@@ -1,0 +1,3811 @@
+Grammar
+
+    0 $accept: Program $end
+
+    1 Program: DeclList
+
+    2 DeclList: DeclList Decl
+    3         | Decl
+
+    4 Decl: VarDecl
+    5     | FnDecl
+    6     | ClassDecl
+
+    7 VarDecl: Type ID SEMI
+    8        | Type ID error SEMI
+
+    9 Type: INT
+   10     | BOOL
+   11     | STRING
+   12     | NamedType
+   13     | ArrayType
+
+   14 NamedType: CLASS ID
+
+   15 ArrayType: Type LB RB
+
+   16 FnDecl: Type ID LP Formals RP StmtBlock
+   17       | VOID ID LP Formals RP StmtBlock
+   18       | STATIC Type ID LP Formals RP StmtBlock
+   19       | STATIC VOID ID LP Formals RP StmtBlock
+
+   20 Formals: %empty
+   21        | Variables
+
+   22 Variables: Variables COMMA Type ID
+   23          | Type ID
+
+   24 ClassDecl: CLASS ID EXTENDS ID LC Fields RC
+   25          | CLASS ID EXTENDS ID LC RC
+   26          | CLASS ID LC Fields RC
+   27          | CLASS ID LC RC
+
+   28 Fields: Fields Field
+   29       | Field
+
+   30 Field: VarDecl
+   31      | FnDecl
+
+   32 StmtBlock: LC VarDecls Stmts RC
+   33          | LC VarDecls RC
+   34          | LC Stmts RC
+   35          | LC RC
+
+   36 VarDecls: VarDecls VarDecl
+   37         | VarDecl
+
+   38 Stmts: Stmts Stmt
+   39      | Stmt
+
+   40 Stmt: OptExpr SEMI
+   41     | IfStmt
+   42     | WhileStmt
+   43     | ForStmt
+   44     | BreakStmt
+   45     | ReturnStmt
+   46     | PrintStmt
+   47     | StmtBlock
+
+   48 IfStmt: IF LP Expr RP Stmt
+   49       | IF LP Expr RP Stmt ELSE Stmt
+
+   50 WhileStmt: WHILE LP Expr RP Stmt
+
+   51 ForStmt: FOR LP OptExpr SEMI Expr SEMI OptExpr RP Stmt
+
+   52 ReturnStmt: RETURN OptExpr SEMI
+
+   53 BreakStmt: BREAK SEMI
+
+   54 PrintStmt: PRINT LP Exprs RP SEMI
+
+   55 Expr: AssignExpr
+   56     | Constant
+   57     | LValue
+   58     | THIS
+   59     | Call
+   60     | LP Expr RP
+   61     | ArithmeticExpr
+   62     | RelationalExpr
+   63     | LogicalExpr
+   64     | READINTEGER LP RP
+   65     | READLINE LP RP
+   66     | INSTANCEOF LP Expr COMMA ID RP
+   67     | NewExpr
+   68     | NewArrayExpr
+
+   69 NewExpr: NEW ID LP RP
+
+   70 NewArrayExpr: NEW Type LB Expr RB
+
+   71 AssignExpr: LValue ASSIGNOP Expr
+
+   72 ArithmeticExpr: Expr PLUS Expr
+   73               | Expr MINUS Expr
+   74               | Expr STAR Expr
+   75               | Expr DIV Expr
+   76               | Expr MOD Expr
+   77               | MINUS Expr
+
+   78 RelationalExpr: Expr GREATER Expr
+   79               | Expr LESS Expr
+   80               | Expr GREATEREQUAL Expr
+   81               | Expr LESSEQUAL Expr
+   82               | Expr EQUAL Expr
+   83               | Expr NOTEQUAL Expr
+
+   84 LogicalExpr: Expr AND Expr
+   85            | Expr OR Expr
+   86            | NOT Expr
+
+   87 Exprs: Exprs COMMA Expr
+   88      | Expr
+
+   89 OptExpr: Expr
+   90        | %empty
+
+   91 LValue: FieldAccess
+   92       | ArrayAccess
+
+   93 FieldAccess: ID
+   94            | Expr DOT ID
+
+   95 Call: ID LP Actuals RP
+   96     | Expr DOT ID LP Actuals RP
+
+   97 ArrayAccess: Expr LB Expr RB
+
+   98 Actuals: Exprs
+   99        | %empty
+
+  100 Constant: INTCONSTANT
+  101         | BOOLCONSTANT
+  102         | STRINGCONSTANT
+  103         | NULLCONSTANT
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256) 8
+BOOL (258) 10
+BREAK (259) 53
+CLASS (260) 14 24 25 26 27
+ELSE (261) 49
+EXTENDS (262) 24 25
+FOR (263) 51
+IF (264) 48 49
+INT (265) 9
+NEW (266) 69 70
+RETURN (267) 52
+STRING (268) 11
+THIS (269) 58
+VOID (270) 17 19
+WHILE (271) 50
+STATIC (272) 18 19
+PRINT (273) 54
+READINTEGER (274) 64
+READLINE (275) 65
+INSTANCEOF (276) 66
+NULLCONSTANT (277) 103
+BOOLCONSTANT (278) 101
+INTCONSTANT (279) 100
+STRINGCONSTANT (280) 102
+ID (281) 7 8 14 16 17 18 19 22 23 24 25 26 27 66 69 93 94 95 96
+SEMI (282) 7 8 40 51 52 53 54
+COMMA (283) 22 66 87
+LC (284) 24 25 26 27 32 33 34 35
+RC (285) 24 25 26 27 32 33 34 35
+LOWER_THAN_ELSE (286)
+ASSIGNOP (287) 71
+OR (288) 85
+AND (289) 84
+GREATER (290) 78
+LESS (291) 79
+GREATEREQUAL (292) 80
+LESSEQUAL (293) 81
+EQUAL (294) 82
+NOTEQUAL (295) 83
+PLUS (296) 72
+MINUS (297) 73 77
+STAR (298) 74
+DIV (299) 75
+MOD (300) 76
+NOT (301) 86
+UMINUS (302)
+LP (303) 16 17 18 19 48 49 50 51 54 60 64 65 66 69 95 96
+RP (304) 16 17 18 19 48 49 50 51 54 60 64 65 66 69 95 96
+LB (305) 15 70 97
+RB (306) 15 70 97
+DOT (307) 94 96
+
+
+Nonterminals, with rules where they appear
+
+$accept (53)
+    on left: 0
+Program (54)
+    on left: 1, on right: 0
+DeclList (55)
+    on left: 2 3, on right: 1 2
+Decl (56)
+    on left: 4 5 6, on right: 2 3
+VarDecl (57)
+    on left: 7 8, on right: 4 30 36 37
+Type (58)
+    on left: 9 10 11 12 13, on right: 7 8 15 16 18 22 23 70
+NamedType (59)
+    on left: 14, on right: 12
+ArrayType (60)
+    on left: 15, on right: 13
+FnDecl (61)
+    on left: 16 17 18 19, on right: 5 31
+Formals (62)
+    on left: 20 21, on right: 16 17 18 19
+Variables (63)
+    on left: 22 23, on right: 21 22
+ClassDecl (64)
+    on left: 24 25 26 27, on right: 6
+Fields (65)
+    on left: 28 29, on right: 24 26 28
+Field (66)
+    on left: 30 31, on right: 28 29
+StmtBlock (67)
+    on left: 32 33 34 35, on right: 16 17 18 19 47
+VarDecls (68)
+    on left: 36 37, on right: 32 33 36
+Stmts (69)
+    on left: 38 39, on right: 32 34 38
+Stmt (70)
+    on left: 40 41 42 43 44 45 46 47, on right: 38 39 48 49 50 51
+IfStmt (71)
+    on left: 48 49, on right: 41
+WhileStmt (72)
+    on left: 50, on right: 42
+ForStmt (73)
+    on left: 51, on right: 43
+ReturnStmt (74)
+    on left: 52, on right: 45
+BreakStmt (75)
+    on left: 53, on right: 44
+PrintStmt (76)
+    on left: 54, on right: 46
+Expr (77)
+    on left: 55 56 57 58 59 60 61 62 63 64 65 66 67 68, on right: 48
+    49 50 51 60 66 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85
+    86 87 88 89 94 96 97
+NewExpr (78)
+    on left: 69, on right: 67
+NewArrayExpr (79)
+    on left: 70, on right: 68
+AssignExpr (80)
+    on left: 71, on right: 55
+ArithmeticExpr (81)
+    on left: 72 73 74 75 76 77, on right: 61
+RelationalExpr (82)
+    on left: 78 79 80 81 82 83, on right: 62
+LogicalExpr (83)
+    on left: 84 85 86, on right: 63
+Exprs (84)
+    on left: 87 88, on right: 54 87 98
+OptExpr (85)
+    on left: 89 90, on right: 40 51 52
+LValue (86)
+    on left: 91 92, on right: 57 71
+FieldAccess (87)
+    on left: 93 94, on right: 91
+Call (88)
+    on left: 95 96, on right: 59
+ArrayAccess (89)
+    on left: 97, on right: 92
+Actuals (90)
+    on left: 98 99, on right: 95 96
+Constant (91)
+    on left: 100 101 102 103, on right: 56
+
+
+State 0
+
+    0 $accept: . Program $end
+
+    BOOL    shift, and go to state 1
+    CLASS   shift, and go to state 2
+    INT     shift, and go to state 3
+    STRING  shift, and go to state 4
+    VOID    shift, and go to state 5
+    STATIC  shift, and go to state 6
+
+    Program    go to state 7
+    DeclList   go to state 8
+    Decl       go to state 9
+    VarDecl    go to state 10
+    Type       go to state 11
+    NamedType  go to state 12
+    ArrayType  go to state 13
+    FnDecl     go to state 14
+    ClassDecl  go to state 15
+
+
+State 1
+
+   10 Type: BOOL .
+
+    $default  reduce using rule 10 (Type)
+
+
+State 2
+
+   14 NamedType: CLASS . ID
+   24 ClassDecl: CLASS . ID EXTENDS ID LC Fields RC
+   25          | CLASS . ID EXTENDS ID LC RC
+   26          | CLASS . ID LC Fields RC
+   27          | CLASS . ID LC RC
+
+    ID  shift, and go to state 16
+
+
+State 3
+
+    9 Type: INT .
+
+    $default  reduce using rule 9 (Type)
+
+
+State 4
+
+   11 Type: STRING .
+
+    $default  reduce using rule 11 (Type)
+
+
+State 5
+
+   17 FnDecl: VOID . ID LP Formals RP StmtBlock
+
+    ID  shift, and go to state 17
+
+
+State 6
+
+   18 FnDecl: STATIC . Type ID LP Formals RP StmtBlock
+   19       | STATIC . VOID ID LP Formals RP StmtBlock
+
+    BOOL    shift, and go to state 1
+    CLASS   shift, and go to state 18
+    INT     shift, and go to state 3
+    STRING  shift, and go to state 4
+    VOID    shift, and go to state 19
+
+    Type       go to state 20
+    NamedType  go to state 12
+    ArrayType  go to state 13
+
+
+State 7
+
+    0 $accept: Program . $end
+
+    $end  shift, and go to state 21
+
+
+State 8
+
+    1 Program: DeclList .
+    2 DeclList: DeclList . Decl
+
+    BOOL    shift, and go to state 1
+    CLASS   shift, and go to state 2
+    INT     shift, and go to state 3
+    STRING  shift, and go to state 4
+    VOID    shift, and go to state 5
+    STATIC  shift, and go to state 6
+
+    $default  reduce using rule 1 (Program)
+
+    Decl       go to state 22
+    VarDecl    go to state 10
+    Type       go to state 11
+    NamedType  go to state 12
+    ArrayType  go to state 13
+    FnDecl     go to state 14
+    ClassDecl  go to state 15
+
+
+State 9
+
+    3 DeclList: Decl .
+
+    $default  reduce using rule 3 (DeclList)
+
+
+State 10
+
+    4 Decl: VarDecl .
+
+    $default  reduce using rule 4 (Decl)
+
+
+State 11
+
+    7 VarDecl: Type . ID SEMI
+    8        | Type . ID error SEMI
+   15 ArrayType: Type . LB RB
+   16 FnDecl: Type . ID LP Formals RP StmtBlock
+
+    ID  shift, and go to state 23
+    LB  shift, and go to state 24
+
+
+State 12
+
+   12 Type: NamedType .
+
+    $default  reduce using rule 12 (Type)
+
+
+State 13
+
+   13 Type: ArrayType .
+
+    $default  reduce using rule 13 (Type)
+
+
+State 14
+
+    5 Decl: FnDecl .
+
+    $default  reduce using rule 5 (Decl)
+
+
+State 15
+
+    6 Decl: ClassDecl .
+
+    $default  reduce using rule 6 (Decl)
+
+
+State 16
+
+   14 NamedType: CLASS ID .
+   24 ClassDecl: CLASS ID . EXTENDS ID LC Fields RC
+   25          | CLASS ID . EXTENDS ID LC RC
+   26          | CLASS ID . LC Fields RC
+   27          | CLASS ID . LC RC
+
+    EXTENDS  shift, and go to state 25
+    LC       shift, and go to state 26
+
+    $default  reduce using rule 14 (NamedType)
+
+
+State 17
+
+   17 FnDecl: VOID ID . LP Formals RP StmtBlock
+
+    LP  shift, and go to state 27
+
+
+State 18
+
+   14 NamedType: CLASS . ID
+
+    ID  shift, and go to state 28
+
+
+State 19
+
+   19 FnDecl: STATIC VOID . ID LP Formals RP StmtBlock
+
+    ID  shift, and go to state 29
+
+
+State 20
+
+   15 ArrayType: Type . LB RB
+   18 FnDecl: STATIC Type . ID LP Formals RP StmtBlock
+
+    ID  shift, and go to state 30
+    LB  shift, and go to state 24
+
+
+State 21
+
+    0 $accept: Program $end .
+
+    $default  accept
+
+
+State 22
+
+    2 DeclList: DeclList Decl .
+
+    $default  reduce using rule 2 (DeclList)
+
+
+State 23
+
+    7 VarDecl: Type ID . SEMI
+    8        | Type ID . error SEMI
+   16 FnDecl: Type ID . LP Formals RP StmtBlock
+
+    error  shift, and go to state 31
+    SEMI   shift, and go to state 32
+    LP     shift, and go to state 33
+
+
+State 24
+
+   15 ArrayType: Type LB . RB
+
+    RB  shift, and go to state 34
+
+
+State 25
+
+   24 ClassDecl: CLASS ID EXTENDS . ID LC Fields RC
+   25          | CLASS ID EXTENDS . ID LC RC
+
+    ID  shift, and go to state 35
+
+
+State 26
+
+   26 ClassDecl: CLASS ID LC . Fields RC
+   27          | CLASS ID LC . RC
+
+    BOOL    shift, and go to state 1
+    CLASS   shift, and go to state 18
+    INT     shift, and go to state 3
+    STRING  shift, and go to state 4
+    VOID    shift, and go to state 5
+    STATIC  shift, and go to state 6
+    RC      shift, and go to state 36
+
+    VarDecl    go to state 37
+    Type       go to state 11
+    NamedType  go to state 12
+    ArrayType  go to state 13
+    FnDecl     go to state 38
+    Fields     go to state 39
+    Field      go to state 40
+
+
+State 27
+
+   17 FnDecl: VOID ID LP . Formals RP StmtBlock
+
+    BOOL    shift, and go to state 1
+    CLASS   shift, and go to state 18
+    INT     shift, and go to state 3
+    STRING  shift, and go to state 4
+
+    $default  reduce using rule 20 (Formals)
+
+    Type       go to state 41
+    NamedType  go to state 12
+    ArrayType  go to state 13
+    Formals    go to state 42
+    Variables  go to state 43
+
+
+State 28
+
+   14 NamedType: CLASS ID .
+
+    $default  reduce using rule 14 (NamedType)
+
+
+State 29
+
+   19 FnDecl: STATIC VOID ID . LP Formals RP StmtBlock
+
+    LP  shift, and go to state 44
+
+
+State 30
+
+   18 FnDecl: STATIC Type ID . LP Formals RP StmtBlock
+
+    LP  shift, and go to state 45
+
+
+State 31
+
+    8 VarDecl: Type ID error . SEMI
+
+    SEMI  shift, and go to state 46
+
+
+State 32
+
+    7 VarDecl: Type ID SEMI .
+
+    $default  reduce using rule 7 (VarDecl)
+
+
+State 33
+
+   16 FnDecl: Type ID LP . Formals RP StmtBlock
+
+    BOOL    shift, and go to state 1
+    CLASS   shift, and go to state 18
+    INT     shift, and go to state 3
+    STRING  shift, and go to state 4
+
+    $default  reduce using rule 20 (Formals)
+
+    Type       go to state 41
+    NamedType  go to state 12
+    ArrayType  go to state 13
+    Formals    go to state 47
+    Variables  go to state 43
+
+
+State 34
+
+   15 ArrayType: Type LB RB .
+
+    $default  reduce using rule 15 (ArrayType)
+
+
+State 35
+
+   24 ClassDecl: CLASS ID EXTENDS ID . LC Fields RC
+   25          | CLASS ID EXTENDS ID . LC RC
+
+    LC  shift, and go to state 48
+
+
+State 36
+
+   27 ClassDecl: CLASS ID LC RC .
+
+    $default  reduce using rule 27 (ClassDecl)
+
+
+State 37
+
+   30 Field: VarDecl .
+
+    $default  reduce using rule 30 (Field)
+
+
+State 38
+
+   31 Field: FnDecl .
+
+    $default  reduce using rule 31 (Field)
+
+
+State 39
+
+   26 ClassDecl: CLASS ID LC Fields . RC
+   28 Fields: Fields . Field
+
+    BOOL    shift, and go to state 1
+    CLASS   shift, and go to state 18
+    INT     shift, and go to state 3
+    STRING  shift, and go to state 4
+    VOID    shift, and go to state 5
+    STATIC  shift, and go to state 6
+    RC      shift, and go to state 49
+
+    VarDecl    go to state 37
+    Type       go to state 11
+    NamedType  go to state 12
+    ArrayType  go to state 13
+    FnDecl     go to state 38
+    Field      go to state 50
+
+
+State 40
+
+   29 Fields: Field .
+
+    $default  reduce using rule 29 (Fields)
+
+
+State 41
+
+   15 ArrayType: Type . LB RB
+   23 Variables: Type . ID
+
+    ID  shift, and go to state 51
+    LB  shift, and go to state 24
+
+
+State 42
+
+   17 FnDecl: VOID ID LP Formals . RP StmtBlock
+
+    RP  shift, and go to state 52
+
+
+State 43
+
+   21 Formals: Variables .
+   22 Variables: Variables . COMMA Type ID
+
+    COMMA  shift, and go to state 53
+
+    $default  reduce using rule 21 (Formals)
+
+
+State 44
+
+   19 FnDecl: STATIC VOID ID LP . Formals RP StmtBlock
+
+    BOOL    shift, and go to state 1
+    CLASS   shift, and go to state 18
+    INT     shift, and go to state 3
+    STRING  shift, and go to state 4
+
+    $default  reduce using rule 20 (Formals)
+
+    Type       go to state 41
+    NamedType  go to state 12
+    ArrayType  go to state 13
+    Formals    go to state 54
+    Variables  go to state 43
+
+
+State 45
+
+   18 FnDecl: STATIC Type ID LP . Formals RP StmtBlock
+
+    BOOL    shift, and go to state 1
+    CLASS   shift, and go to state 18
+    INT     shift, and go to state 3
+    STRING  shift, and go to state 4
+
+    $default  reduce using rule 20 (Formals)
+
+    Type       go to state 41
+    NamedType  go to state 12
+    ArrayType  go to state 13
+    Formals    go to state 55
+    Variables  go to state 43
+
+
+State 46
+
+    8 VarDecl: Type ID error SEMI .
+
+    $default  reduce using rule 8 (VarDecl)
+
+
+State 47
+
+   16 FnDecl: Type ID LP Formals . RP StmtBlock
+
+    RP  shift, and go to state 56
+
+
+State 48
+
+   24 ClassDecl: CLASS ID EXTENDS ID LC . Fields RC
+   25          | CLASS ID EXTENDS ID LC . RC
+
+    BOOL    shift, and go to state 1
+    CLASS   shift, and go to state 18
+    INT     shift, and go to state 3
+    STRING  shift, and go to state 4
+    VOID    shift, and go to state 5
+    STATIC  shift, and go to state 6
+    RC      shift, and go to state 57
+
+    VarDecl    go to state 37
+    Type       go to state 11
+    NamedType  go to state 12
+    ArrayType  go to state 13
+    FnDecl     go to state 38
+    Fields     go to state 58
+    Field      go to state 40
+
+
+State 49
+
+   26 ClassDecl: CLASS ID LC Fields RC .
+
+    $default  reduce using rule 26 (ClassDecl)
+
+
+State 50
+
+   28 Fields: Fields Field .
+
+    $default  reduce using rule 28 (Fields)
+
+
+State 51
+
+   23 Variables: Type ID .
+
+    $default  reduce using rule 23 (Variables)
+
+
+State 52
+
+   17 FnDecl: VOID ID LP Formals RP . StmtBlock
+
+    LC  shift, and go to state 59
+
+    StmtBlock  go to state 60
+
+
+State 53
+
+   22 Variables: Variables COMMA . Type ID
+
+    BOOL    shift, and go to state 1
+    CLASS   shift, and go to state 18
+    INT     shift, and go to state 3
+    STRING  shift, and go to state 4
+
+    Type       go to state 61
+    NamedType  go to state 12
+    ArrayType  go to state 13
+
+
+State 54
+
+   19 FnDecl: STATIC VOID ID LP Formals . RP StmtBlock
+
+    RP  shift, and go to state 62
+
+
+State 55
+
+   18 FnDecl: STATIC Type ID LP Formals . RP StmtBlock
+
+    RP  shift, and go to state 63
+
+
+State 56
+
+   16 FnDecl: Type ID LP Formals RP . StmtBlock
+
+    LC  shift, and go to state 59
+
+    StmtBlock  go to state 64
+
+
+State 57
+
+   25 ClassDecl: CLASS ID EXTENDS ID LC RC .
+
+    $default  reduce using rule 25 (ClassDecl)
+
+
+State 58
+
+   24 ClassDecl: CLASS ID EXTENDS ID LC Fields . RC
+   28 Fields: Fields . Field
+
+    BOOL    shift, and go to state 1
+    CLASS   shift, and go to state 18
+    INT     shift, and go to state 3
+    STRING  shift, and go to state 4
+    VOID    shift, and go to state 5
+    STATIC  shift, and go to state 6
+    RC      shift, and go to state 65
+
+    VarDecl    go to state 37
+    Type       go to state 11
+    NamedType  go to state 12
+    ArrayType  go to state 13
+    FnDecl     go to state 38
+    Field      go to state 50
+
+
+State 59
+
+   32 StmtBlock: LC . VarDecls Stmts RC
+   33          | LC . VarDecls RC
+   34          | LC . Stmts RC
+   35          | LC . RC
+
+    BOOL            shift, and go to state 1
+    BREAK           shift, and go to state 66
+    CLASS           shift, and go to state 18
+    FOR             shift, and go to state 67
+    IF              shift, and go to state 68
+    INT             shift, and go to state 3
+    NEW             shift, and go to state 69
+    RETURN          shift, and go to state 70
+    STRING          shift, and go to state 4
+    THIS            shift, and go to state 71
+    WHILE           shift, and go to state 72
+    PRINT           shift, and go to state 73
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    LC              shift, and go to state 59
+    RC              shift, and go to state 82
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    $default  reduce using rule 90 (OptExpr)
+
+    VarDecl         go to state 86
+    Type            go to state 87
+    NamedType       go to state 12
+    ArrayType       go to state 13
+    StmtBlock       go to state 88
+    VarDecls        go to state 89
+    Stmts           go to state 90
+    Stmt            go to state 91
+    IfStmt          go to state 92
+    WhileStmt       go to state 93
+    ForStmt         go to state 94
+    ReturnStmt      go to state 95
+    BreakStmt       go to state 96
+    PrintStmt       go to state 97
+    Expr            go to state 98
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    OptExpr         go to state 105
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 60
+
+   17 FnDecl: VOID ID LP Formals RP StmtBlock .
+
+    $default  reduce using rule 17 (FnDecl)
+
+
+State 61
+
+   15 ArrayType: Type . LB RB
+   22 Variables: Variables COMMA Type . ID
+
+    ID  shift, and go to state 111
+    LB  shift, and go to state 24
+
+
+State 62
+
+   19 FnDecl: STATIC VOID ID LP Formals RP . StmtBlock
+
+    LC  shift, and go to state 59
+
+    StmtBlock  go to state 112
+
+
+State 63
+
+   18 FnDecl: STATIC Type ID LP Formals RP . StmtBlock
+
+    LC  shift, and go to state 59
+
+    StmtBlock  go to state 113
+
+
+State 64
+
+   16 FnDecl: Type ID LP Formals RP StmtBlock .
+
+    $default  reduce using rule 16 (FnDecl)
+
+
+State 65
+
+   24 ClassDecl: CLASS ID EXTENDS ID LC Fields RC .
+
+    $default  reduce using rule 24 (ClassDecl)
+
+
+State 66
+
+   53 BreakStmt: BREAK . SEMI
+
+    SEMI  shift, and go to state 114
+
+
+State 67
+
+   51 ForStmt: FOR . LP OptExpr SEMI Expr SEMI OptExpr RP Stmt
+
+    LP  shift, and go to state 115
+
+
+State 68
+
+   48 IfStmt: IF . LP Expr RP Stmt
+   49       | IF . LP Expr RP Stmt ELSE Stmt
+
+    LP  shift, and go to state 116
+
+
+State 69
+
+   69 NewExpr: NEW . ID LP RP
+   70 NewArrayExpr: NEW . Type LB Expr RB
+
+    BOOL    shift, and go to state 1
+    CLASS   shift, and go to state 18
+    INT     shift, and go to state 3
+    STRING  shift, and go to state 4
+    ID      shift, and go to state 117
+
+    Type       go to state 118
+    NamedType  go to state 12
+    ArrayType  go to state 13
+
+
+State 70
+
+   52 ReturnStmt: RETURN . OptExpr SEMI
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    $default  reduce using rule 90 (OptExpr)
+
+    Expr            go to state 98
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    OptExpr         go to state 119
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 71
+
+   58 Expr: THIS .
+
+    $default  reduce using rule 58 (Expr)
+
+
+State 72
+
+   50 WhileStmt: WHILE . LP Expr RP Stmt
+
+    LP  shift, and go to state 120
+
+
+State 73
+
+   54 PrintStmt: PRINT . LP Exprs RP SEMI
+
+    LP  shift, and go to state 121
+
+
+State 74
+
+   64 Expr: READINTEGER . LP RP
+
+    LP  shift, and go to state 122
+
+
+State 75
+
+   65 Expr: READLINE . LP RP
+
+    LP  shift, and go to state 123
+
+
+State 76
+
+   66 Expr: INSTANCEOF . LP Expr COMMA ID RP
+
+    LP  shift, and go to state 124
+
+
+State 77
+
+  103 Constant: NULLCONSTANT .
+
+    $default  reduce using rule 103 (Constant)
+
+
+State 78
+
+  101 Constant: BOOLCONSTANT .
+
+    $default  reduce using rule 101 (Constant)
+
+
+State 79
+
+  100 Constant: INTCONSTANT .
+
+    $default  reduce using rule 100 (Constant)
+
+
+State 80
+
+  102 Constant: STRINGCONSTANT .
+
+    $default  reduce using rule 102 (Constant)
+
+
+State 81
+
+   93 FieldAccess: ID .
+   95 Call: ID . LP Actuals RP
+
+    LP  shift, and go to state 125
+
+    $default  reduce using rule 93 (FieldAccess)
+
+
+State 82
+
+   35 StmtBlock: LC RC .
+
+    $default  reduce using rule 35 (StmtBlock)
+
+
+State 83
+
+   77 ArithmeticExpr: MINUS . Expr
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    Expr            go to state 126
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 84
+
+   86 LogicalExpr: NOT . Expr
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    Expr            go to state 127
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 85
+
+   60 Expr: LP . Expr RP
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    Expr            go to state 128
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 86
+
+   37 VarDecls: VarDecl .
+
+    $default  reduce using rule 37 (VarDecls)
+
+
+State 87
+
+    7 VarDecl: Type . ID SEMI
+    8        | Type . ID error SEMI
+   15 ArrayType: Type . LB RB
+
+    ID  shift, and go to state 129
+    LB  shift, and go to state 24
+
+
+State 88
+
+   47 Stmt: StmtBlock .
+
+    $default  reduce using rule 47 (Stmt)
+
+
+State 89
+
+   32 StmtBlock: LC VarDecls . Stmts RC
+   33          | LC VarDecls . RC
+   36 VarDecls: VarDecls . VarDecl
+
+    BOOL            shift, and go to state 1
+    BREAK           shift, and go to state 66
+    CLASS           shift, and go to state 18
+    FOR             shift, and go to state 67
+    IF              shift, and go to state 68
+    INT             shift, and go to state 3
+    NEW             shift, and go to state 69
+    RETURN          shift, and go to state 70
+    STRING          shift, and go to state 4
+    THIS            shift, and go to state 71
+    WHILE           shift, and go to state 72
+    PRINT           shift, and go to state 73
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    LC              shift, and go to state 59
+    RC              shift, and go to state 130
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    $default  reduce using rule 90 (OptExpr)
+
+    VarDecl         go to state 131
+    Type            go to state 87
+    NamedType       go to state 12
+    ArrayType       go to state 13
+    StmtBlock       go to state 88
+    Stmts           go to state 132
+    Stmt            go to state 91
+    IfStmt          go to state 92
+    WhileStmt       go to state 93
+    ForStmt         go to state 94
+    ReturnStmt      go to state 95
+    BreakStmt       go to state 96
+    PrintStmt       go to state 97
+    Expr            go to state 98
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    OptExpr         go to state 105
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 90
+
+   34 StmtBlock: LC Stmts . RC
+   38 Stmts: Stmts . Stmt
+
+    BREAK           shift, and go to state 66
+    FOR             shift, and go to state 67
+    IF              shift, and go to state 68
+    NEW             shift, and go to state 69
+    RETURN          shift, and go to state 70
+    THIS            shift, and go to state 71
+    WHILE           shift, and go to state 72
+    PRINT           shift, and go to state 73
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    LC              shift, and go to state 59
+    RC              shift, and go to state 133
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    $default  reduce using rule 90 (OptExpr)
+
+    StmtBlock       go to state 88
+    Stmt            go to state 134
+    IfStmt          go to state 92
+    WhileStmt       go to state 93
+    ForStmt         go to state 94
+    ReturnStmt      go to state 95
+    BreakStmt       go to state 96
+    PrintStmt       go to state 97
+    Expr            go to state 98
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    OptExpr         go to state 105
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 91
+
+   39 Stmts: Stmt .
+
+    $default  reduce using rule 39 (Stmts)
+
+
+State 92
+
+   41 Stmt: IfStmt .
+
+    $default  reduce using rule 41 (Stmt)
+
+
+State 93
+
+   42 Stmt: WhileStmt .
+
+    $default  reduce using rule 42 (Stmt)
+
+
+State 94
+
+   43 Stmt: ForStmt .
+
+    $default  reduce using rule 43 (Stmt)
+
+
+State 95
+
+   45 Stmt: ReturnStmt .
+
+    $default  reduce using rule 45 (Stmt)
+
+
+State 96
+
+   44 Stmt: BreakStmt .
+
+    $default  reduce using rule 44 (Stmt)
+
+
+State 97
+
+   46 Stmt: PrintStmt .
+
+    $default  reduce using rule 46 (Stmt)
+
+
+State 98
+
+   72 ArithmeticExpr: Expr . PLUS Expr
+   73               | Expr . MINUS Expr
+   74               | Expr . STAR Expr
+   75               | Expr . DIV Expr
+   76               | Expr . MOD Expr
+   78 RelationalExpr: Expr . GREATER Expr
+   79               | Expr . LESS Expr
+   80               | Expr . GREATEREQUAL Expr
+   81               | Expr . LESSEQUAL Expr
+   82               | Expr . EQUAL Expr
+   83               | Expr . NOTEQUAL Expr
+   84 LogicalExpr: Expr . AND Expr
+   85            | Expr . OR Expr
+   89 OptExpr: Expr .
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+
+    OR            shift, and go to state 135
+    AND           shift, and go to state 136
+    GREATER       shift, and go to state 137
+    LESS          shift, and go to state 138
+    GREATEREQUAL  shift, and go to state 139
+    LESSEQUAL     shift, and go to state 140
+    EQUAL         shift, and go to state 141
+    NOTEQUAL      shift, and go to state 142
+    PLUS          shift, and go to state 143
+    MINUS         shift, and go to state 144
+    STAR          shift, and go to state 145
+    DIV           shift, and go to state 146
+    MOD           shift, and go to state 147
+    LB            shift, and go to state 148
+    DOT           shift, and go to state 149
+
+    $default  reduce using rule 89 (OptExpr)
+
+
+State 99
+
+   67 Expr: NewExpr .
+
+    $default  reduce using rule 67 (Expr)
+
+
+State 100
+
+   68 Expr: NewArrayExpr .
+
+    $default  reduce using rule 68 (Expr)
+
+
+State 101
+
+   55 Expr: AssignExpr .
+
+    $default  reduce using rule 55 (Expr)
+
+
+State 102
+
+   61 Expr: ArithmeticExpr .
+
+    $default  reduce using rule 61 (Expr)
+
+
+State 103
+
+   62 Expr: RelationalExpr .
+
+    $default  reduce using rule 62 (Expr)
+
+
+State 104
+
+   63 Expr: LogicalExpr .
+
+    $default  reduce using rule 63 (Expr)
+
+
+State 105
+
+   40 Stmt: OptExpr . SEMI
+
+    SEMI  shift, and go to state 150
+
+
+State 106
+
+   57 Expr: LValue .
+   71 AssignExpr: LValue . ASSIGNOP Expr
+
+    ASSIGNOP  shift, and go to state 151
+
+    $default  reduce using rule 57 (Expr)
+
+
+State 107
+
+   91 LValue: FieldAccess .
+
+    $default  reduce using rule 91 (LValue)
+
+
+State 108
+
+   59 Expr: Call .
+
+    $default  reduce using rule 59 (Expr)
+
+
+State 109
+
+   92 LValue: ArrayAccess .
+
+    $default  reduce using rule 92 (LValue)
+
+
+State 110
+
+   56 Expr: Constant .
+
+    $default  reduce using rule 56 (Expr)
+
+
+State 111
+
+   22 Variables: Variables COMMA Type ID .
+
+    $default  reduce using rule 22 (Variables)
+
+
+State 112
+
+   19 FnDecl: STATIC VOID ID LP Formals RP StmtBlock .
+
+    $default  reduce using rule 19 (FnDecl)
+
+
+State 113
+
+   18 FnDecl: STATIC Type ID LP Formals RP StmtBlock .
+
+    $default  reduce using rule 18 (FnDecl)
+
+
+State 114
+
+   53 BreakStmt: BREAK SEMI .
+
+    $default  reduce using rule 53 (BreakStmt)
+
+
+State 115
+
+   51 ForStmt: FOR LP . OptExpr SEMI Expr SEMI OptExpr RP Stmt
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    $default  reduce using rule 90 (OptExpr)
+
+    Expr            go to state 98
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    OptExpr         go to state 152
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 116
+
+   48 IfStmt: IF LP . Expr RP Stmt
+   49       | IF LP . Expr RP Stmt ELSE Stmt
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    Expr            go to state 153
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 117
+
+   69 NewExpr: NEW ID . LP RP
+
+    LP  shift, and go to state 154
+
+
+State 118
+
+   15 ArrayType: Type . LB RB
+   70 NewArrayExpr: NEW Type . LB Expr RB
+
+    LB  shift, and go to state 155
+
+
+State 119
+
+   52 ReturnStmt: RETURN OptExpr . SEMI
+
+    SEMI  shift, and go to state 156
+
+
+State 120
+
+   50 WhileStmt: WHILE LP . Expr RP Stmt
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    Expr            go to state 157
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 121
+
+   54 PrintStmt: PRINT LP . Exprs RP SEMI
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    Expr            go to state 158
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    Exprs           go to state 159
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 122
+
+   64 Expr: READINTEGER LP . RP
+
+    RP  shift, and go to state 160
+
+
+State 123
+
+   65 Expr: READLINE LP . RP
+
+    RP  shift, and go to state 161
+
+
+State 124
+
+   66 Expr: INSTANCEOF LP . Expr COMMA ID RP
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    Expr            go to state 162
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 125
+
+   95 Call: ID LP . Actuals RP
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    $default  reduce using rule 99 (Actuals)
+
+    Expr            go to state 158
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    Exprs           go to state 163
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Actuals         go to state 164
+    Constant        go to state 110
+
+
+State 126
+
+   72 ArithmeticExpr: Expr . PLUS Expr
+   73               | Expr . MINUS Expr
+   74               | Expr . STAR Expr
+   75               | Expr . DIV Expr
+   76               | Expr . MOD Expr
+   77               | MINUS Expr .
+   78 RelationalExpr: Expr . GREATER Expr
+   79               | Expr . LESS Expr
+   80               | Expr . GREATEREQUAL Expr
+   81               | Expr . LESSEQUAL Expr
+   82               | Expr . EQUAL Expr
+   83               | Expr . NOTEQUAL Expr
+   84 LogicalExpr: Expr . AND Expr
+   85            | Expr . OR Expr
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+
+    LB   shift, and go to state 148
+    DOT  shift, and go to state 149
+
+    $default  reduce using rule 77 (ArithmeticExpr)
+
+
+State 127
+
+   72 ArithmeticExpr: Expr . PLUS Expr
+   73               | Expr . MINUS Expr
+   74               | Expr . STAR Expr
+   75               | Expr . DIV Expr
+   76               | Expr . MOD Expr
+   78 RelationalExpr: Expr . GREATER Expr
+   79               | Expr . LESS Expr
+   80               | Expr . GREATEREQUAL Expr
+   81               | Expr . LESSEQUAL Expr
+   82               | Expr . EQUAL Expr
+   83               | Expr . NOTEQUAL Expr
+   84 LogicalExpr: Expr . AND Expr
+   85            | Expr . OR Expr
+   86            | NOT Expr .
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+
+    LB   shift, and go to state 148
+    DOT  shift, and go to state 149
+
+    $default  reduce using rule 86 (LogicalExpr)
+
+
+State 128
+
+   60 Expr: LP Expr . RP
+   72 ArithmeticExpr: Expr . PLUS Expr
+   73               | Expr . MINUS Expr
+   74               | Expr . STAR Expr
+   75               | Expr . DIV Expr
+   76               | Expr . MOD Expr
+   78 RelationalExpr: Expr . GREATER Expr
+   79               | Expr . LESS Expr
+   80               | Expr . GREATEREQUAL Expr
+   81               | Expr . LESSEQUAL Expr
+   82               | Expr . EQUAL Expr
+   83               | Expr . NOTEQUAL Expr
+   84 LogicalExpr: Expr . AND Expr
+   85            | Expr . OR Expr
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+
+    OR            shift, and go to state 135
+    AND           shift, and go to state 136
+    GREATER       shift, and go to state 137
+    LESS          shift, and go to state 138
+    GREATEREQUAL  shift, and go to state 139
+    LESSEQUAL     shift, and go to state 140
+    EQUAL         shift, and go to state 141
+    NOTEQUAL      shift, and go to state 142
+    PLUS          shift, and go to state 143
+    MINUS         shift, and go to state 144
+    STAR          shift, and go to state 145
+    DIV           shift, and go to state 146
+    MOD           shift, and go to state 147
+    RP            shift, and go to state 165
+    LB            shift, and go to state 148
+    DOT           shift, and go to state 149
+
+
+State 129
+
+    7 VarDecl: Type ID . SEMI
+    8        | Type ID . error SEMI
+
+    error  shift, and go to state 31
+    SEMI   shift, and go to state 32
+
+
+State 130
+
+   33 StmtBlock: LC VarDecls RC .
+
+    $default  reduce using rule 33 (StmtBlock)
+
+
+State 131
+
+   36 VarDecls: VarDecls VarDecl .
+
+    $default  reduce using rule 36 (VarDecls)
+
+
+State 132
+
+   32 StmtBlock: LC VarDecls Stmts . RC
+   38 Stmts: Stmts . Stmt
+
+    BREAK           shift, and go to state 66
+    FOR             shift, and go to state 67
+    IF              shift, and go to state 68
+    NEW             shift, and go to state 69
+    RETURN          shift, and go to state 70
+    THIS            shift, and go to state 71
+    WHILE           shift, and go to state 72
+    PRINT           shift, and go to state 73
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    LC              shift, and go to state 59
+    RC              shift, and go to state 166
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    $default  reduce using rule 90 (OptExpr)
+
+    StmtBlock       go to state 88
+    Stmt            go to state 134
+    IfStmt          go to state 92
+    WhileStmt       go to state 93
+    ForStmt         go to state 94
+    ReturnStmt      go to state 95
+    BreakStmt       go to state 96
+    PrintStmt       go to state 97
+    Expr            go to state 98
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    OptExpr         go to state 105
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 133
+
+   34 StmtBlock: LC Stmts RC .
+
+    $default  reduce using rule 34 (StmtBlock)
+
+
+State 134
+
+   38 Stmts: Stmts Stmt .
+
+    $default  reduce using rule 38 (Stmts)
+
+
+State 135
+
+   85 LogicalExpr: Expr OR . Expr
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    Expr            go to state 167
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 136
+
+   84 LogicalExpr: Expr AND . Expr
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    Expr            go to state 168
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 137
+
+   78 RelationalExpr: Expr GREATER . Expr
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    Expr            go to state 169
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 138
+
+   79 RelationalExpr: Expr LESS . Expr
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    Expr            go to state 170
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 139
+
+   80 RelationalExpr: Expr GREATEREQUAL . Expr
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    Expr            go to state 171
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 140
+
+   81 RelationalExpr: Expr LESSEQUAL . Expr
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    Expr            go to state 172
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 141
+
+   82 RelationalExpr: Expr EQUAL . Expr
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    Expr            go to state 173
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 142
+
+   83 RelationalExpr: Expr NOTEQUAL . Expr
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    Expr            go to state 174
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 143
+
+   72 ArithmeticExpr: Expr PLUS . Expr
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    Expr            go to state 175
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 144
+
+   73 ArithmeticExpr: Expr MINUS . Expr
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    Expr            go to state 176
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 145
+
+   74 ArithmeticExpr: Expr STAR . Expr
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    Expr            go to state 177
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 146
+
+   75 ArithmeticExpr: Expr DIV . Expr
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    Expr            go to state 178
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 147
+
+   76 ArithmeticExpr: Expr MOD . Expr
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    Expr            go to state 179
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 148
+
+   97 ArrayAccess: Expr LB . Expr RB
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    Expr            go to state 180
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 149
+
+   94 FieldAccess: Expr DOT . ID
+   96 Call: Expr DOT . ID LP Actuals RP
+
+    ID  shift, and go to state 181
+
+
+State 150
+
+   40 Stmt: OptExpr SEMI .
+
+    $default  reduce using rule 40 (Stmt)
+
+
+State 151
+
+   71 AssignExpr: LValue ASSIGNOP . Expr
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    Expr            go to state 182
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 152
+
+   51 ForStmt: FOR LP OptExpr . SEMI Expr SEMI OptExpr RP Stmt
+
+    SEMI  shift, and go to state 183
+
+
+State 153
+
+   48 IfStmt: IF LP Expr . RP Stmt
+   49       | IF LP Expr . RP Stmt ELSE Stmt
+   72 ArithmeticExpr: Expr . PLUS Expr
+   73               | Expr . MINUS Expr
+   74               | Expr . STAR Expr
+   75               | Expr . DIV Expr
+   76               | Expr . MOD Expr
+   78 RelationalExpr: Expr . GREATER Expr
+   79               | Expr . LESS Expr
+   80               | Expr . GREATEREQUAL Expr
+   81               | Expr . LESSEQUAL Expr
+   82               | Expr . EQUAL Expr
+   83               | Expr . NOTEQUAL Expr
+   84 LogicalExpr: Expr . AND Expr
+   85            | Expr . OR Expr
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+
+    OR            shift, and go to state 135
+    AND           shift, and go to state 136
+    GREATER       shift, and go to state 137
+    LESS          shift, and go to state 138
+    GREATEREQUAL  shift, and go to state 139
+    LESSEQUAL     shift, and go to state 140
+    EQUAL         shift, and go to state 141
+    NOTEQUAL      shift, and go to state 142
+    PLUS          shift, and go to state 143
+    MINUS         shift, and go to state 144
+    STAR          shift, and go to state 145
+    DIV           shift, and go to state 146
+    MOD           shift, and go to state 147
+    RP            shift, and go to state 184
+    LB            shift, and go to state 148
+    DOT           shift, and go to state 149
+
+
+State 154
+
+   69 NewExpr: NEW ID LP . RP
+
+    RP  shift, and go to state 185
+
+
+State 155
+
+   15 ArrayType: Type LB . RB
+   70 NewArrayExpr: NEW Type LB . Expr RB
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+    RB              shift, and go to state 34
+
+    Expr            go to state 186
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 156
+
+   52 ReturnStmt: RETURN OptExpr SEMI .
+
+    $default  reduce using rule 52 (ReturnStmt)
+
+
+State 157
+
+   50 WhileStmt: WHILE LP Expr . RP Stmt
+   72 ArithmeticExpr: Expr . PLUS Expr
+   73               | Expr . MINUS Expr
+   74               | Expr . STAR Expr
+   75               | Expr . DIV Expr
+   76               | Expr . MOD Expr
+   78 RelationalExpr: Expr . GREATER Expr
+   79               | Expr . LESS Expr
+   80               | Expr . GREATEREQUAL Expr
+   81               | Expr . LESSEQUAL Expr
+   82               | Expr . EQUAL Expr
+   83               | Expr . NOTEQUAL Expr
+   84 LogicalExpr: Expr . AND Expr
+   85            | Expr . OR Expr
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+
+    OR            shift, and go to state 135
+    AND           shift, and go to state 136
+    GREATER       shift, and go to state 137
+    LESS          shift, and go to state 138
+    GREATEREQUAL  shift, and go to state 139
+    LESSEQUAL     shift, and go to state 140
+    EQUAL         shift, and go to state 141
+    NOTEQUAL      shift, and go to state 142
+    PLUS          shift, and go to state 143
+    MINUS         shift, and go to state 144
+    STAR          shift, and go to state 145
+    DIV           shift, and go to state 146
+    MOD           shift, and go to state 147
+    RP            shift, and go to state 187
+    LB            shift, and go to state 148
+    DOT           shift, and go to state 149
+
+
+State 158
+
+   72 ArithmeticExpr: Expr . PLUS Expr
+   73               | Expr . MINUS Expr
+   74               | Expr . STAR Expr
+   75               | Expr . DIV Expr
+   76               | Expr . MOD Expr
+   78 RelationalExpr: Expr . GREATER Expr
+   79               | Expr . LESS Expr
+   80               | Expr . GREATEREQUAL Expr
+   81               | Expr . LESSEQUAL Expr
+   82               | Expr . EQUAL Expr
+   83               | Expr . NOTEQUAL Expr
+   84 LogicalExpr: Expr . AND Expr
+   85            | Expr . OR Expr
+   88 Exprs: Expr .
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+
+    OR            shift, and go to state 135
+    AND           shift, and go to state 136
+    GREATER       shift, and go to state 137
+    LESS          shift, and go to state 138
+    GREATEREQUAL  shift, and go to state 139
+    LESSEQUAL     shift, and go to state 140
+    EQUAL         shift, and go to state 141
+    NOTEQUAL      shift, and go to state 142
+    PLUS          shift, and go to state 143
+    MINUS         shift, and go to state 144
+    STAR          shift, and go to state 145
+    DIV           shift, and go to state 146
+    MOD           shift, and go to state 147
+    LB            shift, and go to state 148
+    DOT           shift, and go to state 149
+
+    $default  reduce using rule 88 (Exprs)
+
+
+State 159
+
+   54 PrintStmt: PRINT LP Exprs . RP SEMI
+   87 Exprs: Exprs . COMMA Expr
+
+    COMMA  shift, and go to state 188
+    RP     shift, and go to state 189
+
+
+State 160
+
+   64 Expr: READINTEGER LP RP .
+
+    $default  reduce using rule 64 (Expr)
+
+
+State 161
+
+   65 Expr: READLINE LP RP .
+
+    $default  reduce using rule 65 (Expr)
+
+
+State 162
+
+   66 Expr: INSTANCEOF LP Expr . COMMA ID RP
+   72 ArithmeticExpr: Expr . PLUS Expr
+   73               | Expr . MINUS Expr
+   74               | Expr . STAR Expr
+   75               | Expr . DIV Expr
+   76               | Expr . MOD Expr
+   78 RelationalExpr: Expr . GREATER Expr
+   79               | Expr . LESS Expr
+   80               | Expr . GREATEREQUAL Expr
+   81               | Expr . LESSEQUAL Expr
+   82               | Expr . EQUAL Expr
+   83               | Expr . NOTEQUAL Expr
+   84 LogicalExpr: Expr . AND Expr
+   85            | Expr . OR Expr
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+
+    COMMA         shift, and go to state 190
+    OR            shift, and go to state 135
+    AND           shift, and go to state 136
+    GREATER       shift, and go to state 137
+    LESS          shift, and go to state 138
+    GREATEREQUAL  shift, and go to state 139
+    LESSEQUAL     shift, and go to state 140
+    EQUAL         shift, and go to state 141
+    NOTEQUAL      shift, and go to state 142
+    PLUS          shift, and go to state 143
+    MINUS         shift, and go to state 144
+    STAR          shift, and go to state 145
+    DIV           shift, and go to state 146
+    MOD           shift, and go to state 147
+    LB            shift, and go to state 148
+    DOT           shift, and go to state 149
+
+
+State 163
+
+   87 Exprs: Exprs . COMMA Expr
+   98 Actuals: Exprs .
+
+    COMMA  shift, and go to state 188
+
+    $default  reduce using rule 98 (Actuals)
+
+
+State 164
+
+   95 Call: ID LP Actuals . RP
+
+    RP  shift, and go to state 191
+
+
+State 165
+
+   60 Expr: LP Expr RP .
+
+    $default  reduce using rule 60 (Expr)
+
+
+State 166
+
+   32 StmtBlock: LC VarDecls Stmts RC .
+
+    $default  reduce using rule 32 (StmtBlock)
+
+
+State 167
+
+   72 ArithmeticExpr: Expr . PLUS Expr
+   73               | Expr . MINUS Expr
+   74               | Expr . STAR Expr
+   75               | Expr . DIV Expr
+   76               | Expr . MOD Expr
+   78 RelationalExpr: Expr . GREATER Expr
+   79               | Expr . LESS Expr
+   80               | Expr . GREATEREQUAL Expr
+   81               | Expr . LESSEQUAL Expr
+   82               | Expr . EQUAL Expr
+   83               | Expr . NOTEQUAL Expr
+   84 LogicalExpr: Expr . AND Expr
+   85            | Expr . OR Expr
+   85            | Expr OR Expr .
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+
+    AND           shift, and go to state 136
+    GREATER       shift, and go to state 137
+    LESS          shift, and go to state 138
+    GREATEREQUAL  shift, and go to state 139
+    LESSEQUAL     shift, and go to state 140
+    EQUAL         shift, and go to state 141
+    NOTEQUAL      shift, and go to state 142
+    PLUS          shift, and go to state 143
+    MINUS         shift, and go to state 144
+    STAR          shift, and go to state 145
+    DIV           shift, and go to state 146
+    MOD           shift, and go to state 147
+    LB            shift, and go to state 148
+    DOT           shift, and go to state 149
+
+    $default  reduce using rule 85 (LogicalExpr)
+
+
+State 168
+
+   72 ArithmeticExpr: Expr . PLUS Expr
+   73               | Expr . MINUS Expr
+   74               | Expr . STAR Expr
+   75               | Expr . DIV Expr
+   76               | Expr . MOD Expr
+   78 RelationalExpr: Expr . GREATER Expr
+   79               | Expr . LESS Expr
+   80               | Expr . GREATEREQUAL Expr
+   81               | Expr . LESSEQUAL Expr
+   82               | Expr . EQUAL Expr
+   83               | Expr . NOTEQUAL Expr
+   84 LogicalExpr: Expr . AND Expr
+   84            | Expr AND Expr .
+   85            | Expr . OR Expr
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+
+    GREATER       shift, and go to state 137
+    LESS          shift, and go to state 138
+    GREATEREQUAL  shift, and go to state 139
+    LESSEQUAL     shift, and go to state 140
+    EQUAL         shift, and go to state 141
+    NOTEQUAL      shift, and go to state 142
+    PLUS          shift, and go to state 143
+    MINUS         shift, and go to state 144
+    STAR          shift, and go to state 145
+    DIV           shift, and go to state 146
+    MOD           shift, and go to state 147
+    LB            shift, and go to state 148
+    DOT           shift, and go to state 149
+
+    $default  reduce using rule 84 (LogicalExpr)
+
+
+State 169
+
+   72 ArithmeticExpr: Expr . PLUS Expr
+   73               | Expr . MINUS Expr
+   74               | Expr . STAR Expr
+   75               | Expr . DIV Expr
+   76               | Expr . MOD Expr
+   78 RelationalExpr: Expr . GREATER Expr
+   78               | Expr GREATER Expr .
+   79               | Expr . LESS Expr
+   80               | Expr . GREATEREQUAL Expr
+   81               | Expr . LESSEQUAL Expr
+   82               | Expr . EQUAL Expr
+   83               | Expr . NOTEQUAL Expr
+   84 LogicalExpr: Expr . AND Expr
+   85            | Expr . OR Expr
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+
+    PLUS   shift, and go to state 143
+    MINUS  shift, and go to state 144
+    STAR   shift, and go to state 145
+    DIV    shift, and go to state 146
+    MOD    shift, and go to state 147
+    LB     shift, and go to state 148
+    DOT    shift, and go to state 149
+
+    $default  reduce using rule 78 (RelationalExpr)
+
+
+State 170
+
+   72 ArithmeticExpr: Expr . PLUS Expr
+   73               | Expr . MINUS Expr
+   74               | Expr . STAR Expr
+   75               | Expr . DIV Expr
+   76               | Expr . MOD Expr
+   78 RelationalExpr: Expr . GREATER Expr
+   79               | Expr . LESS Expr
+   79               | Expr LESS Expr .
+   80               | Expr . GREATEREQUAL Expr
+   81               | Expr . LESSEQUAL Expr
+   82               | Expr . EQUAL Expr
+   83               | Expr . NOTEQUAL Expr
+   84 LogicalExpr: Expr . AND Expr
+   85            | Expr . OR Expr
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+
+    PLUS   shift, and go to state 143
+    MINUS  shift, and go to state 144
+    STAR   shift, and go to state 145
+    DIV    shift, and go to state 146
+    MOD    shift, and go to state 147
+    LB     shift, and go to state 148
+    DOT    shift, and go to state 149
+
+    $default  reduce using rule 79 (RelationalExpr)
+
+
+State 171
+
+   72 ArithmeticExpr: Expr . PLUS Expr
+   73               | Expr . MINUS Expr
+   74               | Expr . STAR Expr
+   75               | Expr . DIV Expr
+   76               | Expr . MOD Expr
+   78 RelationalExpr: Expr . GREATER Expr
+   79               | Expr . LESS Expr
+   80               | Expr . GREATEREQUAL Expr
+   80               | Expr GREATEREQUAL Expr .
+   81               | Expr . LESSEQUAL Expr
+   82               | Expr . EQUAL Expr
+   83               | Expr . NOTEQUAL Expr
+   84 LogicalExpr: Expr . AND Expr
+   85            | Expr . OR Expr
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+
+    PLUS   shift, and go to state 143
+    MINUS  shift, and go to state 144
+    STAR   shift, and go to state 145
+    DIV    shift, and go to state 146
+    MOD    shift, and go to state 147
+    LB     shift, and go to state 148
+    DOT    shift, and go to state 149
+
+    $default  reduce using rule 80 (RelationalExpr)
+
+
+State 172
+
+   72 ArithmeticExpr: Expr . PLUS Expr
+   73               | Expr . MINUS Expr
+   74               | Expr . STAR Expr
+   75               | Expr . DIV Expr
+   76               | Expr . MOD Expr
+   78 RelationalExpr: Expr . GREATER Expr
+   79               | Expr . LESS Expr
+   80               | Expr . GREATEREQUAL Expr
+   81               | Expr . LESSEQUAL Expr
+   81               | Expr LESSEQUAL Expr .
+   82               | Expr . EQUAL Expr
+   83               | Expr . NOTEQUAL Expr
+   84 LogicalExpr: Expr . AND Expr
+   85            | Expr . OR Expr
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+
+    PLUS   shift, and go to state 143
+    MINUS  shift, and go to state 144
+    STAR   shift, and go to state 145
+    DIV    shift, and go to state 146
+    MOD    shift, and go to state 147
+    LB     shift, and go to state 148
+    DOT    shift, and go to state 149
+
+    $default  reduce using rule 81 (RelationalExpr)
+
+
+State 173
+
+   72 ArithmeticExpr: Expr . PLUS Expr
+   73               | Expr . MINUS Expr
+   74               | Expr . STAR Expr
+   75               | Expr . DIV Expr
+   76               | Expr . MOD Expr
+   78 RelationalExpr: Expr . GREATER Expr
+   79               | Expr . LESS Expr
+   80               | Expr . GREATEREQUAL Expr
+   81               | Expr . LESSEQUAL Expr
+   82               | Expr . EQUAL Expr
+   82               | Expr EQUAL Expr .
+   83               | Expr . NOTEQUAL Expr
+   84 LogicalExpr: Expr . AND Expr
+   85            | Expr . OR Expr
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+
+    PLUS   shift, and go to state 143
+    MINUS  shift, and go to state 144
+    STAR   shift, and go to state 145
+    DIV    shift, and go to state 146
+    MOD    shift, and go to state 147
+    LB     shift, and go to state 148
+    DOT    shift, and go to state 149
+
+    $default  reduce using rule 82 (RelationalExpr)
+
+
+State 174
+
+   72 ArithmeticExpr: Expr . PLUS Expr
+   73               | Expr . MINUS Expr
+   74               | Expr . STAR Expr
+   75               | Expr . DIV Expr
+   76               | Expr . MOD Expr
+   78 RelationalExpr: Expr . GREATER Expr
+   79               | Expr . LESS Expr
+   80               | Expr . GREATEREQUAL Expr
+   81               | Expr . LESSEQUAL Expr
+   82               | Expr . EQUAL Expr
+   83               | Expr . NOTEQUAL Expr
+   83               | Expr NOTEQUAL Expr .
+   84 LogicalExpr: Expr . AND Expr
+   85            | Expr . OR Expr
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+
+    PLUS   shift, and go to state 143
+    MINUS  shift, and go to state 144
+    STAR   shift, and go to state 145
+    DIV    shift, and go to state 146
+    MOD    shift, and go to state 147
+    LB     shift, and go to state 148
+    DOT    shift, and go to state 149
+
+    $default  reduce using rule 83 (RelationalExpr)
+
+
+State 175
+
+   72 ArithmeticExpr: Expr . PLUS Expr
+   72               | Expr PLUS Expr .
+   73               | Expr . MINUS Expr
+   74               | Expr . STAR Expr
+   75               | Expr . DIV Expr
+   76               | Expr . MOD Expr
+   78 RelationalExpr: Expr . GREATER Expr
+   79               | Expr . LESS Expr
+   80               | Expr . GREATEREQUAL Expr
+   81               | Expr . LESSEQUAL Expr
+   82               | Expr . EQUAL Expr
+   83               | Expr . NOTEQUAL Expr
+   84 LogicalExpr: Expr . AND Expr
+   85            | Expr . OR Expr
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+
+    STAR  shift, and go to state 145
+    DIV   shift, and go to state 146
+    MOD   shift, and go to state 147
+    LB    shift, and go to state 148
+    DOT   shift, and go to state 149
+
+    $default  reduce using rule 72 (ArithmeticExpr)
+
+
+State 176
+
+   72 ArithmeticExpr: Expr . PLUS Expr
+   73               | Expr . MINUS Expr
+   73               | Expr MINUS Expr .
+   74               | Expr . STAR Expr
+   75               | Expr . DIV Expr
+   76               | Expr . MOD Expr
+   78 RelationalExpr: Expr . GREATER Expr
+   79               | Expr . LESS Expr
+   80               | Expr . GREATEREQUAL Expr
+   81               | Expr . LESSEQUAL Expr
+   82               | Expr . EQUAL Expr
+   83               | Expr . NOTEQUAL Expr
+   84 LogicalExpr: Expr . AND Expr
+   85            | Expr . OR Expr
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+
+    STAR  shift, and go to state 145
+    DIV   shift, and go to state 146
+    MOD   shift, and go to state 147
+    LB    shift, and go to state 148
+    DOT   shift, and go to state 149
+
+    $default  reduce using rule 73 (ArithmeticExpr)
+
+
+State 177
+
+   72 ArithmeticExpr: Expr . PLUS Expr
+   73               | Expr . MINUS Expr
+   74               | Expr . STAR Expr
+   74               | Expr STAR Expr .
+   75               | Expr . DIV Expr
+   76               | Expr . MOD Expr
+   78 RelationalExpr: Expr . GREATER Expr
+   79               | Expr . LESS Expr
+   80               | Expr . GREATEREQUAL Expr
+   81               | Expr . LESSEQUAL Expr
+   82               | Expr . EQUAL Expr
+   83               | Expr . NOTEQUAL Expr
+   84 LogicalExpr: Expr . AND Expr
+   85            | Expr . OR Expr
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+
+    LB   shift, and go to state 148
+    DOT  shift, and go to state 149
+
+    $default  reduce using rule 74 (ArithmeticExpr)
+
+
+State 178
+
+   72 ArithmeticExpr: Expr . PLUS Expr
+   73               | Expr . MINUS Expr
+   74               | Expr . STAR Expr
+   75               | Expr . DIV Expr
+   75               | Expr DIV Expr .
+   76               | Expr . MOD Expr
+   78 RelationalExpr: Expr . GREATER Expr
+   79               | Expr . LESS Expr
+   80               | Expr . GREATEREQUAL Expr
+   81               | Expr . LESSEQUAL Expr
+   82               | Expr . EQUAL Expr
+   83               | Expr . NOTEQUAL Expr
+   84 LogicalExpr: Expr . AND Expr
+   85            | Expr . OR Expr
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+
+    LB   shift, and go to state 148
+    DOT  shift, and go to state 149
+
+    $default  reduce using rule 75 (ArithmeticExpr)
+
+
+State 179
+
+   72 ArithmeticExpr: Expr . PLUS Expr
+   73               | Expr . MINUS Expr
+   74               | Expr . STAR Expr
+   75               | Expr . DIV Expr
+   76               | Expr . MOD Expr
+   76               | Expr MOD Expr .
+   78 RelationalExpr: Expr . GREATER Expr
+   79               | Expr . LESS Expr
+   80               | Expr . GREATEREQUAL Expr
+   81               | Expr . LESSEQUAL Expr
+   82               | Expr . EQUAL Expr
+   83               | Expr . NOTEQUAL Expr
+   84 LogicalExpr: Expr . AND Expr
+   85            | Expr . OR Expr
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+
+    LB   shift, and go to state 148
+    DOT  shift, and go to state 149
+
+    $default  reduce using rule 76 (ArithmeticExpr)
+
+
+State 180
+
+   72 ArithmeticExpr: Expr . PLUS Expr
+   73               | Expr . MINUS Expr
+   74               | Expr . STAR Expr
+   75               | Expr . DIV Expr
+   76               | Expr . MOD Expr
+   78 RelationalExpr: Expr . GREATER Expr
+   79               | Expr . LESS Expr
+   80               | Expr . GREATEREQUAL Expr
+   81               | Expr . LESSEQUAL Expr
+   82               | Expr . EQUAL Expr
+   83               | Expr . NOTEQUAL Expr
+   84 LogicalExpr: Expr . AND Expr
+   85            | Expr . OR Expr
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+   97            | Expr LB Expr . RB
+
+    OR            shift, and go to state 135
+    AND           shift, and go to state 136
+    GREATER       shift, and go to state 137
+    LESS          shift, and go to state 138
+    GREATEREQUAL  shift, and go to state 139
+    LESSEQUAL     shift, and go to state 140
+    EQUAL         shift, and go to state 141
+    NOTEQUAL      shift, and go to state 142
+    PLUS          shift, and go to state 143
+    MINUS         shift, and go to state 144
+    STAR          shift, and go to state 145
+    DIV           shift, and go to state 146
+    MOD           shift, and go to state 147
+    LB            shift, and go to state 148
+    RB            shift, and go to state 192
+    DOT           shift, and go to state 149
+
+
+State 181
+
+   94 FieldAccess: Expr DOT ID .
+   96 Call: Expr DOT ID . LP Actuals RP
+
+    LP  shift, and go to state 193
+
+    $default  reduce using rule 94 (FieldAccess)
+
+
+State 182
+
+   71 AssignExpr: LValue ASSIGNOP Expr .
+   72 ArithmeticExpr: Expr . PLUS Expr
+   73               | Expr . MINUS Expr
+   74               | Expr . STAR Expr
+   75               | Expr . DIV Expr
+   76               | Expr . MOD Expr
+   78 RelationalExpr: Expr . GREATER Expr
+   79               | Expr . LESS Expr
+   80               | Expr . GREATEREQUAL Expr
+   81               | Expr . LESSEQUAL Expr
+   82               | Expr . EQUAL Expr
+   83               | Expr . NOTEQUAL Expr
+   84 LogicalExpr: Expr . AND Expr
+   85            | Expr . OR Expr
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+
+    OR            shift, and go to state 135
+    AND           shift, and go to state 136
+    GREATER       shift, and go to state 137
+    LESS          shift, and go to state 138
+    GREATEREQUAL  shift, and go to state 139
+    LESSEQUAL     shift, and go to state 140
+    EQUAL         shift, and go to state 141
+    NOTEQUAL      shift, and go to state 142
+    PLUS          shift, and go to state 143
+    MINUS         shift, and go to state 144
+    STAR          shift, and go to state 145
+    DIV           shift, and go to state 146
+    MOD           shift, and go to state 147
+    LB            shift, and go to state 148
+    DOT           shift, and go to state 149
+
+    $default  reduce using rule 71 (AssignExpr)
+
+
+State 183
+
+   51 ForStmt: FOR LP OptExpr SEMI . Expr SEMI OptExpr RP Stmt
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    Expr            go to state 194
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 184
+
+   48 IfStmt: IF LP Expr RP . Stmt
+   49       | IF LP Expr RP . Stmt ELSE Stmt
+
+    BREAK           shift, and go to state 66
+    FOR             shift, and go to state 67
+    IF              shift, and go to state 68
+    NEW             shift, and go to state 69
+    RETURN          shift, and go to state 70
+    THIS            shift, and go to state 71
+    WHILE           shift, and go to state 72
+    PRINT           shift, and go to state 73
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    LC              shift, and go to state 59
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    $default  reduce using rule 90 (OptExpr)
+
+    StmtBlock       go to state 88
+    Stmt            go to state 195
+    IfStmt          go to state 92
+    WhileStmt       go to state 93
+    ForStmt         go to state 94
+    ReturnStmt      go to state 95
+    BreakStmt       go to state 96
+    PrintStmt       go to state 97
+    Expr            go to state 98
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    OptExpr         go to state 105
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 185
+
+   69 NewExpr: NEW ID LP RP .
+
+    $default  reduce using rule 69 (NewExpr)
+
+
+State 186
+
+   70 NewArrayExpr: NEW Type LB Expr . RB
+   72 ArithmeticExpr: Expr . PLUS Expr
+   73               | Expr . MINUS Expr
+   74               | Expr . STAR Expr
+   75               | Expr . DIV Expr
+   76               | Expr . MOD Expr
+   78 RelationalExpr: Expr . GREATER Expr
+   79               | Expr . LESS Expr
+   80               | Expr . GREATEREQUAL Expr
+   81               | Expr . LESSEQUAL Expr
+   82               | Expr . EQUAL Expr
+   83               | Expr . NOTEQUAL Expr
+   84 LogicalExpr: Expr . AND Expr
+   85            | Expr . OR Expr
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+
+    OR            shift, and go to state 135
+    AND           shift, and go to state 136
+    GREATER       shift, and go to state 137
+    LESS          shift, and go to state 138
+    GREATEREQUAL  shift, and go to state 139
+    LESSEQUAL     shift, and go to state 140
+    EQUAL         shift, and go to state 141
+    NOTEQUAL      shift, and go to state 142
+    PLUS          shift, and go to state 143
+    MINUS         shift, and go to state 144
+    STAR          shift, and go to state 145
+    DIV           shift, and go to state 146
+    MOD           shift, and go to state 147
+    LB            shift, and go to state 148
+    RB            shift, and go to state 196
+    DOT           shift, and go to state 149
+
+
+State 187
+
+   50 WhileStmt: WHILE LP Expr RP . Stmt
+
+    BREAK           shift, and go to state 66
+    FOR             shift, and go to state 67
+    IF              shift, and go to state 68
+    NEW             shift, and go to state 69
+    RETURN          shift, and go to state 70
+    THIS            shift, and go to state 71
+    WHILE           shift, and go to state 72
+    PRINT           shift, and go to state 73
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    LC              shift, and go to state 59
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    $default  reduce using rule 90 (OptExpr)
+
+    StmtBlock       go to state 88
+    Stmt            go to state 197
+    IfStmt          go to state 92
+    WhileStmt       go to state 93
+    ForStmt         go to state 94
+    ReturnStmt      go to state 95
+    BreakStmt       go to state 96
+    PrintStmt       go to state 97
+    Expr            go to state 98
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    OptExpr         go to state 105
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 188
+
+   87 Exprs: Exprs COMMA . Expr
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    Expr            go to state 198
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 189
+
+   54 PrintStmt: PRINT LP Exprs RP . SEMI
+
+    SEMI  shift, and go to state 199
+
+
+State 190
+
+   66 Expr: INSTANCEOF LP Expr COMMA . ID RP
+
+    ID  shift, and go to state 200
+
+
+State 191
+
+   95 Call: ID LP Actuals RP .
+
+    $default  reduce using rule 95 (Call)
+
+
+State 192
+
+   97 ArrayAccess: Expr LB Expr RB .
+
+    $default  reduce using rule 97 (ArrayAccess)
+
+
+State 193
+
+   96 Call: Expr DOT ID LP . Actuals RP
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    $default  reduce using rule 99 (Actuals)
+
+    Expr            go to state 158
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    Exprs           go to state 163
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Actuals         go to state 201
+    Constant        go to state 110
+
+
+State 194
+
+   51 ForStmt: FOR LP OptExpr SEMI Expr . SEMI OptExpr RP Stmt
+   72 ArithmeticExpr: Expr . PLUS Expr
+   73               | Expr . MINUS Expr
+   74               | Expr . STAR Expr
+   75               | Expr . DIV Expr
+   76               | Expr . MOD Expr
+   78 RelationalExpr: Expr . GREATER Expr
+   79               | Expr . LESS Expr
+   80               | Expr . GREATEREQUAL Expr
+   81               | Expr . LESSEQUAL Expr
+   82               | Expr . EQUAL Expr
+   83               | Expr . NOTEQUAL Expr
+   84 LogicalExpr: Expr . AND Expr
+   85            | Expr . OR Expr
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+
+    SEMI          shift, and go to state 202
+    OR            shift, and go to state 135
+    AND           shift, and go to state 136
+    GREATER       shift, and go to state 137
+    LESS          shift, and go to state 138
+    GREATEREQUAL  shift, and go to state 139
+    LESSEQUAL     shift, and go to state 140
+    EQUAL         shift, and go to state 141
+    NOTEQUAL      shift, and go to state 142
+    PLUS          shift, and go to state 143
+    MINUS         shift, and go to state 144
+    STAR          shift, and go to state 145
+    DIV           shift, and go to state 146
+    MOD           shift, and go to state 147
+    LB            shift, and go to state 148
+    DOT           shift, and go to state 149
+
+
+State 195
+
+   48 IfStmt: IF LP Expr RP Stmt .
+   49       | IF LP Expr RP Stmt . ELSE Stmt
+
+    ELSE  shift, and go to state 203
+
+    $default  reduce using rule 48 (IfStmt)
+
+
+State 196
+
+   70 NewArrayExpr: NEW Type LB Expr RB .
+
+    $default  reduce using rule 70 (NewArrayExpr)
+
+
+State 197
+
+   50 WhileStmt: WHILE LP Expr RP Stmt .
+
+    $default  reduce using rule 50 (WhileStmt)
+
+
+State 198
+
+   72 ArithmeticExpr: Expr . PLUS Expr
+   73               | Expr . MINUS Expr
+   74               | Expr . STAR Expr
+   75               | Expr . DIV Expr
+   76               | Expr . MOD Expr
+   78 RelationalExpr: Expr . GREATER Expr
+   79               | Expr . LESS Expr
+   80               | Expr . GREATEREQUAL Expr
+   81               | Expr . LESSEQUAL Expr
+   82               | Expr . EQUAL Expr
+   83               | Expr . NOTEQUAL Expr
+   84 LogicalExpr: Expr . AND Expr
+   85            | Expr . OR Expr
+   87 Exprs: Exprs COMMA Expr .
+   94 FieldAccess: Expr . DOT ID
+   96 Call: Expr . DOT ID LP Actuals RP
+   97 ArrayAccess: Expr . LB Expr RB
+
+    OR            shift, and go to state 135
+    AND           shift, and go to state 136
+    GREATER       shift, and go to state 137
+    LESS          shift, and go to state 138
+    GREATEREQUAL  shift, and go to state 139
+    LESSEQUAL     shift, and go to state 140
+    EQUAL         shift, and go to state 141
+    NOTEQUAL      shift, and go to state 142
+    PLUS          shift, and go to state 143
+    MINUS         shift, and go to state 144
+    STAR          shift, and go to state 145
+    DIV           shift, and go to state 146
+    MOD           shift, and go to state 147
+    LB            shift, and go to state 148
+    DOT           shift, and go to state 149
+
+    $default  reduce using rule 87 (Exprs)
+
+
+State 199
+
+   54 PrintStmt: PRINT LP Exprs RP SEMI .
+
+    $default  reduce using rule 54 (PrintStmt)
+
+
+State 200
+
+   66 Expr: INSTANCEOF LP Expr COMMA ID . RP
+
+    RP  shift, and go to state 204
+
+
+State 201
+
+   96 Call: Expr DOT ID LP Actuals . RP
+
+    RP  shift, and go to state 205
+
+
+State 202
+
+   51 ForStmt: FOR LP OptExpr SEMI Expr SEMI . OptExpr RP Stmt
+
+    NEW             shift, and go to state 69
+    THIS            shift, and go to state 71
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    $default  reduce using rule 90 (OptExpr)
+
+    Expr            go to state 98
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    OptExpr         go to state 206
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 203
+
+   49 IfStmt: IF LP Expr RP Stmt ELSE . Stmt
+
+    BREAK           shift, and go to state 66
+    FOR             shift, and go to state 67
+    IF              shift, and go to state 68
+    NEW             shift, and go to state 69
+    RETURN          shift, and go to state 70
+    THIS            shift, and go to state 71
+    WHILE           shift, and go to state 72
+    PRINT           shift, and go to state 73
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    LC              shift, and go to state 59
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    $default  reduce using rule 90 (OptExpr)
+
+    StmtBlock       go to state 88
+    Stmt            go to state 207
+    IfStmt          go to state 92
+    WhileStmt       go to state 93
+    ForStmt         go to state 94
+    ReturnStmt      go to state 95
+    BreakStmt       go to state 96
+    PrintStmt       go to state 97
+    Expr            go to state 98
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    OptExpr         go to state 105
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 204
+
+   66 Expr: INSTANCEOF LP Expr COMMA ID RP .
+
+    $default  reduce using rule 66 (Expr)
+
+
+State 205
+
+   96 Call: Expr DOT ID LP Actuals RP .
+
+    $default  reduce using rule 96 (Call)
+
+
+State 206
+
+   51 ForStmt: FOR LP OptExpr SEMI Expr SEMI OptExpr . RP Stmt
+
+    RP  shift, and go to state 208
+
+
+State 207
+
+   49 IfStmt: IF LP Expr RP Stmt ELSE Stmt .
+
+    $default  reduce using rule 49 (IfStmt)
+
+
+State 208
+
+   51 ForStmt: FOR LP OptExpr SEMI Expr SEMI OptExpr RP . Stmt
+
+    BREAK           shift, and go to state 66
+    FOR             shift, and go to state 67
+    IF              shift, and go to state 68
+    NEW             shift, and go to state 69
+    RETURN          shift, and go to state 70
+    THIS            shift, and go to state 71
+    WHILE           shift, and go to state 72
+    PRINT           shift, and go to state 73
+    READINTEGER     shift, and go to state 74
+    READLINE        shift, and go to state 75
+    INSTANCEOF      shift, and go to state 76
+    NULLCONSTANT    shift, and go to state 77
+    BOOLCONSTANT    shift, and go to state 78
+    INTCONSTANT     shift, and go to state 79
+    STRINGCONSTANT  shift, and go to state 80
+    ID              shift, and go to state 81
+    LC              shift, and go to state 59
+    MINUS           shift, and go to state 83
+    NOT             shift, and go to state 84
+    LP              shift, and go to state 85
+
+    $default  reduce using rule 90 (OptExpr)
+
+    StmtBlock       go to state 88
+    Stmt            go to state 209
+    IfStmt          go to state 92
+    WhileStmt       go to state 93
+    ForStmt         go to state 94
+    ReturnStmt      go to state 95
+    BreakStmt       go to state 96
+    PrintStmt       go to state 97
+    Expr            go to state 98
+    NewExpr         go to state 99
+    NewArrayExpr    go to state 100
+    AssignExpr      go to state 101
+    ArithmeticExpr  go to state 102
+    RelationalExpr  go to state 103
+    LogicalExpr     go to state 104
+    OptExpr         go to state 105
+    LValue          go to state 106
+    FieldAccess     go to state 107
+    Call            go to state 108
+    ArrayAccess     go to state 109
+    Constant        go to state 110
+
+
+State 209
+
+   51 ForStmt: FOR LP OptExpr SEMI Expr SEMI OptExpr RP Stmt .
+
+    $default  reduce using rule 51 (ForStmt)

@@ -1,0 +1,5 @@
+1.environment:ubuntu16.04 64-bit
+2.make
+	make //compile decaf
+	make clean 
+	make test  
