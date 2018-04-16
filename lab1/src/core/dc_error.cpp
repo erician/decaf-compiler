@@ -14,6 +14,7 @@
 using namespace std;
 
 string replace_tab_by_blank(string str);
+
 void IssueError::flag_errorplace(YYLTYPE *pyylloc)
 {
     cout<<"    ";

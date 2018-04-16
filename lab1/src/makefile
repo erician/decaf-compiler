@@ -14,7 +14,7 @@ include core/makefile
 # OBJS can deal with either .cc or .c 
 OBJS = $(OBJDIR)y.tab.o $(OBJDIR)lex.yy.o $(OBJDIR)dc_genast.cpp.o $(OBJDIR)dc_printast.cpp.o $(OBJDIR)dc_error.cpp.o $(OBJDIR)main.cpp.o
 
-JUNK = *~ $(OBJDIR)*.o $(LEXDIR)lex.yy.c $(YACCDIR)y.tab.c $(YACCDIR)y.tab.h  
+JUNK = *~ $(OBJDIR)*.o  $(LEXDIR)lex.yy.c $(YACCDIR)y.tab.c $(YACCDIR)y.tab.h  $(YACCDIR)y.output
 
 # Define the tools we are going to use
 CC= g++
@@ -40,6 +40,6 @@ righttest:
 	cat $(TESTDIR)shouldpass.decaf | $(OBJDIR)decaf
 
 clean:
-	@rm -f $(JUNK) y.output $(PRODUCTS)
+	@rm -f $(JUNK) $(PRODUCTS)
 
 
