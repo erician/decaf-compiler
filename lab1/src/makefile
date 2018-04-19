@@ -4,7 +4,7 @@ COMPILER = ../obj/decaf
 PRODUCTS = $(COMPILER)
 default: $(PRODUCTS)
 
-TESTDIR = ../test/
+TESTDIR = ../decaf-test-src/
 OBJDIR = ../obj/
 
 include yacc/makefile

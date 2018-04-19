@@ -6,25 +6,28 @@ class Args
 {
 private:
     OptionsWithValue optionsWithValue;
-    std::map<char, std::string> argDict;  
-    std::map<char, std::string> parseArgs(int argc, char *argv[]);
+    std::map<std::string, std::string> argDict;
+    std::map<std::string, std::string> parseArgs(int argc, char *argv[]);
+    int parseArgsStartsWithSingleStrikethrough(char *option, char *value);
+    int parseArgsStartsWithDoubleStrikethrough(char *option);
+    std::string char_to_string(char ch);
 public:
     Args(int argc, char *argv[]);
-    void set(char key, std::string value);
-    std::string get(char key);
-    bool has_key(char key);
+    void set(std::string, std::string value);
+    std::string get(std::string key);
+    bool hasKey(std::string key);
 };
 
 class OptionsWithValue
 {
 private:
-    std::map<char, bool> optionsDict;
+    std::map<std::string, bool> optionsDict;
 public:
     OptionsWithValue()
     {
-        optionsDict['o'] = true;
+        optionsDict["o"] = true;
     }
-    bool has_key(char key)
+    bool hasKey(std::string key)
     {
         if (optionsDict.find(key) != optionsDict.end())
         {
