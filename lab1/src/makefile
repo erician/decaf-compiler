@@ -10,9 +10,14 @@ OBJDIR = ../obj/
 include yacc/makefile
 include lex/makefile
 include core/makefile
+include utils/makefile
 
 # OBJS can deal with either .cc or .c 
-OBJS = $(OBJDIR)y.tab.o $(OBJDIR)lex.yy.o $(OBJDIR)dc_genast.cpp.o $(OBJDIR)dc_printast.cpp.o $(OBJDIR)dc_error.cpp.o $(OBJDIR)main.cpp.o
+OBJS = $(OBJDIR)y.tab.o $(OBJDIR)lex.yy.o 
+OBJS += $(OBJDIR)dc_genast.cpp.o $(OBJDIR)dc_printast.cpp.o 
+OBJS += $(OBJDIR)dc_error.cpp.o 
+OBJS += $(OBJDIR)dc_args.cpp.o $(OBJDIR)dc_options.cpp.o $(OBJDIR)dc_option_error.cpp.o 
+OBJS += $(OBJDIR)main.cpp.o
 
 JUNK = *~ $(OBJDIR)*.o  $(LEXDIR)lex.yy.c $(YACCDIR)y.tab.c $(YACCDIR)y.tab.h  $(YACCDIR)y.output
 
@@ -32,6 +37,7 @@ $(OBJDIR)main.cpp.o: main.cpp
 
 $(COMPILER) : $(OBJS)
 	$(LD) -o $@ $(OBJS) $(LIBS)
+	cp $(COMPILER) ./
 
 wrongtest:
 	cat $(TESTDIR)shouldfail.decaf | $(OBJDIR)decaf

@@ -1,11 +1,6 @@
 #include <cstring>
 #include "dc_args.h"
 
-Args::Args(int argc, char *argv[])
-{
-    argDict = parseArgs(argc, argv);
-}
-
 void Args::set(std::string key, std::string value)
 {
     argDict[key] = value;
@@ -35,7 +30,7 @@ std::string Args::get(std::string key)
     }
 }
 
-std::map<std::string, std::string> Args::parseArgs(int argc, char *argv[])
+bool Args::parseArgs(int argc, char *argv[])
 {
     int i = 1;
     int addend = 0;
@@ -50,7 +45,7 @@ std::map<std::string, std::string> Args::parseArgs(int argc, char *argv[])
             }
             else
             {
-                addend = parseArgsStartsWithSingleStrikethrough(option, argv[i+1]);
+                addend = parseArgsStartsWithSingleStrikethrough(option, i+1<argc?(argv[i+1]):NULL);
             }
         }
         else
@@ -58,37 +53,91 @@ std::map<std::string, std::string> Args::parseArgs(int argc, char *argv[])
             argDict["src"] = std::string(option);
             addend = 1;
         }
+        if (addend == -1)
+            return false;
         i += addend;
     }
+    if(hasKey(Options::SRC_FILE) == false)
+    {
+        OptionError::NotHaveSourceFile();
+        return false;
+    }
+    return true;
 }
 
 int Args::parseArgsStartsWithSingleStrikethrough(char *option, char *value)
 {
     if (strlen(option) == 2)
     {
-        argDict[char_to_string(option[1])] = std::string();
-        if (optionsWithValue.hasKey(char_to_string(option[1])))
+        if (allOptions.doesHaveKey(char_to_string(option[1])))
         {
-            argDict[char_to_string(option[1])] = std::string(value);
-            return 2;
+            if (allOptions.doesHaveValue(char_to_string(option[1])))
+            {
+                if (value != NULL)
+                {
+                    argDict[char_to_string(option[1])] = std::string(value);
+                    return 2;
+                }
+                else
+                {
+                    OptionError::NotWithValue(std::string(option));
+                    return -1;
+                }
+            }
+            else
+            {
+                argDict[char_to_string(option[1])] = std::string();
+                return 1;
+            }
+        }
+        else
+        {
+            OptionError::NotHaveThisOption(std::string(option));
+            return -1;
         }
     }
     else
     {
         for (int j = 1; j < strlen(option); j++)
-        {
-            set(char_to_string(option[j]), std::string());
+        { 
+            if (allOptions.doesHaveKey(char_to_string(option[j])))
+            {
+                if (allOptions.doesHaveValue(char_to_string(option[j])) == false)
+                {
+                    set(char_to_string(option[j]), std::string());
+                }
+                else
+                {
+                    OptionError::NotWithValue(char_to_string(option[j]));
+                    return -1;
+                }
+            }
+            else
+            {
+                OptionError::NotHaveThisOption(char_to_string(option[j]));
+                return -1;
+            }
+            
         }
         return 1;
     }
 }
+
 int Args::parseArgsStartsWithDoubleStrikethrough(char *option)
 {
-    set(std::string(option), std::string());
+    if (allOptions.doesHaveKey(std::string(option)))
+    {
+        set(std::string(option), std::string());
+        return 1;
+    }
+    else
+    {   OptionError::NotHaveThisOption(std::string(option));
+        return -1;
+    }
     return 1;
 }
 
-std::string char_to_string(char ch)
+std::string Args::char_to_string(char ch)
 {
     char a[2] = {ch, '\0'};
     return std::string(a);
