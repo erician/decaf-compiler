@@ -1,0 +1,42 @@
+Program
+    ClassDecl  Computer 
+        VarDecl  cpu  inttype 
+        FnDecl  Crash  voidtype 
+            formals
+                VarDecl  numTimes  inttype 
+            StmtBlock
+                VarDecl  i  inttype 
+                for
+                    =
+                        FieldAccess  i 
+                        intcon 0
+                    <
+                        FieldAccess  i 
+                        FieldAccess  numTimes 
+                    =
+                        FieldAccess  i 
+                        +
+                            FieldAccess  i 
+                            intcon 1
+                    Print
+                        stringcon "sad\n"
+    ClassDecl  Mac Extends  Computer 
+        VarDecl  mouse  inttype 
+        FnDecl  Crash  voidtype 
+            formals
+                VarDecl  numTimes  inttype 
+            StmtBlock
+                Print
+                    stringcon "ack!"
+    ClassDecl  Main 
+        FnDecl  main static  voidtype 
+            formals
+            StmtBlock
+                VarDecl  powerbook  classtype  Mac 
+                =
+                    FieldAccess  powerbook 
+                    New  Mac 
+                call
+                    FieldAccess  powerbook 
+                    Crash 
+                    intcon 2

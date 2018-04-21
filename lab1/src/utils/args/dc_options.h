@@ -10,6 +10,7 @@ public:
     static const std::string PRINT_AST;
     static const std::string OUTPUT;
     static const std::string SRC_FILE;
+    static const std::string LEX_GRAMM_ANALYSIS;
 public:
     Options();
     bool doesHaveKey(std::string key);

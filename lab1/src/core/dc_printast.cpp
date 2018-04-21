@@ -37,10 +37,10 @@ void Id::printAst(int aline,int level)
 
 void Program::printAst(int aline,int level)
 {
-    printWhite(aline,level);
-    cout<<"Program";
+    std::cout<<"Program";
     for(int i=0;i<pdecllist->size();i++)
         (*pdecllist)[i]->printAst(1,1+level);
+    std::cout<<std::endl;
 }
 
 void VarDecl::printAst(int aline,int level)

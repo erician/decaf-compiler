@@ -117,6 +117,7 @@ public:
     FnDecl(int s,Type* s1,Id* s2,vector<VarDecl*>* s4,StmtBlock* s6);
     void printAst(int aline,int level); 
 };
+
 class ClassDecl:public Decl
 {
 public:
