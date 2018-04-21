@@ -100,7 +100,6 @@
 %left   LP RP LB RB DOT
 /*非终结符的声明*/
 %type <program> Program
-%type <decl> Decl
 %type <vardecl> VarDecl
 %type <fndecl> FnDecl
 %type <classdecl> ClassDecl
@@ -148,15 +147,11 @@
 Program   :    DeclList     	{$$=new Program($1); program = $$;}
           ;    
 
-DeclList  :    DeclList Decl    {($$=$1)->push_back($2);}
-          |    Decl             {($$=new vector<Decl*>)->push_back($1);}
+DeclList  :    DeclList ClassDecl    {($$=$1)->push_back($2);}
+          |    ClassDecl             {($$=new vector<Decl*>)->push_back($1);}
           ;
-/*按照类的思想，变量在声明时是没有初值的*/
-Decl      :    VarDecl          {$$=$1;}
-          |    FnDecl           {$$=$1;}
-          |    ClassDecl	    {$$=$1;}
-          ;
-/*变量的声明时是没有初始化的*/
+
+/*变量在声明时是没有初始化的*/
 VarDecl   :    Type ID SEMI 	{$$=new VarDecl($1,(new Id($2,@2)));}     
           |    Type ID error SEMI {}
 	  ;

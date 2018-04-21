@@ -38,8 +38,8 @@ void Id::printAst(int aline,int level)
 void Program::printAst(int aline,int level)
 {
     std::cout<<"Program";
-    for(int i=0;i<pdecllist->size();i++)
-        (*pdecllist)[i]->printAst(1,1+level);
+    for(int i=0;i<pvecClassDecl->size();i++)
+        (*pvecClassDecl)[i]->printAst(1,1+level);
     std::cout<<std::endl;
 }
 

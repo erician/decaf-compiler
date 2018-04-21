@@ -19,9 +19,16 @@ int main(int argc,char *argv[])
         return -1;
     InitFlex();
     yyin =  fopen(args.get(Options::SRC_FILE).c_str(), "r");
-    if (yyparse() == 0)
-    {   
-        Compiler compiler(args, *program);
-        compiler.parseArgs();
+    if (yyin != 0)
+    {
+        if (yyparse() == 0)
+        {   
+            Compiler compiler(args, *program);
+            compiler.parseArgs();
+        }
+    }
+    else
+    {
+        std::cout<<args.get(Options::SRC_FILE)<<" doesn\'t exist"<<std::endl;
     }
 }

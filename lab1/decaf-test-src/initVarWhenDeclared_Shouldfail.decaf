@@ -12,7 +12,7 @@ class Mac extends Computer{
 		Print("ack!");
 	}
 }
- Main{
+class Main{
 	static void main(){
 		class Mac powerbook;
 		powerbook=new Mac();

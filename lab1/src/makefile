@@ -42,7 +42,10 @@ $(COMPILER) : $(OBJS)
 	cp $(COMPILER) ./
 
 failtest:
-	./$(OBJDIR)decaf $(TESTDIR)shouldfail.decaf
+	@echo "---------->funNotInClass_Shouldfail" 
+	./$(OBJDIR)decaf $(TESTDIR)funNotInClass_Shouldfail.decaf
+	@echo "---------->initVarWhenDeclared_Shouldfail.decaf"
+	./$(OBJDIR)decaf $(TESTDIR)initVarWhenDeclared_Shouldfail.decaf
 
 passtest:
 	./$(OBJDIR)decaf $(TESTDIR)shouldpass.decaf

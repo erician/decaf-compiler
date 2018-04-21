@@ -77,7 +77,7 @@ public:
 class Program:public treenode
 {
 public:
-    vector<Decl*> *pdecllist;
+    vector<Decl*> *pvecClassDecl;
 	vector<string> vec_data; 	//最后打印的数据区
     Program(vector<Decl*> *s1);
     void printAst(int aline,int level);

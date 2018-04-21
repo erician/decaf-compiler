@@ -31,7 +31,7 @@ Id::Id(char* str,YYLTYPE loc):treenode(loc)
 
 Program::Program(vector<Decl*> *s1)
 {
-    pdecllist = s1;
+    pvecClassDecl = s1;
 }
 /*************decl************/
 Decl::Decl(Id *s)
