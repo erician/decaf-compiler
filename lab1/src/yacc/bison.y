@@ -73,7 +73,7 @@
 
     vector<Stmt*> *stmts;
 
-    vector<Expr*> *exprs;
+    vector<const Expr&> *exprs;
     vector<Expr*> *actuals;
 }
 /*终结符的声明*/
@@ -144,7 +144,7 @@
 
 %start Program
 %%
-Program   :    DeclList     	{$$=new Program($1); program = $$;}
+Program   :    DeclList     	{$$=new Program(*$1); program = $$;}
           ;    
 
 DeclList  :    DeclList ClassDecl    {($$=$1)->push_back($2);}
@@ -273,7 +273,7 @@ BreakStmt  : BREAK SEMI         {$$=new BreakStmt(@1);
        
 
 PrintStmt  : PRINT LP Exprs RP SEMI 
-                                {$$=new PrintStmt($3);}
+                                {$$=new PrintStmt(*$3);}
            ;
            
 Expr       :  AssignExpr        {$$=$1;}
@@ -349,9 +349,9 @@ LogicalExpr    : Expr AND Expr
 
 
 Exprs      : Exprs COMMA Expr         
-				{($$=$1)->push_back($3);}
+				{($$=$1)->push_back(*$3);}
            | Expr               
-				{($$=new vector<Expr*>)->push_back($1);}
+				{($$=new vector<const Expr&>)->push_back(*$1);}
            ; 
 
 OptExpr    : Expr		{$$=$1;}
@@ -362,17 +362,17 @@ LValue     : FieldAccess    {$$=$1;}
            | ArrayAccess 	{$$=$1;}
            ; 
 
-FieldAccess : ID           	{$$=new FieldAccess(NULL,new Id($1,@1));}
-            | Expr DOT ID	{$$=new FieldAccess($1,new Id($3,@3));}
+FieldAccess : ID           	{$$=new FieldAccess(NULL,*(new Id($1,@1)));}
+            | Expr DOT ID	{$$=new FieldAccess(*$1,*(new Id($3,@3)));}
             ;
 
 Call       : ID LP Actuals RP 
-                            {$$=new Call(NULL,new Id($1,@1),$3);} 
+                            {$$=new Call(NULL,*(new Id($1,@1)),$3);} 
            | Expr DOT ID LP Actuals RP
-                            {$$=new Call($1,new Id($3,@3),$5);}
+                            {$$=new Call(*$1,*(new Id($3,@3)),$5);}
            ;
 
-ArrayAccess : Expr LB Expr RB   {$$=new ArrayAccess($1,$3);}
+ArrayAccess : Expr LB Expr RB   {$$=new ArrayAccess(*$1,*$3);}
             ;
            
 Actuals    : Exprs 		{$$=$1;}

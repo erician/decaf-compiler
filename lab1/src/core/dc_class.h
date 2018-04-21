@@ -77,9 +77,9 @@ public:
 class Program:public treenode
 {
 public:
-    vector<Decl*> *pvecClassDecl;
+    vector<Decl*> &pvecClassDecl;
 	vector<string> vec_data; 	//最后打印的数据区
-    Program(vector<Decl*> *s1);
+    Program(vector<Decl*> &s1);
     void printAst(int aline,int level);
 };
 
@@ -241,8 +241,8 @@ public:
 class PrintStmt:public Stmt
 {
 public:
-    vector<Expr*> *pexprs;
-    PrintStmt(vector<Expr*> *s3);
+    vector<const Expr&> &pexprs;
+    PrintStmt(vector<const Expr&>& s3);
     void printAst(int aline,int level);
 };
 /************expr*************/
@@ -296,26 +296,32 @@ class FieldAccess:public Lvalue
 public:
     //因为decaf的变量成员都是私有的，所以不会有类名.
     //唯一有的是this.
-    Expr* pexpr;
-    Id* pid;
-    FieldAccess(Expr* s1,Id* s3);
+    Expr& pexpr;
+    Id& pid;
+    bool doesHaveExpr;
+    FieldAccess(Expr& s1,Id& s3);
+    FieldAccess(long int nullValue, Id& s3);
     void printAst(int aline,int level);
 };
 class ArrayAccess:public Lvalue
 {
 public:
-    Expr* pexpr1;
-    Expr* pexpr2;
-    ArrayAccess(Expr* s1,Expr* s3);
+    Expr& pexpr1;
+    Expr& pexpr2;
+    ArrayAccess(Expr& s1,Expr& s3);
     void printAst(int aline,int level);
 };
 class Call:public Expr
 {
 public:
-    Id* pid;
-    vector<Expr*> *pactuals;
-    Expr* pexpr;
-    Call(Expr* s1,Id* s3,vector<Expr*> *s5);
+    Id& pid;
+    vector<const Expr&>& pactuals;
+    Expr& pexpr;
+    bool doesHaveExpr;
+    bool doesHavePactuals;
+    Call(Expr& s1,Id& s3,vector<const Expr&>& s5);
+    Call(long int nullValue,Id& s3,vector<const Expr&>& s5);
+    Call(long int nullValue,Id& s3,long int nullValue);
     void printAst(int aline,int level);
 };
 class This:public Expr

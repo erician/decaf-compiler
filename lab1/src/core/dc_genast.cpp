@@ -29,9 +29,8 @@ Id::Id(char* str,YYLTYPE loc):treenode(loc)
     name = str;
 }
 
-Program::Program(vector<Decl*> *s1)
+Program::Program(vector<Decl*> &s1):pvecClassDecl(s1)
 {
-    pvecClassDecl = s1;
 }
 /*************decl************/
 Decl::Decl(Id *s)
@@ -123,10 +122,11 @@ BreakStmt::BreakStmt(YYLTYPE loc)
 	//自己设置location
 	plocation=new YYLTYPE(loc);
 }
-PrintStmt::PrintStmt(vector<Expr*> *s3)
+
+PrintStmt::PrintStmt(vector<Expr*> &s3):pexprs(s3)
 {
-    pexprs=s3;
 }
+
 /**************Expr***********/
 Expr::Expr()
 {
@@ -155,25 +155,25 @@ LogicalExpr::LogicalExpr(Expr* s1,const char* s,Expr* s3)
     pexpr2=s3;
     opname=s;
 }
+
 Lvalue::Lvalue()
 {
-    
 }
-FieldAccess::FieldAccess(Expr* s1,Id* s3)
+
+FieldAccess::FieldAccess(Expr& s1, Id& s3):pexpr(s1), pid(s3)
 {
-    pexpr=s1;
-    pid=s3;
+    doesHaveExpr = true;
 }
-ArrayAccess::ArrayAccess(Expr* s1,Expr* s3)
+FieldAccess::FieldAccess(long int nullValue, Id& s3):pid(s3);
 {
-    pexpr1=s1;
-    pexpr2=s3;
+    doesHaveExpr = false;
 }
-Call::Call(Expr* s1,Id* s3,vector<Expr*> *s5)
+
+ArrayAccess::ArrayAccess(Expr& s1,Expr& s3):pexpr1(s1),pexpr2(s3)
 {
-    pid=s3;
-    pexpr=s1;
-    pactuals=s5;
+}
+Call::Call(Expr& s1,Id& s3,vector<Expr*>& s5):pid(s3),pexpr(s1),pactuals(s5)
+{
 }
 This::This()
 {
@@ -181,11 +181,9 @@ This::This()
 }
 ReadInteger::ReadInteger()
 {
-
 }
 ReadLine::ReadLine()
 {
-    
 }
 Instanceof::Instanceof(Expr* s3,Id* s5)
 {

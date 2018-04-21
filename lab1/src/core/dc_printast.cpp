@@ -223,8 +223,8 @@ void ArrayAccess::printAst(int aline,int level)
 {
     printWhite(aline,level);
     cout<<"ArrayAccess ";
-    pexpr1->printAst(0,level);
-    pexpr2->printAst(0,level);
+    pexpr1.printAst(0,level);
+    pexpr2.printAst(0,level);
 }
 
 void Call::printAst(int aline,int level)
