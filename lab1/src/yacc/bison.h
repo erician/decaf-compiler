@@ -11,5 +11,5 @@
 #include "../core/dc_class.h"
 void yyerror (char const *msg);
 int yyparse();
-Program *ast_root = NULL;
+Program *program = NULL;
 #endif

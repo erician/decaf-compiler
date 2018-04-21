@@ -145,7 +145,7 @@
 
 %start Program
 %%
-Program   :    DeclList     	{$$=new Program($1); ast_root = $$;}
+Program   :    DeclList     	{$$=new Program($1); program = $$;}
           ;    
 
 DeclList  :    DeclList Decl    {($$=$1)->push_back($2);}

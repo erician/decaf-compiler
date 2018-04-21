@@ -1708,7 +1708,7 @@ yyreduce:
     {
         case 2:
 #line 148 "yacc/bison.y" /* yacc.c:1646  */
-    {(yyval.program)=new Program((yyvsp[0].decllist)); ast_root = (yyval.program);}
+    {(yyval.program)=new Program((yyvsp[0].decllist)); program = (yyval.program);}
 #line 1713 "y.tab.c" /* yacc.c:1646  */
     break;
 
