@@ -78,8 +78,10 @@ class Program:public treenode
 {
 public:
     vector<Decl*> *pvecClassDecl;
-	vector<string> vec_data; 	//最后打印的数据区
+	vector<GloScope*> *pvecGloScope;
+    stack< vector<Scope*>* > *pstack;
     Program(vector<Decl*> *s1);
+    void Program::buildSym()
     void printAst(int aline,int level);
 };
 
@@ -96,7 +98,7 @@ public:
 class Decl:public treenode
 {
 public:
-    Id *pid;
+    Id *pId;
     Decl(Id* s);
 };
 class VarDecl:public Decl
@@ -121,10 +123,11 @@ public:
 class ClassDecl:public Decl
 {
 public:
-    Id* base;
+    Id* pParentId;
     vector<Decl*> *pfields;
     //使用NULL表示是否继承，是否有Fields
     ClassDecl(Id* s2,Id* s4,vector<Decl*> *s6);
+    void buildSym(stack<vector<Scope*>*> *pstack, GloScope* _pgloscope);
     void printAst(int aline,int level);
 };
 /**********type******************/
