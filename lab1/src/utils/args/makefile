@@ -1,4 +1,4 @@
-UTILSDIR := utils/
+UTILSDIR := utils/args/
 
 $(OBJDIR)dc_args.cpp.o: $(UTILSDIR)dc_args.cpp
 	$(CC) $(CFLAGS) -c -o $@ $<

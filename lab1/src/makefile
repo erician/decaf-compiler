@@ -10,7 +10,7 @@ OBJDIR = ../obj/
 include yacc/makefile
 include lex/makefile
 include core/makefile
-include utils/makefile
+include utils/args/makefile
 
 # OBJS can deal with either .cc or .c 
 OBJS = $(OBJDIR)y.tab.o $(OBJDIR)lex.yy.o 
