@@ -11,10 +11,14 @@ using namespace std;
 #define _ERROR_H
 class IssueError
 {
+private:
+    static void flagErrorPlace(YYLTYPE *pyylloc);
+	static string replaceTabByBlank(string str);
+
 public:
-    static void flag_errorplace(YYLTYPE *pyylloc);
     static void UnMachedChar(YYLTYPE *pyylloc,char c);
     static void Printyyerror(YYLTYPE *pyylloc,string str);
+	
 };
 
 #endif

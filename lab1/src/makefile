@@ -41,11 +41,11 @@ $(COMPILER) : $(OBJS)
 	$(LD) -o $@ $(OBJS) $(LIBS)
 	cp $(COMPILER) ./
 
-wrongtest:
-	cat $(TESTDIR)shouldfail.decaf | $(OBJDIR)decaf
+failtest:
+	./$(OBJDIR)decaf $(TESTDIR)shouldfail.decaf
 
-righttest:
-	cat $(TESTDIR)shouldpass.decaf | $(OBJDIR)decaf
+passtest:
+	./$(OBJDIR)decaf $(TESTDIR)shouldpass.decaf
 
 clean:
 	@rm -f $(JUNK) $(PRODUCTS)

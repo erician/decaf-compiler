@@ -13,9 +13,7 @@
 #include "dc_error.h"
 using namespace std;
 
-string replace_tab_by_blank(string str);
-
-void IssueError::flag_errorplace(YYLTYPE *pyylloc)
+void IssueError::flagErrorPlace(YYLTYPE *pyylloc)
 {
     cout<<"    ";
     for(int i=0;i<pyylloc->first_column-1;i++)
@@ -26,17 +24,18 @@ void IssueError::UnMachedChar(YYLTYPE *pyylloc,char c)
 {
     cout<<pyylloc->first_line<<":"<<pyylloc->first_column<<": ";
     cout<<"error: "<<"\'"<<c<<"\' "<<"unmatched char "<<endl;
-    cout<<"    "<<replace_tab_by_blank(savedlines[pyylloc->first_line-1])<<endl;
-    flag_errorplace(pyylloc);
+    cout<<"    "<<replaceTabByBlank(savedlines[pyylloc->first_line-1])<<endl;
+    flagErrorPlace(pyylloc);
 }
 void IssueError::Printyyerror(YYLTYPE *pyylloc,string str)
 {
     cout<<pyylloc->first_line<<":"<<pyylloc->first_column<<": ";
     cout<<"syntax error: "<<"\'"<<str<<"\' "<<endl;
-    cout<<"    "<<replace_tab_by_blank(savedlines[pyylloc->first_line-1])<<endl;
-    flag_errorplace(pyylloc);
+    cout<<"    "<<replaceTabByBlank(savedlines[pyylloc->first_line-1])<<endl;
+    flagErrorPlace(pyylloc);
 }
-string replace_tab_by_blank(string str)
+
+string IssueError::replaceTabByBlank(string str)
 {
     do{
         long long pos = str.find('\t');
