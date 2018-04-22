@@ -13,30 +13,35 @@ using namespace std;
 #ifndef _NT_BUILDSYM_H
 #define _NT_BUILDSYM_H
 
-class TYPE;
+class Type;
 class Scope;
 class GloScope;
+class GloScopeEntry;
 //注释一下，别自己都忘了, des全称是descriptor,意思是描述，是对该类型的一个基本描述
 //详情可以参考编译原理p304
 class ClaDes;
 class ClaScope;
+class ClaScopeEntry;
 
 class FunDes;
 class ForScope;
 class LocScope;
 
 /*
-类型type：int，string,bool,namedtype(即定义的class),arraytype;
-类别category:Class,Var,Fun
+类型type：int，string,bool,namedtype(即定义的class),arraytype,void,
+按照decaf语法的定于，应该支持任意维数组，只是最后一维的大小必须指定
+类别category:class,var,fun
+访问控制：所有的变量都是私有的，只能被该类或其子类访问，所有方法都是公共的
 */
-class TYPE 
+
+class Type 
 {
 public:
     string _typename;
     string class_arraytypename;
     string class_base;  //基类指针的名字
     int arraylevel;
-    YYLTYPE *plocation;
+    const YYLTYPE *plocation;
 	    
     TYPE(string s1,string s2,int s3,string s4="")
     {
@@ -156,26 +161,42 @@ class Entry
 {
 };
 
-class GloScope: public Entry
+class GloScopeEntry: public Entry
 {
 private:
     std::string className;
     std::string category;
-    ClaDes *pClades;
+    ClaDes *pClaDes;
 public:
-    GloScope(std::string className, std::string catagory, ClaDes *pClades);
+    GloScopeEntry(std::string className, std::string catagory, ClaDes *pClades);
+    GloScopeEntry(std::string className, ClaDes *pClades);
     std::string getClassName();
     std::getCategpry();
-    ClaDes *getPClades();
+    ClaDes *getPClaDes();
 };
 
+class ClaScopeEntry: public Entry
+{
+private:
+    //func or var name
+    std::string name;
+    std::string category;
+    Type *pType;
+    FunDes *pFunDes;
+public:
+    ClaScopeEntry(std::string name, std::string category, Type *pType, FunDes *pFunDes);
+    std::string getName();
+    std::string category();
+    const Type* getPType();
+    const FunDes* getPFunDes();
+};
 
 class ClaDes:public Scope
 {
 public:
     //仅支持单继承
     string parentName;
-    ClaDes* pParentClaDes;
+    ClaDes& pParentClaDes;
     string className;
     vector<ClaScope*> *pvecClaScope;
     ClaDes(string className, string parentName, ClaDes *pParentClaDes, vector<ClaScope*> *pvecClaScope);
