@@ -9,6 +9,8 @@
 #define _BISON_H
 #include "../lex/flex.h"
 #include "../core/dc_class.h"
+#define DC_STATIC 1
+#define DC_NOTSTATIC 0
 void yyerror (char const *msg);
 int yyparse();
 Program *program = NULL;

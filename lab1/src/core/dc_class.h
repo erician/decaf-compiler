@@ -15,6 +15,8 @@
 #endif
 using namespace std;
 
+enum type{DC_INT, DC_BOOL, DC_STRING, DC_NAMED, DC_ARRAY, DC_VOID};
+
 //类的名字和非终结符的名字相同
 class treenode;
 class Id;
@@ -78,10 +80,8 @@ class Program:public treenode
 {
 public:
     vector<Decl*> *pvecClassDecl;
-	vector<GloScope*> *pvecGloScope;
-    stack< vector<Scope*>* > *pstack;
     Program(vector<Decl*> *s1);
-    void Program::buildSym()
+    void buildSym();
     void printAst(int aline,int level);
 };
 
@@ -98,7 +98,7 @@ public:
 class Decl:public treenode
 {
 public:
-    Id *pId;
+    Id *pid;
     Decl(Id* s);
 };
 class VarDecl:public Decl
@@ -127,43 +127,44 @@ public:
     vector<Decl*> *pfields;
     //使用NULL表示是否继承，是否有Fields
     ClassDecl(Id* s2,Id* s4,vector<Decl*> *s6);
-    void buildSym(stack<vector<Scope*>*> *pstack, GloScope* _pgloscope);
+    
     void printAst(int aline,int level);
 };
 /**********type******************/
 class Type:public treenode
 {
-public:
-    string _typename;//typename重名，前加_
-    Type(const char* s);
-    string gettypename();
+protected:
+    int type; 
+public:   
+    Type();
+    int getType();
 };
 
 class IntType:public Type
 {
 public:
-    IntType(const char* s);
+    IntType();
     void printAst(int aline,int level);
     
 };
 class BoolType:public Type
 {
 public:
-    BoolType(const char* s);
+    BoolType();
     void printAst(int aline,int level);
     
 };
 class StringType:public Type
 {
 public:
-    StringType(const char* s);
+    StringType();
     void printAst(int aline,int level);
     
 };
 class VoidType:public Type
 {
 public:
-    VoidType(const char* s);
+    VoidType();
     void printAst(int aline,int level);
     
 };
@@ -172,18 +173,18 @@ class NamedType:public Type
 {
 public:
     Id* pid;
-    NamedType(const char* s,Id* s2);
+    NamedType(Id* s2);
     void printAst(int aline,int level);
     Id *getpid();
-    string get_named_id_name();
+    string getClassName();
 };
 class ArrayType:public Type
 {
 public:
     Type* ptype;
-    ArrayType(const char* s,Type* s1);
+    ArrayType(Type* s1);
     void printAst(int aline,int level);
-    Type* get_type_pointer();
+    Type* getPtype();
     
 };
 /***********StmtBlock***********/

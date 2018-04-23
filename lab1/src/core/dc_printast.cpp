@@ -72,10 +72,10 @@ void ClassDecl::printAst(int aline,int level)
     printWhite(aline,level);
     cout<<"ClassDecl ";
     pid->printAst(0,level);
-    if(base!=NULL)
+    if(pParentId != NULL)
     {
         cout<<"Extends ";
-        base->printAst(0,level);
+        pParentId->printAst(0,level);
     }
     for(int i=0;i<pfields->size();i++)
     (*pfields)[i]->printAst(1,level+1);

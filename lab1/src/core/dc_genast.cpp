@@ -37,7 +37,6 @@ Program::Program(vector<Decl*> *s1)
 Decl::Decl(Id *s)
 {
     pid=s;
-
 }
 //加这个构造函数，防止不在：后构造而出错
 VarDecl::VarDecl(Type* s1,Id* s2):Decl(s2)
@@ -53,34 +52,39 @@ FnDecl::FnDecl(int s,Type* s1,Id* s2,vector<VarDecl*>* s4,StmtBlock* s6):Decl(s2
 }
 ClassDecl::ClassDecl(Id* s2,Id* s4,vector<Decl*>* s6):Decl(s2)
 {
-    base = s4;
+    pParentId = s4;
     pfields = s6;
 }
 /**********type****************/
-Type::Type(const char* s)
-{
-    _typename = s;
-}
-
-IntType::IntType(const char* s):Type(s)
-{
-}
-BoolType::BoolType(const char* s):Type(s)
-{
-}
-StringType::StringType(const char* s):Type(s)
-{
-}
-VoidType::VoidType(const char* s):Type(s)
+Type::Type()
 {
 }
 
-NamedType::NamedType(const char* s,Id* s2):Type(s)
+IntType::IntType()
 {
+    type = DC_INT;
+}
+BoolType::BoolType()
+{
+    type = DC_BOOL;
+}
+StringType::StringType()
+{
+    type = DC_STRING;
+}
+VoidType::VoidType()
+{
+    type = DC_VOID;
+}
+
+NamedType::NamedType(Id* s2)
+{
+    type = DC_NAMED;
     pid = s2;
 }
-ArrayType::ArrayType(const char* s,Type* s1):Type(s)
+ArrayType::ArrayType(Type* s1)
 {
+    type = DC_ARRAY;
     ptype = s1;
 }
 /***********StmtBlock*************/

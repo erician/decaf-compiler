@@ -48,7 +48,8 @@ failtest:
 	./$(OBJDIR)decaf $(TESTDIR)initVarWhenDeclared_Shouldfail.decaf
 
 passtest:
-	./$(OBJDIR)decaf $(TESTDIR)shouldpass.decaf
+	@./$(OBJDIR)decaf $(TESTDIR)simpleTest_shouldpass.decaf
+	@./$(OBJDIR)decaf $(TESTDIR)withArray_shouldpass.decaf
 
 clean:
 	@rm -f $(JUNK) $(PRODUCTS)

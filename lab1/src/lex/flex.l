@@ -36,6 +36,7 @@ FOR for
 IF if
 INT int
 NEW new
+NEWARRAY newarray
 NULL null
 RETURN return 
 STRING string
@@ -112,6 +113,7 @@ AERROR .
 {CLASS}   {return CLASS;}
 {EXTENDS} {return EXTENDS;}
 {NEW}     {return NEW;}
+{NEWARRAY}     {return NEWARRAY;}
 {THIS}    {return THIS;}
 {IF}      {return IF;}
 {ELSE}	  {return ELSE;}

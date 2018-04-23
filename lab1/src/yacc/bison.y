@@ -77,7 +77,7 @@
     vector<Expr*> *actuals;
 }
 /*终结符的声明*/
-%token BOOL BREAK CLASS ELSE EXTENDS FOR IF INT NEW RETURN STRING THIS VOID WHILE STATIC PRINT READINTEGER READLINE INSTANCEOF 
+%token BOOL BREAK CLASS ELSE EXTENDS FOR IF INT NEW NEWARRAY RETURN STRING THIS VOID WHILE STATIC PRINT READINTEGER READLINE INSTANCEOF 
 %token <nullcon> NULLCONSTANT
 %token <boolcon> BOOLCONSTANT
 %token <intcon>  INTCONSTANT 
@@ -156,27 +156,27 @@ VarDecl   :    Type ID SEMI 	{$$=new VarDecl($1,(new Id($2,@2)));}
           |    Type ID error SEMI {}
 	  ;
         
-Type      :    INT          {$$=new IntType("int");}
-          |    BOOL         {$$=new BoolType("bool");}
-          |    STRING       {$$=new StringType("string");}
+Type      :    INT          {$$=new IntType();}
+          |    BOOL         {$$=new BoolType();}
+          |    STRING       {$$=new StringType();}
           |    NamedType	{$$=$1;}
           |    ArrayType    {$$=$1;}
           ;
 
-NamedType :    CLASS ID      {$$=new NamedType("class",new Id($2,@2));}             
+NamedType :    CLASS ID      {$$=new NamedType(new Id($2,@2));}             
           ;
 
-ArrayType :    Type LB RB    {$$=new ArrayType("[]",$1);}
+ArrayType :    Type LB RB    {$$=new ArrayType($1);}
           ;
 
 FnDecl    :    Type ID LP Formals RP StmtBlock
-                                {$$=new FnDecl(0,$1,new Id($2,@2),$4,$6);}
+                                {$$=new FnDecl(DC_NOTSTATIC,$1,new Id($2,@2),$4,$6);}
           |    VOID ID LP Formals RP StmtBlock
-                                {$$=new FnDecl(0,(new VoidType("void")),new Id($2,@2),$4,$6);}
+                                {$$=new FnDecl(DC_NOTSTATIC,(new VoidType()),new Id($2,@2),$4,$6);}
 	      |    STATIC Type ID LP Formals RP StmtBlock
-                                {$$=new FnDecl(1,$2,new Id($3,@3),$5,$7);}
+                                {$$=new FnDecl(DC_STATIC,$2,new Id($3,@3),$5,$7);}
 	      |    STATIC VOID ID LP Formals RP StmtBlock
-                                {$$=new FnDecl(1,(new VoidType("void")),new Id($3,@3),$5,$7);}
+                                {$$=new FnDecl(DC_STATIC,(new VoidType()),new Id($3,@3),$5,$7);}
           ;
 
 Formals   :   			    {$$=new vector<VarDecl*>;}
@@ -303,8 +303,8 @@ Expr       :  AssignExpr        {$$=$1;}
 NewExpr        : NEW ID LP RP 
                 {$$=new NewExpr(new Id($2,@2));}
                ;
-NewArrayExpr   : NEW Type LB Expr RB 
-                {$$=new NewArrayExpr($2,$4);}
+NewArrayExpr   : NEWARRAY LP Type COMMA Expr RP
+                {$$=new NewArrayExpr($3,$5);}
                ;
 
 AssignExpr     : LValue ASSIGNOP Expr     
