@@ -10,12 +10,13 @@
 #include <stack>
 #include <vector>
 #include "../yacc/location.h"
+#include "dc_symbol.h"
 #ifndef _NT_CLASS_H
 #define _NT_CLASS_H
 #endif
 using namespace std;
 
-enum type{DC_INT, DC_BOOL, DC_STRING, DC_NAMED, DC_ARRAY, DC_VOID};
+enum TYPE{DC_INT, DC_BOOL, DC_STRING, DC_NAMED, DC_ARRAY, DC_VOID};
 
 //类的名字和非终结符的名字相同
 class treenode;
@@ -78,8 +79,10 @@ public:
 
 class Program:public treenode
 {
-public:
+private:
     vector<Decl*> *pvecClassDecl;
+    GloScope gloScope;
+public:
     Program(vector<Decl*> *s1);
     void buildSym();
     void printAst(int aline,int level);
@@ -127,7 +130,7 @@ public:
     vector<Decl*> *pfields;
     //使用NULL表示是否继承，是否有Fields
     ClassDecl(Id* s2,Id* s4,vector<Decl*> *s6);
-    
+
     void printAst(int aline,int level);
 };
 /**********type******************/

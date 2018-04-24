@@ -52,6 +52,6 @@ passtest:
 	@./$(OBJDIR)decaf $(TESTDIR)withArray_shouldpass.decaf
 
 clean:
-	@rm -f $(JUNK) $(PRODUCTS)
+	@rm -f $(JUNK) $(PRODUCTS) decaf
 
 

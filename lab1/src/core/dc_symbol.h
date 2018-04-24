@@ -4,14 +4,16 @@
 	> Mail: 
 	> Created Time: Tue 29 Nov 2016 06:55:23 PM PST
  ************************************************************************/
-
 #include <vector>
 #include <string>
 #include <stack>
 #include "location.h"
-using namespace std;
+
 #ifndef _NT_BUILDSYM_H
 #define _NT_BUILDSYM_H
+
+enum CATEGORY{DC_CLASS, DC_FUN, DC_VAR};
+enum TYPE{DC_INT, DC_BOOL, DC_STRING, DC_NAMED, DC_ARRAY, DC_VOID};
 
 class Type;
 class Scope;
@@ -87,8 +89,8 @@ public:
     {
 	return plocation;
     }
-        
 };
+
 class Scope
 {
 public:
@@ -130,31 +132,11 @@ public:
 
 class GloScope:public Scope
 {
+private:
+    std::vector<const GloScopeEntry *> entries;
 public:
-    string name;
-    string category;
-    ClaDes *pclades;  
-    GloScope(string s1,string s2,ClaDes* s3)
-    {
-        name=s1;
-        category=s2;
-        pclades=s3;
-    }
-    string getname()
-    {
-        return name;
-    }
-    ClaDes* getpclades()
-    {
-	return pclades;
-    }
-    TYPE *getptype()
-    {
-	return NULL;
-    }
-
-    void printglosym();
-    void printclasym();
+    GloScope();
+    bool addEntry(GloScopeEntry entry);
 };
 
 class Entry
@@ -165,14 +147,19 @@ class GloScopeEntry: public Entry
 {
 private:
     std::string className;
-    std::string category;
-    ClaDes *pClaDes;
+    int category;
+    
+    ClaDes *claDes;
 public:
-    GloScopeEntry(std::string className, std::string catagory, ClaDes *pClades);
-    GloScopeEntry(std::string className, ClaDes *pClades);
+    GloScopeEntry();
+    bool setClassName(std::string);
     std::string getClassName();
-    std::getCategpry();
-    ClaDes *getPClaDes();
+
+    bool setCategory(int catagory);
+    int getCategpry();
+
+    bool setClaDes(const ClaDes* claDes);
+    const ClaDes* getClaDes();
 };
 
 class ClaScopeEntry: public Entry
@@ -193,28 +180,28 @@ public:
 
 class ClaDes:public Scope
 {
-public:
+private:
     //仅支持单继承
     string parentName;
-    ClaDes& pParentClaDes;
+    //parentClaDes可以在后面绑定，在创建该类的时候并不着急指定它的值.只要确定parentName
+    ClaDes* parentClaDes;
     string className;
-    vector<ClaScope*> *pvecClaScope;
-    ClaDes(string className, string parentName, ClaDes *pParentClaDes, vector<ClaScope*> *pvecClaScope);
+    ClaScope* claScope;
+public:
+    ClaDes();
+    bool setClassName(std::string className);
+    std::string getClassName();
 
-    ClaDes *getparent()
-    {
-        return pparent;
-    }
-    vector<ClaScope*>* get_pvec_clascope()
-    {
-        return pvec_clascope;
-    }
-    string getparentname()
-    {
-        return parentname;
-    }
+    bool setParentName(std::string parentName);
+    std::string getParentName();
 
+    bool setClaScope(const ClaScope* claScope);
+    const ClaScope* getClaScope();
+
+    bool setParentClaDes(const ClaDes* parentClaDes);
+    const ClaDes* getParentClaDes();
 };
+
 class ClaScope:public Scope
 {
 public:
@@ -243,11 +230,13 @@ public:
     }
     void printsym();
 };
+
 class FunDes:public Scope
 {
 public:
     int isstatic;
     int ismain;
+    
     vector<ForScope*> *pforscope;
     FunDes(int s1,int s2,vector<ForScope*> *s3)
     {

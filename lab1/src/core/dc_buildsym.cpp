@@ -57,52 +57,27 @@ Id* NamedType::getpid()
 }
 
 void Program::buildSym()
-{
-    pvecGloScope = new vector<GloScope*>;   
-    pstack = new stack< vector<Scope*>* >;             
-    pstack->push((vector<Scope*>*)pvecGloScope);        
+{     
     for(int i=0; i<pvecClassDecl->size(); i++)
     {
-        (*pvecClassDecl)[i]->buildSym(pstack,NULL); 
+        (*pvecClassDecl)[i]->buildSym(gloScope); 
     }
-    pstack->pop();
 }
 
-void ClassDecl::buildSym(stack<vector<Scope*>*> *pstack, GloScope* _pgloscope)
+void ClassDecl::buildSym(const GloScope& gloScope)
 {
-    vector<GloScope*> *pvecGloScope = (vector<GloScope*>*)pstack->top();
-    //ClassScope
-    vector<ClaScope*> *pvecClaScope = new vector<ClaScope*>;
-    ClaDes *pclades;
-    GloScope* pgloscope;
-    if(base==NULL)
+    GloScopeEntry gloScopeEntry;
+    ClaDes claDes;
+    claDes.setClassName(pid->getidname());
+    if(pParentId==NULL)
     {//不继承其他的类
-        pclades=new ClaDes(pid->getidname(), "", NULL, pvecClaScope);
+        //"" means it doesnot have parent
+        claDes.setParentName("");
     }
     else
     {
-        string parentName=pParentId->getidname();
-        int i;
-	//cout<<pvec_gloscope->size()<<endl;
-        for(i=0;i<pvec_gloscope->size();i++)
-        {
-	    //cout<<(*pvec_gloscope)[i]->getname()<<endl;
-	    
-            if(parentname==(*pvec_gloscope)[i]->getname())
-            {
-		//cout<<parentname<<endl;
-                pclades=new ClaDes(parentname,(*pvec_gloscope)[i]->getpclades(),pvec_clascope);
-                break;
-            }
-        }
-        //如果没找到，说明base没有定义，存在语义错误
-        if(i==pvec_gloscope->size())
-	{
-	    //cout<<"not find "<<endl;
-            pclades=new ClaDes("",NULL,pvec_clascope);
-	}
+        claDes.setParentName(pParentId.getidname());
     }
-
     //创建一个gloscope并放入vector
     pgloscope = new GloScope(idname,"class",pclades);
     //设置parent
