@@ -6,7 +6,7 @@ GloScope::GloScope()
 
 }
 
-bool GloScope::addEntry(const GloScopeEntry& entry)
+bool GloScope::addEntry(GloScopeEntry* entry)
 {
     entries.push_back(entry);
     return true;
@@ -16,6 +16,13 @@ bool GloScope::addEntry(const GloScopeEntry& entry)
 GloScopeEntry::GloScopeEntry()
 {
     category = DC_CLASS;
+}
+
+GloScopeEntry::GloScopeEntry(std::string className, ClaDes* claDes)
+{
+    category = DC_CLASS;
+    this->className = className;
+    this->claDes = claDes;
 }
 
 bool GloScopeEntry::setCategory(int category)
@@ -48,52 +55,14 @@ const ClaDes* GloScopeEntry::getClaDes()
     return claDes;
 }
 
-//ClaScopeEntry
-ClaScopeEntry::ClaScopeEntry(std::string name, std::string category, Type *pType, FunDes *pFunDes)
-{
-    this->name = name;
-    this->category = category;
-    this->pType = pType;
-    this->pFunDes = pFunDes;
-}
-
-std::string ClaScopeEntry::getName()
-{
-    return name;
-}
-
-std::string ClaScopeEntry::getCategory()
-{
-    return category;
-}
-
-const Type* ClaScopeEntry::getPType()
-{
-    return (const Type*)pType;
-}
-
-const FunDes* ClaScopeEntry::getPFunDes()
-{
-    return (const FunDes*)pFunDes;
-}
-
 //ClaDes
 ClaDes()
 {
-
+    parentClaDes = NULL;
+    this->claScope = NULL;
 }
 
-bool setClassName(std::string className)
-{
-    this->className = className;
-}
-
-std::string ClaDes::getClassName()
-{
-    return className;
-}
-
-bool setParentName(std::string parentName)
+bool ClaDes::setParentName(std::string parentName)
 {
     this->parentName = parentName;
 }
@@ -124,11 +93,94 @@ const ClaDes* ClaDes::getParentClaDes()
 }
 
 //ClaScope
-const ClaDes& getParentClaDes()
+ClaScope::ClaScope()
 {
-    return parentClaDes;
+
 }
-const ClaScope& getClaScope()
+bool ClaScope::addEntry(ClaScopeEntry* entry)
 {
-    return claScope;
+    this->entries.push_back(entry);
 }
+
+TypeInfo::TypeInfo()
+{
+    className = "";
+    arrayLevel = 0;
+}
+
+bool TypeInfo::setType(int type)
+{
+    this->type = type;
+}
+
+int getType()
+{
+    return type;
+}
+
+bool setArrayLevle(int level)
+{
+    this->arrayLevel = level;
+}
+
+int getArrayLevel()
+{
+    return arrayLevel;
+}
+
+bool setClassName(std::string className)
+{
+    this->className = className;
+}
+
+std::string getClassName()
+{
+    return className;
+}
+
+//ClaScopeEntry
+ClaScopeEntry::ClaScopeEntry()
+{
+    this->funDes = NULL;
+}
+
+bool ClaScopeEntry::setName(std::string name)
+{
+    this->name = name;
+}
+
+std::string ClaScopeEntry::getName()
+{
+    return name;
+}
+
+bool ClaScopeEntry::setCategory(int category)
+{
+    this->category = categort;
+}
+
+int  ClaScopeEntry::getCategory()
+{
+    return category;
+}
+    
+bool ClaScopeEntry::setTypeInfo(TypeInfo* typeInfo)
+{
+    this->typeInfo = typeInfo;
+}
+
+int ClaScopeEntry::getTypeInfo()
+{
+    return typeInfo;
+}
+ 
+bool ClaScopeEntry::setFunDes(FunDes *funDes)
+{
+    this->funDes = funDes;
+}
+
+const FunDes* ClaScopeEntry::getFunDes()
+{
+    return funDes;
+}
+

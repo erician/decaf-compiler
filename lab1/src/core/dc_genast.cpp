@@ -87,6 +87,7 @@ ArrayType::ArrayType(Type* s1)
     type = DC_ARRAY;
     ptype = s1;
 }
+
 /***********StmtBlock*************/
 StmtBlock::StmtBlock(vector<VarDecl*>* s2,vector<Stmt*> *s3)
 {

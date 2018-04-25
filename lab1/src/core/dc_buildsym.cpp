@@ -11,7 +11,6 @@
 #include <stack>
 #include <vector>
 #include "nt_class.h"
-#include "nt_buildsym.h"
 #include "error.h"
 #include "y.tab.h"
 using namespace std;
@@ -41,76 +40,57 @@ Id *Type::getpid()
     return 0;
 }
 
-string NamedType::get_named_id_name()
-{
-    return pid->getidname();
-}
-
-Type* ArrayType::get_type_pointer()
+//ArrayType
+const Type* ArrayType::getPType()
 {
     return ptype;
 }
-
-Id* NamedType::getpid()
+int ArrayType::getArrayLevel()
 {
-    return pid;
+    level = 1;
+    Type *type = this->ptype;
+    while(type->getType() == DC_ARRAY)
+    {
+        level++;
+        type = type->getPType()
+    }
+    return level;
 }
 
 void Program::buildSym()
 {     
     for(int i=0; i<pvecClassDecl->size(); i++)
     {
-        (*pvecClassDecl)[i]->buildSym(gloScope); 
+        gloScope.addEntry((*pvecClassDecl)[i]->buildSym()); 
     }
 }
 
-void ClassDecl::buildSym(const GloScope& gloScope)
+void ClassDecl::buildSym()
 {
-    GloScopeEntry gloScopeEntry;
-    ClaDes claDes;
-    claDes.setClassName(pid->getidname());
+    ClaDes *claDes = new ClaDes();
     if(pParentId==NULL)
-    {//不继承其他的类
+    {
         //"" means it doesnot have parent
-        claDes.setParentName("");
+        claDes->setParentName("");
     }
     else
     {
-        claDes.setParentName(pParentId.getidname());
+        claDes->setParentName(pParentId.getidname());
     }
-    //创建一个gloscope并放入vector
-    pgloscope = new GloScope(idname,"class",pclades);
-    //设置parent
-    pgloscope->setparent((vector<Scope*>*)pvec_gloscope,1);
-    //设置location
-    pgloscope->setlocation(pid->getplocation());
-    //设置id的scope，生成tac时使用
-	pid->setpscope((Scope*)pgloscope);	
-    
-    //入栈
-    pvec_gloscope->push_back(pgloscope);
-    //检查基类是否已定义,应该在这里进行。此时已有元素入栈
-    if(base!=NULL)
-        base->checkdecl_class(pgloscope);
-    //将ClaScope入栈
-    pst->push((vector<Scope*>*)pvec_clascope);
-    for(int i=0;i<pfields->size();i++)
+    if (pfields->size() != 0)
     {
-        (*pfields)[i]->buildSym(pst,pgloscope);
+        ClaScope *claScope = new claScope();
+        for(int i=0; i<pfields->size(); i++)
+        {
+            claScope->addEntry((*pfields)[i]->buildSym());
+        }
+        claDes.setClaScope(claScope);
     }
-    //类体为空是允许的，但是为了方便加入一个成员
-    if(pfields->size()==0)
-    {
-        ClaScope *pclascope;
-        pclascope = new ClaScope("","",NULL,NULL);
-        pclascope->setparent((vector<Scope*>*)pvec_gloscope,2);
-        pvec_clascope->push_back(pclascope);
-    }
-    pst->pop();
+    return new GloScopeEntry(pid->getidname(), claDes);
 }
-void VarDecl::buildSym(stack<vector<Scope*>*> *pst,GloScope* pgloscope)
+
+void VarDecl::buildSym()
 {
-//cout<<"var"<<endl;
     vector<ClaScope*> *pvec_clascope;
     pvec_clascope=(vector<ClaScope*>*)pst->top();
 
@@ -219,58 +199,27 @@ void VarDecl::buildSym(stack<vector<Scope*>*> *pst,GloScope* pgloscope)
         }
     }
 }
-void FnDecl::buildSym(stack<vector<Scope*>*> *pst,GloScope* pgloscope)
+void FnDecl::buildSym()
 {
-//cout<<"Fn"<<endl;
-    vector<ClaScope*> *pvec_clascope;
-    pvec_clascope=(vector<ClaScope*>*)pst->top();
-
-    string idname;
-    idname = pid->getidname();
-    //查看函数是否重名
-    for(int i=0;i<pvec_clascope->size();i++)
-    {
-        if(idname==(*pvec_clascope)[i]->getname())
-        {
-            IssueError::Redefinition(pid->getplocation(),idname);
-            break;
-        }
-    }
-
-    string _typename;
-    _typename=ptype->gettypename();
-    TYPE *pscope_type;
-    Type *p=ptype;
+    ClaScopeEntry *claScopeEntry = new ClaScopeEntry();
+    claScopeEntry->setCategory(DC_Fun);
+    claScopeEntry->setName(pid->getidname());
     
-    if(_typename=="class")
+    TypeInfo *typeInfo = new TypeInfo();
+    typeInfo->setType(ptype->getType());
+    switch(ptype->getType())
     {
-        string classidname;
-        classidname=ptype->get_named_id_name();
-        //先不对类是否存在进行检查
-        pscope_type=new TYPE(_typename,classidname,0);    
+        case(DC_NAMED):
+            typeInfo->setClassName(ptype->getClassName());
+            break;
+        case(DC_ARRAY):
+            typeInfo->setArrayLevel(ptype->getArrayLevel());
+            break;
+        default:
+            break;
     }
-    else if(_typename=="[]")
-    {
-        //数组层数
-        int arraylevel=0;
-        
-        while(p->gettypename()=="[]")
-        {
-            arraylevel+=1;
-            p=p->get_type_pointer();
-        }
-        string arraytype;
-        if(p->gettypename()=="class")
-            arraytype=p->get_named_id_name();
-        else
-            arraytype = p->gettypename();
+    claScopeEntry->setTypeInfo(typeInfo);
 
-        pscope_type=new TYPE(_typename,arraytype,arraylevel);
-    }
-    else
-    {
-        pscope_type=new TYPE(_typename,"",0);
-    }
     FunDes *pfundes;
     //形参域
     vector<ForScope*> *pvec_forscope;

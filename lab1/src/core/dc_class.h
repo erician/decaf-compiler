@@ -188,6 +188,7 @@ public:
     ArrayType(Type* s1);
     void printAst(int aline,int level);
     Type* getPtype();
+    int getArrayLevel();
     
 };
 /***********StmtBlock***********/
