@@ -1,4 +1,6 @@
-#include "dc_options.h"
+#ifndef DC_UTILS_ARGS_DC_OPTIONS_H_
+#include "utils/args/dc_options.h"
+#endif
 
 const std::string Options::PRINT_AST = "--print-ast"; 
 const std::string Options::OUTPUT = "o";

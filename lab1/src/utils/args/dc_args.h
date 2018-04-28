@@ -1,9 +1,18 @@
-#include <map>
-#include <string>
-#include <vector>
+#ifndef DC_UTILS_ARGS_DC_ARGS_H_
+#define DC_UTILS_ARGS_DC_ARGS_H_
+
 #include <iostream>
-#include "dc_options.h"
-#include "dc_option_error.h"
+#include <map>
+#include <vector>
+#include <string>
+
+#ifndef DC_UTILS_ARGS_DC_OPTIONS_H_
+#include "utils/args/dc_options.h"
+#endif
+
+#ifndef DC_UTILS_ARGS_DC_OPTION_ERROR_H_
+#include "utils/args/dc_option_error.h"
+#endif
 
 class Args
 {
@@ -21,3 +30,4 @@ public:
     bool hasKey(std::string key);
 };
 
+#endif

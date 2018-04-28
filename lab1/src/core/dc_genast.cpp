@@ -4,17 +4,19 @@
 	> Mail: 
 	> Created Time: Mon 28 Nov 2016 12:07:01 AM PST
  ************************************************************************/
+#ifndef DC_CORE_DC_CLASS_H_
+#include "core/dc_class.h"
+#endif
 
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include "../yacc/location.h"
-#ifndef _NT_CLASS_H
-#include "dc_class.h"
+
+#ifndef DC_YACC_LOCATION_H_
+#include "yacc/location.h"
 #endif
 
-using namespace std;
 //类的构造函数
 treenode::treenode()
 {
@@ -29,7 +31,7 @@ Id::Id(char* str,YYLTYPE loc):treenode(loc)
     name = str;
 }
 
-Program::Program(vector<Decl*> *s1)
+Program::Program(std::vector<Decl*> *s1)
 {
     pvecClassDecl = s1;
 }
@@ -43,14 +45,14 @@ VarDecl::VarDecl(Type* s1,Id* s2):Decl(s2)
 {
     ptype = s1;
 }
-FnDecl::FnDecl(int s,Type* s1,Id* s2,vector<VarDecl*>* s4,StmtBlock* s6):Decl(s2)
+FnDecl::FnDecl(int s,Type* s1,Id* s2,std::vector<VarDecl*>* s4,StmtBlock* s6):Decl(s2)
 {
     isstatic = s;
     ptype = s1;
     pformals = s4;
     pstmtblock = s6;
 }
-ClassDecl::ClassDecl(Id* s2,Id* s4,vector<Decl*>* s6):Decl(s2)
+ClassDecl::ClassDecl(Id* s2,Id* s4,std::vector<Decl*>* s6):Decl(s2)
 {
     pParentId = s4;
     pfields = s6;
@@ -62,34 +64,34 @@ Type::Type()
 
 IntType::IntType()
 {
-    type = DC_INT;
+    type = DC::TYPE::DC_INT;
 }
 BoolType::BoolType()
 {
-    type = DC_BOOL;
+    type = DC::TYPE::DC_BOOL;
 }
 StringType::StringType()
 {
-    type = DC_STRING;
+    type = DC::TYPE::DC_STRING;
 }
 VoidType::VoidType()
 {
-    type = DC_VOID;
+    type = DC::TYPE::DC_VOID;
 }
 
 NamedType::NamedType(Id* s2)
 {
-    type = DC_NAMED;
+    type = DC::TYPE::NAMED;
     pid = s2;
 }
 ArrayType::ArrayType(Type* s1)
 {
-    type = DC_ARRAY;
+    type = DC::TYPE::DC_ARRAY;
     ptype = s1;
 }
 
 /***********StmtBlock*************/
-StmtBlock::StmtBlock(vector<VarDecl*>* s2,vector<Stmt*> *s3)
+StmtBlock::StmtBlock(std::vector<VarDecl*>* s2,std::vector<Stmt*> *s3)
 {
     pvardecls=s2;
     pstmts=s3;
@@ -128,7 +130,7 @@ BreakStmt::BreakStmt(YYLTYPE loc)
 	//自己设置location
 	plocation=new YYLTYPE(loc);
 }
-PrintStmt::PrintStmt(vector<Expr*> *s3)
+PrintStmt::PrintStmt(std::vector<Expr*> *s3)
 {
     pexprs=s3;
 }
@@ -174,7 +176,7 @@ ArrayAccess::ArrayAccess(Expr* s1,Expr* s3)
     pexpr1=s1;
     pexpr2=s3;
 }
-Call::Call(Expr* s1,Id* s3,vector<Expr*> *s5)
+Call::Call(Expr* s1,Id* s3,std::vector<Expr*> *s5)
 {
     pid=s3;
     pexpr=s1;

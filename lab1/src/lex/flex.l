@@ -4,12 +4,20 @@
     #include <cstring>
     #include <string>
     #include <vector>
-    #ifndef _FLEX_H
-    #include "flex.h"
+
+    #ifndef DC_LEX_FLEX_H_
+    #include "lex/flex.h"
     #endif
-    #include "../core/dc_class.h"
-    #include "../core/dc_error.h"
-    #include "../yacc/y.tab.h"
+    
+    #ifndef DC_CORE_DC_CLASS_H_
+    #include "core/dc_class.h"
+    #endif
+
+    #ifndef DC_CORE_DC_ERROR_H_
+    #include "core/dc_error.h"
+    #endif
+    
+    #include "yacc/y.tab.h"
 
     static void DoBeforeEachAction();
     #define YY_USER_ACTION DoBeforeEachAction();

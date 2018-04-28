@@ -29,7 +29,7 @@ LD = g++
 LEX = flex
 YACC = bison
 
-CFLAGS = -g -Wall -Wno-unused -Wno-sign-compare 
+CFLAGS = -Wall -std=c++11 -I ./ 
 LEXFLAGS = 
 YACCFLAGS = -dvty
 LIBS = -lc -lm -ll

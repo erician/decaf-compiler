@@ -1,7 +1,10 @@
+#ifndef DC_COMPILER_DC_COMPILER_H_
+#include "dc_compiler.h"
+#endif
+
 #include <iostream>
 #include <fstream>
 #include <cstdio>
-#include "dc_compiler.h"
 
 Compiler::Compiler(Args &args, Program &program):args(args),program(program)
 {

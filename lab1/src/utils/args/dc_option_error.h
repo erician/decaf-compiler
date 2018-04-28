@@ -1,5 +1,7 @@
-#include <iostream>
+#ifndef DC_UTILS_DC_OPTION_ERROR_H_
+#define DC_UTILS_DC_OPTION_ERROR_H_
 
+#include <iostream>
 class OptionError
 {
 public:
@@ -7,3 +9,5 @@ public:
     static void NotWithValue(std::string option);
     static void NotHaveSourceFile();
 };
+
+#endif

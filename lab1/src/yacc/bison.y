@@ -3,10 +3,16 @@
 #include<cstdio>
 #include<cstdlib>
 #include<cstring>
-#ifndef _BISON_H
-#include "location.h"
-#include "../core/dc_error.h"
-#include "bison.h"
+#ifndef DC_YACC_BISON_H_
+#include "yacc/bison.h"
+#endif
+
+#ifndef DC_CORE_DC_ERROR_H_
+#include "core/dc_error.h"
+#endif
+
+#ifndef DC_YACC_LOCATION_H_
+#include "yacc/location.h"
 #endif
 
 %}
@@ -64,17 +70,17 @@
     StringCon *stringconstant;
     NullCon *nullconstant;
 
-    vector<Decl*> *decllist;
-    vector<VarDecl*> *formals;
-    vector<Decl*> *fields;
+    std::vector<Decl*> *decllist;
+    std::vector<VarDecl*> *formals;
+    std::vector<Decl*> *fields;
 
-    vector<VarDecl*> *variables;
-    vector<VarDecl*> *vardecls;
+    std::vector<VarDecl*> *variables;
+    std::vector<VarDecl*> *vardecls;
 
-    vector<Stmt*> *stmts;
+    std::vector<Stmt*> *stmts;
 
-    vector<Expr*> *exprs;
-    vector<Expr*> *actuals;
+    std::vector<Expr*> *exprs;
+    std::vector<Expr*> *actuals;
 }
 /*终结符的声明*/
 %token BOOL BREAK CLASS ELSE EXTENDS FOR IF INT NEW NEWARRAY RETURN STRING THIS VOID WHILE STATIC PRINT READINTEGER READLINE INSTANCEOF 
@@ -148,7 +154,7 @@ Program   :    DeclList     	{$$=new Program($1); program = $$;}
           ;    
 
 DeclList  :    DeclList ClassDecl    {($$=$1)->push_back($2);}
-          |    ClassDecl             {($$=new vector<Decl*>)->push_back($1);}
+          |    ClassDecl             {($$=new std::vector<Decl*>)->push_back($1);}
           ;
 
 /*变量在声明时是没有初始化的*/
@@ -179,13 +185,13 @@ FnDecl    :    Type ID LP Formals RP StmtBlock
                                 {$$=new FnDecl(DC_STATIC,(new VoidType()),new Id($3,@3),$5,$7);}
           ;
 
-Formals   :   			    {$$=new vector<VarDecl*>;}
+Formals   :   			    {$$=new std::vector<VarDecl*>;}
           | 	Variables   {$$=$1;}              
           ;
           
 Variables :    Variables COMMA Type ID
                        		{($$=$1)->push_back(new VarDecl($3,new Id($4,@4)));}
-          |     Type ID    	{($$=new vector<VarDecl*>)->push_back(new VarDecl($1,new Id($2,@2)));}
+          |     Type ID    	{($$=new std::vector<VarDecl*>)->push_back(new VarDecl($1,new Id($2,@2)));}
           ;
           
 ClassDecl :    CLASS ID EXTENDS ID LC Fields RC              
@@ -199,7 +205,7 @@ ClassDecl :    CLASS ID EXTENDS ID LC Fields RC
           ;
 
 Fields     :   Fields Field	    {($$=$1)->push_back($2);}
-           |   Field            {($$=new vector<Decl*>)->push_back($1);}
+           |   Field            {($$=new std::vector<Decl*>)->push_back($1);}
            ;  
 
 Field      :   VarDecl          {$$=$1;}		  
@@ -227,11 +233,11 @@ StmtBlock  : LC VarDecls Stmts RC
            ;
            
 VarDecls   : VarDecls VarDecl  	{($$=$1)->push_back($2);}
-           | VarDecl            {($$=new vector<VarDecl*>)->push_back($1);}
+           | VarDecl            {($$=new std::vector<VarDecl*>)->push_back($1);}
            ;
 
 Stmts      : Stmts Stmt         {($$=$1)->push_back($2);}
-           | Stmt               {($$=new vector<Stmt*>)->push_back($1);}
+           | Stmt               {($$=new std::vector<Stmt*>)->push_back($1);}
            ;
            
 Stmt       : OptExpr SEMI       {$$=$1;}
@@ -351,7 +357,7 @@ LogicalExpr    : Expr AND Expr
 Exprs      : Exprs COMMA Expr         
 				{($$=$1)->push_back($3);}
            | Expr               
-				{($$=new vector<Expr*>)->push_back($1);}
+				{($$=new std::vector<Expr*>)->push_back($1);}
            ; 
 
 OptExpr    : Expr		{$$=$1;}

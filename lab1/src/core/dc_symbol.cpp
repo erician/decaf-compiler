@@ -1,4 +1,7 @@
-#include "nt_symbol.h"
+
+#ifndef DC_CORE_DC_SYMBOL_H_
+#include "core/nt_symbol.h"
+#endif
 
 //GloScope
 GloScope::GloScope()

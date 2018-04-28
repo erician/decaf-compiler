@@ -4,28 +4,33 @@
 	> Mail: 
 	> Created Time: Tue 29 Nov 2016 07:23:43 PM PST
  ************************************************************************/
+#ifndef DC_CORE_DC_CLASS_H_
+#include "core/dc_class.h"
+#endif
 
 #include <iostream>
 #include <cstdio>
-#include <string>
 #include <stack>
 #include <vector>
-#include "nt_class.h"
-#include "error.h"
-#include "y.tab.h"
-using namespace std;
+
+#ifndef DC_CORE_DC_ERROR_H_
+#include "core/dc_error.h"
+#endif
+
+#include "yacc/y.tab.h"
+
 //一些下面要用的函数
-string Id::getidname()
+std::string Id::getidname()
 {
     return name;
 }
 
-string Type::gettypename()
+std::string Type::gettypename()
 {
     return _typename;
 }
 
-string Type::get_named_id_name()
+std::string Type::get_named_id_name()
 {
 	return 0;
 }
@@ -94,7 +99,7 @@ void VarDecl::buildSym()
     vector<ClaScope*> *pvec_clascope;
     pvec_clascope=(vector<ClaScope*>*)pst->top();
 
-    string idname;
+    std::string idname;
     idname = pid->getidname();
 
     //查看变量名与变量名是否重名，变量名与函数名是否重名
@@ -109,13 +114,13 @@ void VarDecl::buildSym()
 
     //查看类型
 
-    string _typename;
+    std::string _typename;
     _typename=ptype->gettypename();
     TYPE *pscope_type;
     Type *p=ptype;      //多维数组使用
     if(_typename=="class")
     {
-        string classidname;
+        std::string classidname;
         classidname=ptype->get_named_id_name();
         //先不对类是否存在进行检查,以后会做
 	//下面获取基类名
@@ -134,7 +139,7 @@ void VarDecl::buildSym()
 		break;
 	    }
 	}
-	string base_name;
+	std::string base_name;
 	if(flag==0)
 	    base_name = pclades->getparentname();
 	else
@@ -152,7 +157,7 @@ void VarDecl::buildSym()
             arraylevel+=1;
             p=p->get_type_pointer();
         }
-        string arraytype;
+        std::string arraytype;
         if(p->gettypename()=="class")
             arraytype=p->get_named_id_name();
         else
@@ -202,17 +207,17 @@ void VarDecl::buildSym()
 void FnDecl::buildSym()
 {
     ClaScopeEntry *claScopeEntry = new ClaScopeEntry();
-    claScopeEntry->setCategory(DC_Fun);
+    claScopeEntry->setCategory(DC::CATEGORY::DC_Fun);
     claScopeEntry->setName(pid->getidname());
     
     TypeInfo *typeInfo = new TypeInfo();
     typeInfo->setType(ptype->getType());
     switch(ptype->getType())
     {
-        case(DC_NAMED):
+        case(DC::TYPE::DC_NAMED):
             typeInfo->setClassName(ptype->getClassName());
             break;
-        case(DC_ARRAY):
+        case(DC::TYPE::DC_ARRAY):
             typeInfo->setArrayLevel(ptype->getArrayLevel());
             break;
         default:
@@ -268,7 +273,7 @@ void FnDecl::buildSym()
 
     //先把this指针加上,等一下再处理
     ForScope *pforscope;
-    pforscope = new ForScope(string("this"),new TYPE(string("class"),string(""),0),pvec_locscope);
+    pforscope = new ForScope(std::string("this"),new TYPE(std::string("class"),std::string(""),0),pvec_locscope);
 
     pforscope->setparent((vector<Scope*>*)pvec_clascope,3);
     pvec_forscope->push_back(pforscope);
@@ -292,7 +297,7 @@ void VarDecl::buildformals(stack<vector<Scope*>*> *pst,vector<LocScope*> *pvec_l
     vector<ForScope*> *pvec_forscope;
     pvec_forscope = (vector<ForScope*>*)pst->top();
     
-    string idname;
+    std:: idname;
     idname = pid->getidname();
     //检查形参是否重名
     for(int i=0;i<pvec_forscope->size();i++)
@@ -304,13 +309,13 @@ void VarDecl::buildformals(stack<vector<Scope*>*> *pst,vector<LocScope*> *pvec_l
         }
     }
     //查看类型,这个有点重复
-    string _typename;
+    std::string _typename;
     _typename=ptype->gettypename();
     TYPE *pscope_type;
     Type *p=ptype;
     if(_typename=="class")
     {
-        string classidname;
+        std::string classidname;
         classidname=ptype->get_named_id_name();
         //先不对类是否存在进行检查
         pscope_type=new TYPE(_typename,classidname,0);    
@@ -325,7 +330,7 @@ void VarDecl::buildformals(stack<vector<Scope*>*> *pst,vector<LocScope*> *pvec_l
             arraylevel+=1;
             p=p->get_type_pointer();
         }
-        string arraytype;
+        std::string arraytype;
         if(p->gettypename()=="class")
             arraytype=p->get_named_id_name();
         else
@@ -374,7 +379,7 @@ void VarDecl::buildformals(stack<vector<Scope*>*> *pst,vector<LocScope*> *pvec_l
 void VarDecl::buildlocal(vector<LocScope*> *pvec_locscope,vector<vector<LocScope*>*> *pvecvec_locscope,vector<Scope*> *pvec_for_loc_scope)
 {
 //cout<<"local"<<endl;
-    string idname;
+    std::string idname;
     idname = pid->getidname();
 
     //查看局部作用域里是否重名
@@ -389,13 +394,13 @@ void VarDecl::buildlocal(vector<LocScope*> *pvec_locscope,vector<vector<LocScope
 
     //查看类型
 
-    string _typename;
+    std::string _typename;
     _typename=ptype->gettypename();
     TYPE *pscope_type;
     Type *p=ptype;
     if(_typename=="class")
     {
-        string classidname;
+        std::string classidname;
         classidname=ptype->get_named_id_name();
         //先不对类是否存在进行检查
 	//找到基类名
@@ -430,7 +435,7 @@ void VarDecl::buildlocal(vector<LocScope*> *pvec_locscope,vector<vector<LocScope
 		break;
 	    }
 	}
-	string base_name;
+	std::string base_name;
 	if(flag==0)
 	    base_name = pclades->getparentname();
 	else
@@ -447,7 +452,7 @@ void VarDecl::buildlocal(vector<LocScope*> *pvec_locscope,vector<vector<LocScope
             arraylevel+=1;
             p=p->get_type_pointer();
         }
-        string arraytype;
+        std::string arraytype;
         if(p->gettypename()=="class")
         arraytype=p->get_named_id_name();
         else

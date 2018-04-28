@@ -1,3 +1,6 @@
+#ifndef DC_UTILS_ARGS_DC_OPTIONS_H_
+#define DC_UTILS_ARGS_DC_OPTIONS_H_
+
 #include <iostream>
 #include <map>
 

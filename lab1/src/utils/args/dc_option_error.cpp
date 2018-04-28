@@ -1,4 +1,6 @@
-#include "dc_option_error.h"
+#ifndef DC_UTILS_ARGS_DC_OPTION_ERROR_H_
+#include "utils/args/dc_option_error.h"
+#endif
 
 void OptionError::NotHaveThisOption(std::string option)
 {

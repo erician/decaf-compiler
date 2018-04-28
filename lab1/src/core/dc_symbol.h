@@ -4,18 +4,23 @@
 	> Mail: 
 	> Created Time: Tue 29 Nov 2016 06:55:23 PM PST
  ************************************************************************/
+#ifndef DC_CORE_DC_SYMBOL_H_
+#define DC_CORE_DC_SYMBOL_H_
+
+#include <iostream>
 #include <vector>
-#include <string>
 #include <stack>
-#include "location.h"
+#include <string>
 
-#ifndef _NT_BUILDSYM_H
-#define _NT_BUILDSYM_H
+#ifndef DC_YACC_LOCATION_H_
+#include "yacc/location.h"
+#endif
 
-enum CATEGORY{DC_CLASS, DC_FUN, DC_VAR};
-enum TYPE{DC_INT, DC_BOOL, DC_STRING, DC_NAMED, DC_ARRAY, DC_VOID};
+#ifndef DC_CORE_DC_ENUM_H_
+#include "core/dc_enum.h"
+#endif
 
-class Type;
+class TypeInfo;
 class Scope;
 class GloScope;
 class GloScopeEntry;
@@ -81,7 +86,7 @@ class ClaDes:public Scope
 {
 private:
     //仅支持单继承
-    string parentName;
+    std::string parentName;
     //parentClaDes可以在后面绑定，在创建该类的时候并不着急指定它的值.只要确定parentName
     ClaDes* parentClaDes;
     ClaScope* claScope;
@@ -158,8 +163,8 @@ public:
     int isstatic;
     int ismain;
     
-    vector<ForScope*> *pforscope;
-    FunDes(int s1,int s2,vector<ForScope*> *s3)
+    std::vector<ForScope*> *pforscope;
+    FunDes(int s1,int s2,std::vector<ForScope*> *s3)
     {
         isstatic=s1;
         ismain=s2;
@@ -169,7 +174,7 @@ public:
     {
         return isstatic;
     }
-    vector<ForScope*> *getpforscope()
+    std::vector<ForScope*> *getpforscope()
     {
 	return pforscope;
     }
@@ -177,20 +182,20 @@ public:
 class ForScope:public Scope
 {
 public:
-    string name;
+    std::string name;
     TYPE *ptype;
-    vector<LocScope*> *pvec_locscope;
-    ForScope(string s1,TYPE *s2,vector<LocScope*> *s3)
+    std::vector<LocScope*> *pvec_locscope;
+    ForScope(std::string s1,TYPE *s2,std::vector<LocScope*> *s3)
     {
         name=s1;
         ptype=s2;
         pvec_locscope=s3;
     }
-    string getname()
+    std::string getname()
     {
         return name;
     }
-    vector<LocScope*> *getlocscope()
+    std::vector<LocScope*> *getlocscope()
     {
 	return pvec_locscope;
     }
@@ -204,18 +209,18 @@ public:
 class LocScope:public Scope
 {
 public:
-    string name;
-    string category;
+    std::string name;
+    std::string category;
     TYPE *ptype;
-    vector<vector<LocScope*>*> *pvecvec_locscope;
-    LocScope(string s1,const char* s2,TYPE* s3,vector<vector<LocScope*>*> *s4)
+    std::vector<std::vector<LocScope*>*> *pvecvec_locscope;
+    LocScope(std::string s1,const char* s2,TYPE* s3,std::vector<std::vector<LocScope*>*> *s4)
     {
         name = s1;
         category = s2;
         ptype = s3;
         pvecvec_locscope = s4;
     }
-    string getname()
+    std::string getname()
     {
         return name;
     }
@@ -225,4 +230,5 @@ public:
     }
     void printsym(int level,int islast);
 };
+
 #endif

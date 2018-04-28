@@ -4,19 +4,25 @@
 	> Mail: 
 	> Created Time: Sun 27 Nov 2016 08:38:38 PM PST
  ************************************************************************/
- 
+#ifndef DC_CORE_DC_CLASS_H_
+#define DC_CORE_DC_CLASS_H_
+
 #include <iostream>
-#include <string>
 #include <stack>
 #include <vector>
-#include "../yacc/location.h"
-#include "dc_symbol.h"
-#ifndef _NT_CLASS_H
-#define _NT_CLASS_H
-#endif
-using namespace std;
 
-enum TYPE{DC_INT, DC_BOOL, DC_STRING, DC_NAMED, DC_ARRAY, DC_VOID};
+#ifndef DC_YACC_LOCATION_H_ 
+#include "yacc/location.h"
+#endif
+
+#ifndef DC_CORE_DC_SYMBOL_H_
+#include "core/dc_symbol.h"
+#endif
+
+#ifndef DC_CORE_DC_ENUM_H_
+#include "core/dc_enum.h"
+#endif
+
 
 //类的名字和非终结符的名字相同
 class treenode;
@@ -80,10 +86,10 @@ public:
 class Program:public treenode
 {
 private:
-    vector<Decl*> *pvecClassDecl;
+    std::vector<Decl*> *pvecClassDecl;
     GloScope gloScope;
 public:
-    Program(vector<Decl*> *s1);
+    Program(std::vector<Decl*> *s1);
     void buildSym();
     void printAst(int aline,int level);
 };
@@ -91,10 +97,10 @@ public:
 class Id:public treenode
 {
 public:
-    string name;
+    std::string name;
     Id(char* str,YYLTYPE loc);          //id 是字符串
     void printAst(int aline,int level);
-    string getidname();
+    std::string getidname();
 };
 
 /**************decl************/
@@ -116,10 +122,10 @@ class FnDecl:public Decl
 {
 public:
     Type* ptype;
-    vector<VarDecl*>* pformals;
+    std::vector<VarDecl*>* pformals;
     StmtBlock* pstmtblock;
     int isstatic;   //表示是否为static，0不是，1是
-    FnDecl(int s,Type* s1,Id* s2,vector<VarDecl*>* s4,StmtBlock* s6);
+    FnDecl(int s,Type* s1,Id* s2,std::vector<VarDecl*>* s4,StmtBlock* s6);
     void printAst(int aline,int level); 
 };
 
@@ -127,9 +133,9 @@ class ClassDecl:public Decl
 {
 public:
     Id* pParentId;
-    vector<Decl*> *pfields;
+    std::vector<Decl*> *pfields;
     //使用NULL表示是否继承，是否有Fields
-    ClassDecl(Id* s2,Id* s4,vector<Decl*> *s6);
+    ClassDecl(Id* s2,Id* s4,std::vector<Decl*> *s6);
 
     void printAst(int aline,int level);
 };
@@ -179,7 +185,7 @@ public:
     NamedType(Id* s2);
     void printAst(int aline,int level);
     Id *getpid();
-    string getClassName();
+    std::string getClassName();
 };
 class ArrayType:public Type
 {
@@ -200,9 +206,9 @@ public:
 class StmtBlock:public Stmt
 {
 public:
-    vector<VarDecl*> *pvardecls;
-    vector<Stmt*> *pstmts;
-    StmtBlock(vector<VarDecl*> *s2,vector<Stmt*> *s3);
+    std::vector<VarDecl*> *pvardecls;
+    std::vector<Stmt*> *pstmts;
+    StmtBlock(std::vector<VarDecl*> *s2,std::vector<Stmt*> *s3);
     void printAst(int aline,int level);
 };
 class IfStmt:public Stmt
@@ -210,7 +216,7 @@ class IfStmt:public Stmt
 public:
     Expr *pexpr;
     Stmt *pstmt1;
-    string elsename;
+    std::string elsename;
     Stmt *pstmt2;
     IfStmt(Expr *s3,Stmt *s5,const char *s6,Stmt *s7);
     void printAst(int aline,int level);
@@ -249,8 +255,8 @@ public:
 class PrintStmt:public Stmt
 {
 public:
-    vector<Expr*> *pexprs;
-    PrintStmt(vector<Expr*> *s3);
+    std::vector<Expr*> *pexprs;
+    PrintStmt(std::vector<Expr*> *s3);
     void printAst(int aline,int level);
 };
 /************expr*************/
@@ -272,7 +278,7 @@ class ArithmeticExpr:public Expr
 public:
     Expr* pexpr1;
     Expr* pexpr2;
-    string opname;
+    std::string opname;
     ArithmeticExpr(Expr* s1,const char *s,Expr* s3);
     void printAst(int aline,int level);
 };
@@ -281,7 +287,7 @@ class RelationExpr:public Expr
 public:
     Expr* pexpr1;
     Expr* pexpr2;
-    string opname;
+    std::string opname;
     RelationExpr(Expr* s1,const char* s,Expr* s3);
     void printAst(int aline,int level);
 };
@@ -290,7 +296,7 @@ class LogicalExpr:public Expr
 public:
     Expr* pexpr1;
     Expr* pexpr2;
-    string opname;
+    std::string opname;
     LogicalExpr(Expr* s1,const char* s,Expr* s3);
     void printAst(int aline,int level);
 };
@@ -321,9 +327,9 @@ class Call:public Expr
 {
 public:
     Id* pid;
-    vector<Expr*> *pactuals;
+    std::vector<Expr*> *pactuals;
     Expr* pexpr;
-    Call(Expr* s1,Id* s3,vector<Expr*> *s5);
+    Call(Expr* s1,Id* s3,std::vector<Expr*> *s5);
     void printAst(int aline,int level);
 };
 class This:public Expr
@@ -391,7 +397,7 @@ public:
 class StringCon:public Constant
 {
 public:
-    string value;
+    std::string value;
     StringCon(const char *s1,YYLTYPE loc);
     void printAst(int aline,int level);
 };
@@ -402,3 +408,5 @@ public:
     NullCon(int s1,YYLTYPE loc);
     void printAst(int aline,int level);
 };
+
+#endif

@@ -4,16 +4,14 @@
 	> Mail: 
 	> Created Time: Mon 28 Nov 2016 12:07:01 AM PST
  ************************************************************************/
+#ifndef DC_CORE_DC_CLASS_H_
+#include "core/dc_class.h"
+#endif
 
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#ifndef _NT_CLASS_H
-#include "dc_class.h"
-#endif
-
-using namespace std;
 
 void treenode::printWhite(int aline,int level)
 {

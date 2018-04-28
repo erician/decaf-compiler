@@ -1,5 +1,8 @@
+#ifndef DC_UTILS_ARGS_DC_ARGS_H_
+#include "utils/args/dc_args.h"
+#endif
+
 #include <cstring>
-#include "dc_args.h"
 
 void Args::set(std::string key, std::string value)
 {
