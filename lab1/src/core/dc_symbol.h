@@ -80,7 +80,6 @@ public:
     bool setClaDes(const ClaDes* claDes);
     const ClaDes* getClaDes();
 };
-
 //ClaDes
 class ClaDes:public Scope
 {
@@ -155,80 +154,86 @@ public:
     bool setFunDes(FunDes *funDes);
     const FunDes* getFunDes();
 };
-
-
+//function descriptor
 class FunDes:public Scope
 {
 public:
-    int isstatic;
-    int ismain;
+    FunDes();
+    bool setIsStatic(bool isStatic);
+    bool isStatic();
+
+    bool setIsMain(bool isMain);
+    bool isMain();
+
+    bool setForScope(ForScope *forScope);
+    const ForScope* getForScope();
+    
+private:
+    bool isStatic;
+    bool isMain;
+    ForScope *forScope;
     
     std::vector<ForScope*> *pforscope;
-    FunDes(int s1,int s2,std::vector<ForScope*> *s3)
-    {
-        isstatic=s1;
-        ismain=s2;
-        pforscope=s3;
-    }
-    int getisstatic()
-    {
-        return isstatic;
-    }
-    std::vector<ForScope*> *getpforscope()
-    {
-	return pforscope;
-    }
 };
+//formal scope
 class ForScope:public Scope
 {
+private:
+    std::vector<ForScopeEntry*> entries;
+    LocScope *locScope;
 public:
-    std::string name;
-    TYPE *ptype;
-    std::vector<LocScope*> *pvec_locscope;
-    ForScope(std::string s1,TYPE *s2,std::vector<LocScope*> *s3)
-    {
-        name=s1;
-        ptype=s2;
-        pvec_locscope=s3;
-    }
-    std::string getname()
-    {
-        return name;
-    }
-    std::vector<LocScope*> *getlocscope()
-    {
-	return pvec_locscope;
-    }
-    TYPE *getptype()
-    {
-	return ptype;
-    }
-    void printsym();
+    ForScope();
+    bool addEntry(ForScopeEntry* entry);
+    
+    bool setLocScope(LocScope *locScope);
+    const LocScope* getLocScope();
 };
-
+//formal scope entry
+class ForScopeEntry: public Entry
+{
+private:
+    std::string name;
+    TypeInfo *typeInfo;
+public:
+    ForScopeEntry();
+    bool setName(std::string name);
+    std::string getName();
+    
+    bool setTypeInfo(TypeInfo *typeInfo);
+    const TypeInfo* getTypeInfo();
+    
+};
+//local scope
 class LocScope:public Scope
 {
+private:
+    std::vector<LocScopeEntry*> entries;
 public:
-    std::string name;
-    std::string category;
-    TYPE *ptype;
-    std::vector<std::vector<LocScope*>*> *pvecvec_locscope;
-    LocScope(std::string s1,const char* s2,TYPE* s3,std::vector<std::vector<LocScope*>*> *s4)
-    {
-        name = s1;
-        category = s2;
-        ptype = s3;
-        pvecvec_locscope = s4;
-    }
-    std::string getname()
-    {
-        return name;
-    }
-    TYPE *getptype()
-    {
-	return ptype;
-    }
-    void printsym(int level,int islast);
+    LocScope();
+    bool addEntry(LocScopeEntry* entry);
 };
+//local scope entry
+class LocScopeEntry: public Entry
+{
+private:
+    std::string name;
+    int category;
+    TypeInfo *typeInfo;
+    LocScope *subLocScope;
+public:
+    LocScopeEntry();
+    bool setName(std::string name);
+    std::string getName();
+
+    bool setCategory(int category);
+    int  getCategory();
+    
+    bool setTypeInfo(TypeInfo *typeInfo);
+    int getTypeInfo();
+    
+    bool setSubLocScope(LocScope *subLocScope);
+    const LocScope* getSubLocScope();
+};
+
 
 #endif

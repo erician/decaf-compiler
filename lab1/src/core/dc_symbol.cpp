@@ -172,7 +172,7 @@ bool ClaScopeEntry::setTypeInfo(TypeInfo* typeInfo)
     this->typeInfo = typeInfo;
 }
 
-int ClaScopeEntry::getTypeInfo()
+const TypeInfo* ClaScopeEntry::getTypeInfo()
 {
     return typeInfo;
 }
@@ -186,4 +186,120 @@ const FunDes* ClaScopeEntry::getFunDes()
 {
     return funDes;
 }
+//function descriptor
+FunDes::FunDes()
+{
+    this->isStatic = false;
+    this->isMain = false;
+}
+
+bool FunDes::setIsStatic(bool isStatic)
+{
+    this->isStatic = isStatic;
+}
+
+bool FunDes::isStatic()
+{
+    return isStatic;
+}
+
+bool FunDes::setIsMain(bool isMain)
+{
+    this->isMain = isMain;
+}
+
+bool FunDes::isMain()
+{
+    return isMain;
+}
+
+bool setForScope(ForScope *forScope)
+{
+    this->forScope = forScope;
+}
+
+const ForScope* getForScope()
+{
+    return this->forScope;
+}
+//formal scope
+ForScope::ForScope()
+{
+
+}
+bool ForScope::addEntry(ForScopeEntry *entry)
+{
+    this->entries.push_back(entry);
+}
+bool ForScope::setLocScope(LocScope* locScope)
+{
+    this->locScope = locScope;
+}
+const ForScope::getLocScope()
+{
+    return this->locScope;
+}
+//formal scope entry
+ForScopeEntry::ForScopeEntry()
+{
+
+}
+bool ForScopeEntry::setName(std::string name)
+{
+    this->name = name;
+}
+std::string getName()
+{
+    return this->name;
+}
+bool ForScopeEntry::setTypeInfo(TypeInfo *typeInfo)
+{
+    this->typeInfo = typeInfo;
+}
+const TypeInfo* getTypeInfo()
+{
+    return this->typeInfo;
+}
+//local scope
+LocScope::LocScope()
+{
+
+}
+bool LocScope::addEntry(LocScopeEntry* entry)
+{
+    this->entries.push_back(entry);
+}
+//local scope entry
+LocScopeEntry::LocScopeEntry()
+{
+
+}
+bool LocScopeEntry::setName(std:;string name)
+{
+    this->name = name;
+}
+std::string LocScopeEntry::getName()
+{
+    return name;
+}
+bool LocScopeEntry::setCateGory(int category)
+{
+    this->category = category;
+}
+int LocScopeEntry::getCategory()
+{
+    return category;
+}
+bool LocScopeEntry::setSubLocScope(LocScope* subLocScopeEntry)
+{
+    this->subLocScopeEntry = subLocScope;
+}
+const LocScope* LocScope::getSubLocScope()
+{
+    return subLocScope;
+}
+
+
+
+
 

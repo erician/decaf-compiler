@@ -47,7 +47,14 @@ VarDecl::VarDecl(Type* s1,Id* s2):Decl(s2)
 }
 FnDecl::FnDecl(int s,Type* s1,Id* s2,std::vector<VarDecl*>* s4,StmtBlock* s6):Decl(s2)
 {
-    isstatic = s;
+    if (s == 0)
+    {
+        this->isStatic = false;
+    }
+    else
+    {
+        this->isStatic = true;
+    }
     ptype = s1;
     pformals = s4;
     pstmtblock = s6;

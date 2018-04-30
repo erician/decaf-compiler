@@ -17,6 +17,10 @@
 #include "core/dc_error.h"
 #endif
 
+#ifndef DC_CORE_DC_CONST_H_
+#include "core/dc_const.h"
+#endif
+
 #include "yacc/y.tab.h"
 
 //一些下面要用的函数
@@ -61,7 +65,34 @@ int ArrayType::getArrayLevel()
     }
     return level;
 }
-
+//type info
+TypeInfo* Decl::getTypeInfoFromType(Type* type)
+{
+    TypeInfo *typeInfo = new TypeInfo();
+    typeInfo->setType(type->getType());
+    switch(type->getType())
+    {
+        case(DC::TYPE::DC_NAMED):
+            typeInfo->setClassName(type->getClassName());
+            break;
+        case(DC::TYPE::DC_ARRAY):
+            typeInfo->setArrayLevel(type->getArrayLevel());
+            break;
+        default:
+            break;
+    }
+    return typeInfo;
+}
+//stmt block
+const std::vector<VarDecl*>* StmtBlock::getVarDecls()
+{
+    return pvardecls;
+}
+const std::vector<Stmt*>* StmtBlock::getStmts
+{
+    return pstmts;
+}
+//program
 void Program::buildSym()
 {     
     for(int i=0; i<pvecClassDecl->size(); i++)
@@ -204,178 +235,50 @@ void VarDecl::buildSym()
         }
     }
 }
-void FnDecl::buildSym()
+
+void FunDecl::buildSym()
 {
     ClaScopeEntry *claScopeEntry = new ClaScopeEntry();
-    claScopeEntry->setCategory(DC::CATEGORY::DC_Fun);
+    claScopeEntry->setCategory(DC::CATEGORY::DC_FUN);
     claScopeEntry->setName(pid->getidname());
-    
-    TypeInfo *typeInfo = new TypeInfo();
-    typeInfo->setType(ptype->getType());
-    switch(ptype->getType())
+    claScopeEntry->setTypeInfo(getTypeInfoFromType(ptype));
+    //function descriptor
+    FunDes *funDes = new FunDes();
+    funDes->setIsStatic(isStatic);
+    if (pid->getidname() == DC::MAIN)
     {
-        case(DC::TYPE::DC_NAMED):
-            typeInfo->setClassName(ptype->getClassName());
-            break;
-        case(DC::TYPE::DC_ARRAY):
-            typeInfo->setArrayLevel(ptype->getArrayLevel());
-            break;
-        default:
-            break;
+        funDes->setIsMain(true);
     }
-    claScopeEntry->setTypeInfo(typeInfo);
-
-    FunDes *pfundes;
-    //形参域
-    vector<ForScope*> *pvec_forscope;
-    pvec_forscope = new vector<ForScope*>;
-    if(idname=="main")
-        pfundes = new FunDes(isstatic,1,pvec_forscope);
     else
-        pfundes = new FunDes(isstatic,0,pvec_forscope);
-
-    ClaScope *pclascope;
-    pscope_type->setplocation(pid->getplocation());
-    pclascope = new ClaScope(idname,"function",pscope_type,pfundes);
-
-    //设置parent
-    //pst->pop();
-    //vector<Scope*> *tmp=pst->top();
-    //pst->push((vector<Scope*>*)pvec_clascope);
-    pclascope->setparent((vector<Scope*>*)pgloscope,2);
-    //设置location
-    pclascope->setlocation(pid->getplocation());
-    //入栈
-    pvec_clascope->push_back(pclascope);
-    //类检查
-    if(_typename=="class")
     {
-        Id *pid_tmp;
-        pid_tmp=ptype->getpid();
-        pid_tmp->checkdecl_class(pclascope);
+        funDes->setIsMain(false);
     }
-    else if(_typename=="[]")
+    //formal scope
+    ForScope *forScope = new ForScope();
+    for(int i=0; pformals!=NULL && i<pformals->size(); i++)
     {
-        Type *ptype_tmp;
-        ptype_tmp=ptype->get_type_pointer();
-        if(p->gettypename()=="class")
-        {
-            Id *pid_tmp;
-            pid_tmp = ptype_tmp->getpid();
-            pid_tmp->checkdecl_class(pclascope);        
-        }
+        forScope->addEntry((*pformals)[i]->buildformals());
     }
-
-    pst->push((vector<Scope*>*)pvec_forscope);
-    //局部域
-    vector<LocScope*> *pvec_locscope;
-    pvec_locscope = new vector<LocScope*>;
-
-    //先把this指针加上,等一下再处理
-    ForScope *pforscope;
-    pforscope = new ForScope(std::string("this"),new TYPE(std::string("class"),std::string(""),0),pvec_locscope);
-
-    pforscope->setparent((vector<Scope*>*)pvec_clascope,3);
-    pvec_forscope->push_back(pforscope);
-
-    for(int i=0;i<pformals->size();i++)
+    //local scope
+    LocScope *locScope = new LocScope();
+    for (int i=0; pstmts != NULL && i<pstmts->size(); i++)
     {
-        (*pformals)[i]->buildformals(pst,pvec_locscope,pvec_clascope);
+        locScope->addEntry((*pstmts)[i]->buildSym());
     }
-    
-    pst->push((vector<Scope*>*)pvec_locscope);
-    pstmtblock->buildlocal(pvec_locscope,(vector<Scope*>*)pvec_forscope);  //从0开始
-    //这里checkbreak,会导致错误的行序号不是递增的
-    pstmtblock->stmt_checkbreak();
-    pst->pop();
-    pst->pop();
+    forScope->setLocScope(locScope);
+    funDes->setForScope(forScope);
+    claScopeEntry->setFunDes(funDes);
+    return claScopeEntry;
 }
 
-void VarDecl::buildformals(stack<vector<Scope*>*> *pst,vector<LocScope*> *pvec_locscope,vector<ClaScope*>* pvec_clascope)
+void VarDecl::buildformals()
 {
-//cout<<"formal"<<endl;
-    vector<ForScope*> *pvec_forscope;
-    pvec_forscope = (vector<ForScope*>*)pst->top();
-    
-    std:: idname;
-    idname = pid->getidname();
-    //检查形参是否重名
-    for(int i=0;i<pvec_forscope->size();i++)
-    {
-        if(idname==(*pvec_forscope)[i]->getname())
-        { 
-            IssueError::Redefinition(pid->getplocation(),idname);
-            break; 
-        }
-    }
-    //查看类型,这个有点重复
-    std::string _typename;
-    _typename=ptype->gettypename();
-    TYPE *pscope_type;
-    Type *p=ptype;
-    if(_typename=="class")
-    {
-        std::string classidname;
-        classidname=ptype->get_named_id_name();
-        //先不对类是否存在进行检查
-        pscope_type=new TYPE(_typename,classidname,0);    
-    }
-    else if(_typename=="[]")
-    {
-        //数组层数
-        int arraylevel=0;
-        
-        while(p->gettypename()=="[]")
-        {
-            arraylevel+=1;
-            p=p->get_type_pointer();
-        }
-        std::string arraytype;
-        if(p->gettypename()=="class")
-            arraytype=p->get_named_id_name();
-        else
-            arraytype = p->gettypename();
-
-        pscope_type=new TYPE(_typename,arraytype,arraylevel);
-    }
-    else
-    {
-        pscope_type=new TYPE(_typename,"",0);
-    }
-    
-    ForScope *pforscope;
-    pscope_type->setplocation(pid->getplocation());
-    pforscope = new ForScope(idname,pscope_type,pvec_locscope);
-    //设置parent
-    //pst->pop();
-    //vector<Scope*> *tmp=pst->top();
-    //pst->push((vector<Scope*>*)pvec_forscope);
-    pforscope->setparent((vector<Scope*>*)pvec_clascope,3);
-    //设置location
-    pforscope->setlocation(pid->getplocation());
-	//设置pscope
-	pid->setpscope((Scope*)pforscope);
-	//入栈
-    pvec_forscope->push_back(pforscope);
-    //类检查
-    if(_typename=="class")
-    {
-        Id *pid_tmp;
-        pid_tmp=ptype->getpid();
-        pid_tmp->checkdecl_class(pforscope);
-    }
-    else if(_typename=="[]")
-    {
-        Type *ptype_tmp;
-        ptype_tmp=ptype->get_type_pointer();
-        if(p->gettypename()=="class")
-        {
-            Id *pid_tmp;
-            pid_tmp = ptype_tmp->getpid();
-            pid_tmp->checkdecl_class(pforscope);        
-        }
-    }
+    ForScopeEntry *forScopeEntry = new ForScopeEntry();
+    forScopeEntry->setName(pid->getidname());
+    forScopeEntry->setTypeInfo(getTypeInfoFromType(ptype));
+    return forScopeEntry;
 }
+
 void VarDecl::buildlocal(vector<LocScope*> *pvec_locscope,vector<vector<LocScope*>*> *pvecvec_locscope,vector<Scope*> *pvec_for_loc_scope)
 {
 //cout<<"local"<<endl;

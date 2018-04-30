@@ -28,7 +28,7 @@
     Id *id;
     Decl *decl;
     VarDecl *vardecl;
-    FnDecl *fndecl;
+    FunDecl *fundecl;
     ClassDecl *classdecl;
 
     Type *type;
@@ -107,7 +107,7 @@
 /*非终结符的声明*/
 %type <program> Program
 %type <vardecl> VarDecl
-%type <fndecl> FnDecl
+%type <fundecl> FunDecl
 %type <classdecl> ClassDecl
 
 %type <type> Type
@@ -175,14 +175,14 @@ NamedType :    CLASS ID      {$$=new NamedType(new Id($2,@2));}
 ArrayType :    Type LB RB    {$$=new ArrayType($1);}
           ;
 
-FnDecl    :    Type ID LP Formals RP StmtBlock
-                                {$$=new FnDecl(DC_NOTSTATIC,$1,new Id($2,@2),$4,$6);}
+FunDecl    :    Type ID LP Formals RP StmtBlock
+                                {$$=new FunDecl(DC_NOTSTATIC,$1,new Id($2,@2),$4,$6);}
           |    VOID ID LP Formals RP StmtBlock
-                                {$$=new FnDecl(DC_NOTSTATIC,(new VoidType()),new Id($2,@2),$4,$6);}
+                                {$$=new FunDecl(DC_NOTSTATIC,(new VoidType()),new Id($2,@2),$4,$6);}
 	      |    STATIC Type ID LP Formals RP StmtBlock
-                                {$$=new FnDecl(DC_STATIC,$2,new Id($3,@3),$5,$7);}
+                                {$$=new FunDecl(DC_STATIC,$2,new Id($3,@3),$5,$7);}
 	      |    STATIC VOID ID LP Formals RP StmtBlock
-                                {$$=new FnDecl(DC_STATIC,(new VoidType()),new Id($3,@3),$5,$7);}
+                                {$$=new FunDecl(DC_STATIC,(new VoidType()),new Id($3,@3),$5,$7);}
           ;
 
 Formals   :   			    {$$=new std::vector<VarDecl*>;}
@@ -223,6 +223,9 @@ Prototype  : Type T_Identifier LP Formals RP SEMI
                                      {  }
            ;                
 */    
+
+decls应该放到stmt
+
 StmtBlock  : LC VarDecls Stmts RC  
 				{$$=new StmtBlock($2,$3);}
            | LC VarDecls RC        

@@ -25,12 +25,12 @@
 
 
 //类的名字和非终结符的名字相同
-class treenode;
+class TreeNode;
 class Id;
 class Program;
 class Decl;
 class VarDecl;
-class FnDecl;
+class FunDecl;
 class ClassDecl;
 
 class Type;
@@ -72,18 +72,18 @@ class BoolCon;
 class StringCon;
 class NullCon;
 
-class treenode
+class TreeNode
 {
 public:
     YYLTYPE *plocation;
-    treenode(YYLTYPE s1);
-    treenode();
+    TreeNode(YYLTYPE s1);
+    TreeNode();
     YYLTYPE* getplocation(){return plocation;}
     virtual void printAst(int aline,int level)=0;
     void printWhite(int aline,int level);
 };
 
-class Program:public treenode
+class Program:public TreeNode
 {
 private:
     std::vector<Decl*> *pvecClassDecl;
@@ -94,7 +94,7 @@ public:
     void printAst(int aline,int level);
 };
 
-class Id:public treenode
+class Id:public TreeNode
 {
 public:
     std::string name;
@@ -104,11 +104,12 @@ public:
 };
 
 /**************decl************/
-class Decl:public treenode
+class Decl:public TreeNode
 {
 public:
     Id *pid;
     Decl(Id* s);
+    TypeInfo* getTypeInfoFromType(Type* type);
 };
 class VarDecl:public Decl
 {
@@ -116,17 +117,20 @@ public:
     Type* ptype;
     VarDecl(Type* s1,Id* s2);
     void printAst(int aline,int level);
+    void buildFormals();
 };
 
-class FnDecl:public Decl
+class FunDecl:public Decl
 {
 public:
     Type* ptype;
     std::vector<VarDecl*>* pformals;
     StmtBlock* pstmtblock;
-    int isstatic;   //表示是否为static，0不是，1是
-    FnDecl(int s,Type* s1,Id* s2,std::vector<VarDecl*>* s4,StmtBlock* s6);
-    void printAst(int aline,int level); 
+    bool isStatic;   
+    FunDecl(int s,Type* s1,Id* s2,std::vector<VarDecl*>* s4,StmtBlock* s6);
+    void printAst(int aline,int level);
+    void buildSym(); 
+    
 };
 
 class ClassDecl:public Decl
@@ -140,7 +144,7 @@ public:
     void printAst(int aline,int level);
 };
 /**********type******************/
-class Type:public treenode
+class Type:public TreeNode
 {
 protected:
     int type; 
@@ -198,7 +202,7 @@ public:
     
 };
 /***********StmtBlock***********/
-class Stmt:public treenode
+class Stmt:public TreeNode
 {
 public:
     Stmt();
@@ -210,6 +214,8 @@ public:
     std::vector<Stmt*> *pstmts;
     StmtBlock(std::vector<VarDecl*> *s2,std::vector<Stmt*> *s3);
     void printAst(int aline,int level);
+    std::vector<VarDecl*> getVarDecls();
+    std::vector<Stmt*> *pstmts;
 };
 class IfStmt:public Stmt
 {
