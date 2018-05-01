@@ -80,7 +80,7 @@ public:
     TreeNode();
     YYLTYPE* getplocation(){return plocation;}
     virtual void printAst(int aline,int level)=0;
-    void printWhite(int aline,int level);
+    virtual void printWhite(int aline,int level);
 };
 
 class Program:public TreeNode
@@ -111,7 +111,15 @@ public:
     Decl(Id* s);
     TypeInfo* getTypeInfoFromType(Type* type);
 };
-class VarDecl:public Decl
+
+/**************stmt************/
+class Stmt:public treenode
+{
+public:
+    Stmt();
+};
+
+class VarDecl:public Decl, public Stmt
 {
 public:
     Type* ptype;
@@ -202,11 +210,7 @@ public:
     
 };
 /***********StmtBlock***********/
-class Stmt:public TreeNode
-{
-public:
-    Stmt();
-};
+
 class StmtBlock:public Stmt
 {
 public:
