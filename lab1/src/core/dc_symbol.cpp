@@ -1,6 +1,6 @@
 
 #ifndef DC_CORE_DC_SYMBOL_H_
-#include "core/nt_symbol.h"
+#include "core/dc_symbol.h"
 #endif
 
 //GloScope
@@ -9,7 +9,7 @@ GloScope::GloScope()
 
 }
 
-bool GloScope::addEntry(GloScopeEntry* entry)
+bool GloScope::addEntry(Entry* entry)
 {
     entries.push_back(entry);
     return true;
@@ -18,12 +18,12 @@ bool GloScope::addEntry(GloScopeEntry* entry)
 //GloScopeEntry
 GloScopeEntry::GloScopeEntry()
 {
-    category = DC_CLASS;
+    category = DC::CATEGORY::DC_CLASS;
 }
 
 GloScopeEntry::GloScopeEntry(std::string className, ClaDes* claDes)
 {
-    category = DC_CLASS;
+    category = DC::CATEGORY::DC_CLASS;
     this->className = className;
     this->claDes = claDes;
 }
@@ -31,6 +31,7 @@ GloScopeEntry::GloScopeEntry(std::string className, ClaDes* claDes)
 bool GloScopeEntry::setCategory(int category)
 {
     this->category = category;
+    return true;
 }
 
 int GloScopeEntry::getCategory() 
@@ -41,6 +42,7 @@ int GloScopeEntry::getCategory()
 bool GloScopeEntry::setClassName(std::string className)
 {
     this->className = className;
+    return true;
 }
 
 std::string GloScopeEntry::getClassName() 
@@ -48,9 +50,10 @@ std::string GloScopeEntry::getClassName()
     return className;
 }
 
-bool GloScopeEntry::setClaDes(const ClaDes* claDes)
+bool GloScopeEntry::setClaDes(ClaDes* claDes)
 {   
     this->claDes = claDes;
+    return true;
 }
 
 const ClaDes* GloScopeEntry::getClaDes() 
@@ -59,7 +62,7 @@ const ClaDes* GloScopeEntry::getClaDes()
 }
 
 //ClaDes
-ClaDes()
+ClaDes::ClaDes()
 {
     parentClaDes = NULL;
     this->claScope = NULL;
@@ -68,6 +71,7 @@ ClaDes()
 bool ClaDes::setParentName(std::string parentName)
 {
     this->parentName = parentName;
+    return true;
 }
 
 std::string ClaDes::getParentName()
@@ -75,9 +79,10 @@ std::string ClaDes::getParentName()
     return parentName;
 }
 
-bool ClaDes::setClaScope(const ClaScope* claScope)
+bool ClaDes::setClaScope(ClaScope* claScope)
 {
     this->claScope = claScope;
+    return true;
 }
 
 const ClaScope* ClaDes::getClaScope()
@@ -85,9 +90,10 @@ const ClaScope* ClaDes::getClaScope()
     return claScope;
 }
 
-bool ClaDes::setParentClaDes(const ClaDes* parentClaDes)
+bool ClaDes::setParentClaDes(ClaDes* parentClaDes)
 {
     this->parentClaDes = parentClaDes;
+    return true;
 }
 
 const ClaDes* ClaDes::getParentClaDes()
@@ -100,9 +106,10 @@ ClaScope::ClaScope()
 {
 
 }
-bool ClaScope::addEntry(ClaScopeEntry* entry)
+bool ClaScope::addEntry(Entry* entry)
 {
     this->entries.push_back(entry);
+    return true;
 }
 
 TypeInfo::TypeInfo()
@@ -114,32 +121,32 @@ TypeInfo::TypeInfo()
 bool TypeInfo::setType(int type)
 {
     this->type = type;
+    return true;
 }
 
-int getType()
+int TypeInfo::getType()
 {
     return type;
 }
 
-bool setArrayLevle(int level)
+bool TypeInfo::setArrayLevel(int level)
 {
     this->arrayLevel = level;
+    return true;
 }
 
-int getArrayLevel()
+int TypeInfo::getArrayLevel()
 {
     return arrayLevel;
 }
 
-bool setClassName(std::string className)
+bool TypeInfo::setClassName(std::string className)
 {
     this->className = className;
+    return true;
 }
 
-std::string getClassName()
-{
-    return className;
-}
+
 
 //ClaScopeEntry
 ClaScopeEntry::ClaScopeEntry()
@@ -150,6 +157,7 @@ ClaScopeEntry::ClaScopeEntry()
 bool ClaScopeEntry::setName(std::string name)
 {
     this->name = name;
+    return true;
 }
 
 std::string ClaScopeEntry::getName()
@@ -159,7 +167,8 @@ std::string ClaScopeEntry::getName()
 
 bool ClaScopeEntry::setCategory(int category)
 {
-    this->category = categort;
+    this->category = category;
+    return true;
 }
 
 int  ClaScopeEntry::getCategory()
@@ -170,6 +179,7 @@ int  ClaScopeEntry::getCategory()
 bool ClaScopeEntry::setTypeInfo(TypeInfo* typeInfo)
 {
     this->typeInfo = typeInfo;
+    return true;
 }
 
 const TypeInfo* ClaScopeEntry::getTypeInfo()
@@ -180,6 +190,7 @@ const TypeInfo* ClaScopeEntry::getTypeInfo()
 bool ClaScopeEntry::setFunDes(FunDes *funDes)
 {
     this->funDes = funDes;
+    return true;
 }
 
 const FunDes* ClaScopeEntry::getFunDes()
@@ -196,9 +207,10 @@ FunDes::FunDes()
 bool FunDes::setIsStatic(bool isStatic)
 {
     this->isStatic = isStatic;
+    return true;
 }
 
-bool FunDes::isStatic()
+bool FunDes::getIsStatic()
 {
     return isStatic;
 }
@@ -206,19 +218,21 @@ bool FunDes::isStatic()
 bool FunDes::setIsMain(bool isMain)
 {
     this->isMain = isMain;
+    return true;
 }
 
-bool FunDes::isMain()
+bool FunDes::getIsMain()
 {
     return isMain;
 }
 
-bool setForScope(ForScope *forScope)
+bool FunDes::setForScope(ForScope *forScope)
 {
     this->forScope = forScope;
+    return true;
 }
 
-const ForScope* getForScope()
+const ForScope* FunDes::getForScope()
 {
     return this->forScope;
 }
@@ -227,17 +241,19 @@ ForScope::ForScope()
 {
 
 }
-bool ForScope::addEntry(ForScopeEntry *entry)
+bool ForScope::addEntry(Entry *entry)
 {
     this->entries.push_back(entry);
+    return true;
 }
-bool ForScope::setLocScope(LocScope* locScope)
+bool ForScope::setLocScopeEntry(Entry *locScopeEntry)
 {
-    this->locScope = locScope;
+    this->locScopeEntry = (LocScopeEntry*)locScopeEntry;
+    return true;
 }
-const ForScope::getLocScope()
+const LocScopeEntry* ForScope::getLocScopeEntry()
 {
-    return this->locScope;
+    return this->locScopeEntry;
 }
 //formal scope entry
 ForScopeEntry::ForScopeEntry()
@@ -247,16 +263,18 @@ ForScopeEntry::ForScopeEntry()
 bool ForScopeEntry::setName(std::string name)
 {
     this->name = name;
+    return true;
 }
-std::string getName()
+std::string ForScopeEntry::getName()
 {
     return this->name;
 }
 bool ForScopeEntry::setTypeInfo(TypeInfo *typeInfo)
 {
     this->typeInfo = typeInfo;
+    return true;
 }
-const TypeInfo* getTypeInfo()
+const TypeInfo* ForScopeEntry::getTypeInfo()
 {
     return this->typeInfo;
 }
@@ -265,36 +283,52 @@ LocScope::LocScope()
 {
 
 }
-bool LocScope::addEntry(LocScopeEntry* entry)
+bool LocScope::addEntry(Entry* entry)
 {
     this->entries.push_back(entry);
+    return true;
 }
 //local scope entry
 LocScopeEntry::LocScopeEntry()
 {
 
 }
-bool LocScopeEntry::setName(std:;string name)
+bool LocScopeEntry::setName(std::string name)
 {
     this->name = name;
+    return true;
 }
 std::string LocScopeEntry::getName()
 {
     return name;
 }
-bool LocScopeEntry::setCateGory(int category)
+bool LocScopeEntry::setCategory(int category)
 {
     this->category = category;
+    return true;
 }
 int LocScopeEntry::getCategory()
 {
     return category;
 }
+
+bool LocScopeEntry::setTypeInfo(TypeInfo *typeInfo)
+{
+    this->typeInfo = typeInfo;
+    return true;
+}
+
+const TypeInfo* LocScopeEntry::getTypeInfo()
+{
+    return this->typeInfo;
+}
+
 bool LocScopeEntry::setSubLocScope(LocScope* subLocScopeEntry)
 {
-    this->subLocScopeEntry = subLocScope;
+    this->subLocScope = subLocScope;
+    return true;
 }
-const LocScope* LocScope::getSubLocScope()
+const LocScope* LocScopeEntry::getSubLocScope()
 {
     return subLocScope;
 }

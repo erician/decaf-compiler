@@ -19,3 +19,5 @@ public:
     bool doesHaveKey(std::string key);
     bool doesHaveValue(std::string key);
 };
+
+#endif

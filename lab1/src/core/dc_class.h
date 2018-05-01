@@ -110,13 +110,16 @@ public:
     Id *pid;
     Decl(Id* s);
     TypeInfo* getTypeInfoFromType(Type* type);
+    virtual Entry *buildClassSym(); 
+    virtual Entry *buildGlobalSym(); 
 };
 
 /**************stmt************/
-class Stmt:public treenode
+class Stmt:public TreeNode
 {
 public:
     Stmt();
+    virtual Entry* buildLocalSym();   
 };
 
 class VarDecl:public Decl, public Stmt
@@ -125,7 +128,9 @@ public:
     Type* ptype;
     VarDecl(Type* s1,Id* s2);
     void printAst(int aline,int level);
-    void buildFormals();
+    Entry* buildClassSym();
+    Entry* buildFormalSym();
+    Entry* buildLocalSym();
 };
 
 class FunDecl:public Decl
@@ -134,11 +139,10 @@ public:
     Type* ptype;
     std::vector<VarDecl*>* pformals;
     StmtBlock* pstmtblock;
-    bool isStatic;   
+    bool isStatic;
     FunDecl(int s,Type* s1,Id* s2,std::vector<VarDecl*>* s4,StmtBlock* s6);
     void printAst(int aline,int level);
-    void buildSym(); 
-    
+    Entry *buildClassSym();   
 };
 
 class ClassDecl:public Decl
@@ -148,8 +152,8 @@ public:
     std::vector<Decl*> *pfields;
     //使用NULL表示是否继承，是否有Fields
     ClassDecl(Id* s2,Id* s4,std::vector<Decl*> *s6);
-
     void printAst(int aline,int level);
+    Entry* buildGlobalSym();
 };
 /**********type******************/
 class Type:public TreeNode
@@ -202,24 +206,23 @@ public:
 class ArrayType:public Type
 {
 public:
-    Type* ptype;
+    Type* nextArray;
     ArrayType(Type* s1);
     void printAst(int aline,int level);
-    Type* getPtype();
+    Type* getNextArray();
     int getArrayLevel();
     
 };
-/***********StmtBlock***********/
-
+/***********stmt***********/
 class StmtBlock:public Stmt
 {
 public:
-    std::vector<VarDecl*> *pvardecls;
     std::vector<Stmt*> *pstmts;
-    StmtBlock(std::vector<VarDecl*> *s2,std::vector<Stmt*> *s3);
+    StmtBlock(std::vector<Stmt*> *s2);
     void printAst(int aline,int level);
-    std::vector<VarDecl*> getVarDecls();
-    std::vector<Stmt*> *pstmts;
+    //return LocScopeEntry with name="" and subLocScope not NULL;
+    Entry* buildLocalSym();     
+
 };
 class IfStmt:public Stmt
 {
@@ -230,6 +233,7 @@ public:
     Stmt *pstmt2;
     IfStmt(Expr *s3,Stmt *s5,const char *s6,Stmt *s7);
     void printAst(int aline,int level);
+    Entry* buildLocalSym(); 
 };
 class WhileStmt:public Stmt
 {
@@ -238,6 +242,7 @@ public:
     Stmt *pstmt;
     WhileStmt(Expr *s3,Stmt *s5);
     void printAst(int aline,int level);
+    Entry* buildLocalSym(); 
 };
 class ForStmt:public Stmt
 {
@@ -248,6 +253,7 @@ public:
     Stmt* pstmt;
     ForStmt(Expr* s3,Expr* s5,Expr* s7,Stmt* s9);
     void printAst(int aline,int level);
+    Entry* buildLocalSym(); 
 };
 class ReturnStmt:public Stmt
 {

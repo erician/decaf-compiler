@@ -32,7 +32,10 @@ class ClaScopeEntry;
 
 class FunDes;
 class ForScope;
+class ForScopeEntry;
+
 class LocScope;
+class LocScopeEntry;
 
 /*
 类型type：int，string,bool,namedtype(即定义的class),arraytype,void,
@@ -55,10 +58,10 @@ class Scope
 class GloScope:public Scope
 {
 private:
-    std::vector<const GloScopeEntry *> entries;
+    std::vector<Entry *> entries;
 public:
     GloScope();
-    bool addEntry(GloScopeEntry* entry);
+    bool addEntry(Entry* entry);
 };
 
 //GloScopeEntry
@@ -75,9 +78,9 @@ public:
     std::string getClassName();
 
     bool setCategory(int catagory);
-    int getCategpry();
+    int getCategory();
 
-    bool setClaDes(const ClaDes* claDes);
+    bool setClaDes(ClaDes* claDes);
     const ClaDes* getClaDes();
 };
 //ClaDes
@@ -95,10 +98,10 @@ public:
     bool setParentName(std::string parentName);
     std::string getParentName();
 
-    bool setClaScope(const ClaScope* claScope);
+    bool setClaScope(ClaScope* claScope);
     const ClaScope* getClaScope();
 
-    bool setParentClaDes(const ClaDes* parentClaDes);
+    bool setParentClaDes(ClaDes* parentClaDes);
     const ClaDes* getParentClaDes();
 };
 
@@ -106,10 +109,10 @@ public:
 class ClaScope:public Scope
 {
 private:
-    std::vector<ClaScopeEntry*> entries;
+    std::vector<Entry*> entries;
 public:
     ClaScope();
-    bool addEntry(ClaScopeEntry* entry);
+    bool addEntry(Entry* entry);
 };
 
 //TypeInfo
@@ -124,7 +127,7 @@ public:
     bool setType(int type);
     int getType();
 
-    bool setArrayLevle(int level);
+    bool setArrayLevel(int level);
     int getArrayLevel();
 
     bool setClassName(std::string className);
@@ -149,7 +152,7 @@ public:
     int  getCategory();
     
     bool setTypeInfo(TypeInfo *typeInfo);
-    int getTypeInfo();
+    const TypeInfo* getTypeInfo();
     
     bool setFunDes(FunDes *funDes);
     const FunDes* getFunDes();
@@ -160,10 +163,10 @@ class FunDes:public Scope
 public:
     FunDes();
     bool setIsStatic(bool isStatic);
-    bool isStatic();
+    bool getIsStatic();
 
     bool setIsMain(bool isMain);
-    bool isMain();
+    bool getIsMain();
 
     bool setForScope(ForScope *forScope);
     const ForScope* getForScope();
@@ -179,14 +182,14 @@ private:
 class ForScope:public Scope
 {
 private:
-    std::vector<ForScopeEntry*> entries;
-    LocScope *locScope;
+    std::vector<Entry*> entries;
+    LocScopeEntry *locScopeEntry;
 public:
     ForScope();
-    bool addEntry(ForScopeEntry* entry);
+    bool addEntry(Entry* entry);
     
-    bool setLocScope(LocScope *locScope);
-    const LocScope* getLocScope();
+    bool setLocScopeEntry(Entry *locScopeEntry);
+    const LocScopeEntry* getLocScopeEntry();
 };
 //formal scope entry
 class ForScopeEntry: public Entry
@@ -207,10 +210,10 @@ public:
 class LocScope:public Scope
 {
 private:
-    std::vector<LocScopeEntry*> entries;
+    std::vector<Entry*> entries;
 public:
     LocScope();
-    bool addEntry(LocScopeEntry* entry);
+    bool addEntry(Entry* entry);
 };
 //local scope entry
 class LocScopeEntry: public Entry
@@ -229,7 +232,7 @@ public:
     int  getCategory();
     
     bool setTypeInfo(TypeInfo *typeInfo);
-    int getTypeInfo();
+    const TypeInfo* getTypeInfo();
     
     bool setSubLocScope(LocScope *subLocScope);
     const LocScope* getSubLocScope();

@@ -24,23 +24,23 @@
 
 void IssueError::flagErrorPlace(YYLTYPE *pyylloc)
 {
-    cout<<"    ";
+    std::cout<<"    ";
     for(int i=0;i<pyylloc->first_column-1;i++)
-        cout<<' ';
-    cout<<'^'<<endl;
+        std::cout<<' ';
+    std::cout<<'^'<<std::endl;
 }
 void IssueError::UnMachedChar(YYLTYPE *pyylloc,char c)
 {
-    cout<<pyylloc->first_line<<":"<<pyylloc->first_column<<": ";
-    cout<<"error: "<<"\'"<<c<<"\' "<<"unmatched char "<<endl;
-    cout<<"    "<<replaceTabByBlank(savedlines[pyylloc->first_line-1])<<endl;
+    std::cout<<pyylloc->first_line<<":"<<pyylloc->first_column<<": ";
+    std::cout<<"error: "<<"\'"<<c<<"\' "<<"unmatched char "<<std::endl;
+    std::cout<<"    "<<replaceTabByBlank(savedlines[pyylloc->first_line-1])<<std::endl;
     flagErrorPlace(pyylloc);
 }
 void IssueError::Printyyerror(YYLTYPE *pyylloc,std::string str)
 {
-    cout<<pyylloc->first_line<<":"<<pyylloc->first_column<<": ";
-    cout<<"syntax error: "<<"\'"<<str<<"\' "<<endl;
-    cout<<"    "<<replaceTabByBlank(savedlines[pyylloc->first_line-1])<<endl;
+    std::cout<<pyylloc->first_line<<":"<<pyylloc->first_column<<": ";
+    std::cout<<"syntax error: "<<"\'"<<str<<"\' "<<std::endl;
+    std::cout<<"    "<<replaceTabByBlank(savedlines[pyylloc->first_line-1])<<std::endl;
     flagErrorPlace(pyylloc);
 }
 

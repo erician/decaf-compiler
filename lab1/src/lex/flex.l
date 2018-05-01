@@ -22,7 +22,7 @@
     static void DoBeforeEachAction();
     #define YY_USER_ACTION DoBeforeEachAction();
     #define TAB_SIZE 4
-    vector<string> savedlines;
+    std::vector<std::string> savedlines;
     int lineno,colno;          //列号，需要自己来管理
     int errornum=0;
 %}

@@ -18,15 +18,15 @@
 #endif
 
 //类的构造函数
-treenode::treenode()
+TreeNode::TreeNode()
 {
     plocation=NULL;
 }
-treenode::treenode(YYLTYPE s1)
+TreeNode::TreeNode(YYLTYPE s1)
 {
     plocation=new YYLTYPE(s1);
 }
-Id::Id(char* str,YYLTYPE loc):treenode(loc)
+Id::Id(char* str,YYLTYPE loc):TreeNode(loc)
 {
     name = str;
 }
@@ -45,7 +45,7 @@ VarDecl::VarDecl(Type* s1,Id* s2):Decl(s2)
 {
     ptype = s1;
 }
-FnDecl::FnDecl(int s,Type* s1,Id* s2,std::vector<VarDecl*>* s4,StmtBlock* s6):Decl(s2)
+FunDecl::FunDecl(int s,Type* s1,Id* s2,std::vector<VarDecl*>* s4,StmtBlock* s6):Decl(s2)
 {
     if (s == 0)
     {
@@ -88,20 +88,19 @@ VoidType::VoidType()
 
 NamedType::NamedType(Id* s2)
 {
-    type = DC::TYPE::NAMED;
+    type = DC::TYPE::DC_NAMED;
     pid = s2;
 }
 ArrayType::ArrayType(Type* s1)
 {
     type = DC::TYPE::DC_ARRAY;
-    ptype = s1;
+    nextArray = s1;
 }
 
 /***********StmtBlock*************/
-StmtBlock::StmtBlock(std::vector<VarDecl*>* s2,std::vector<Stmt*> *s3)
+StmtBlock::StmtBlock(std::vector<Stmt*> *s2)
 {
-    pvardecls=s2;
-    pstmts=s3;
+    pstmts=s2;
 }
 Stmt::Stmt()
 {

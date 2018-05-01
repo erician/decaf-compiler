@@ -74,7 +74,7 @@
     std::vector<VarDecl*> *formals;
     std::vector<Decl*> *fields;
 
-    vector<VarDecl*> *variables;
+    std::vector<VarDecl*> *variables;
 
     std::vector<Stmt*> *stmts;
 
@@ -207,7 +207,7 @@ Fields     :   Fields Field	    {($$=$1)->push_back($2);}
            ;  
 
 Field      :   VarDecl          {$$=$1;}		  
-           |   FnDecl		    {$$=$1;}
+           |   FunDecl		    {$$=$1;}
            ;
 /*原型声明暂不支持*/
 /*            
@@ -222,8 +222,8 @@ Prototype  : Type T_Identifier LP Formals RP SEMI
            ;                
 */    
            
-StmtBlock  : LC Stmts RC        {$$=new StmtBlock(NULL,$2);}
-           | LC RC 		        {$$=new StmtBlock(NULL,NULL);}
+StmtBlock  : LC Stmts RC        {$$=new StmtBlock($2);}
+           | LC RC 		        {$$=new StmtBlock(NULL);}
            ;
 
 Stmts      : Stmts Stmt         {($$=$1)->push_back($2);}
@@ -241,14 +241,12 @@ Stmt       : OptExpr SEMI       {$$=$1;}
            | VarDecl            {$$=$1;}
            ;
           
-           
 IfStmt     : IF LP Expr RP Stmt %prec LOWER_THAN_ELSE
                                 {$$=new IfStmt($3,$5,"",NULL);}
            | IF LP Expr RP Stmt ELSE Stmt
                                 {$$=new IfStmt($3,$5,"else",$7);}
            ;
                                      
-          
 WhileStmt  : WHILE LP Expr RP Stmt
                                 {$$=new WhileStmt($3,$5);}
            ;

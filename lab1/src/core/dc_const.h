@@ -5,7 +5,7 @@
 #include <string>
 
 namespace DC{
-    const std::string MIAN = "main";
+    const std::string MAIN = "main";
     
 };
 

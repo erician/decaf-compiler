@@ -13,24 +13,24 @@
 #include <cstdlib>
 #include <cstring>
 
-void treenode::printWhite(int aline,int level)
+void TreeNode::printWhite(int aline,int level)
 {
     if(aline)
     {
-        cout<<endl;
+        std::cout<<std::endl;
         for(int i=0;i<level;i++)
-            cout<<"    ";
+            std::cout<<"    ";
     }
     else
     {
-        cout<<" ";
+        std::cout<<" ";
     }
 } 
 
 void Id::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<name<<' ';
+    std::cout<<name<<' ';
 }
 
 void Program::printAst(int aline,int level)
@@ -44,22 +44,22 @@ void Program::printAst(int aline,int level)
 void VarDecl::printAst(int aline,int level)
 {
     Decl::printWhite(aline,level);
-    cout<<"VarDecl ";
+    std::cout<<"VarDecl ";
     pid->printAst(0,level);
     ptype->printAst(0,level);
 }
-void FnDecl::printAst(int aline,int level)
+void FunDecl::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"FnDecl ";
+    std::cout<<"FnDecl ";
     pid->printAst(0,level);
-    if(isstatic)
-        cout<<"static ";
+    if(isStatic)
+        std::cout<<"static ";
     ptype->printAst(0,level);
     if(pformals!=NULL)
     {
         printWhite(1,level+1);
-        cout<<"formals";
+        std::cout<<"formals";
         for(int i=0;i<pformals->size();i++)
             (*pformals)[i]->printAst(1,level+2);
     }
@@ -68,11 +68,11 @@ void FnDecl::printAst(int aline,int level)
 void ClassDecl::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"ClassDecl ";
+    std::cout<<"ClassDecl ";
     pid->printAst(0,level);
     if(pParentId != NULL)
     {
-        cout<<"Extends ";
+        std::cout<<"Extends ";
         pParentId->printAst(0,level);
     }
     for(int i=0;i<pfields->size();i++)
@@ -81,45 +81,40 @@ void ClassDecl::printAst(int aline,int level)
 void IntType::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"inttype ";
+    std::cout<<"inttype ";
 }
 void BoolType::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"booltype ";
+    std::cout<<"booltype ";
 }
 void StringType::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"stringtype ";
+    std::cout<<"stringtype ";
 }
 void VoidType::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"voidtype ";
+    std::cout<<"voidtype ";
 }
 void NamedType::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"classtype ";
+    std::cout<<"classtype ";
     pid->printAst(0,level);
 }
 void ArrayType::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"arraytype ";
-    ptype->printAst(0,level);
+    std::cout<<"arraytype ";
+    nextArray->printAst(0,level);
 }
 
 void StmtBlock::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"StmtBlock";
-    if(pvardecls!=NULL)
-    {
-        for(int i=0;i<pvardecls->size();i++)
-            (*pvardecls)[i]->printAst(1,level+1);
-    }
+    std::cout<<"StmtBlock";
     if(pstmts!=NULL)
     {
         for(int i=0;i<pstmts->size();i++)
@@ -129,13 +124,13 @@ void StmtBlock::printAst(int aline,int level)
 void IfStmt::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"if";
+    std::cout<<"if";
     pexpr->printAst(1,level+1);
     if(pstmt1!=NULL)
         pstmt1->printAst(1,level+1);
     if(elsename=="else")
     {
-        cout<<"else"<<endl;
+        std::cout<<"else"<<std::endl;
         pstmt2->printAst(1,level+1);
     }
 }
@@ -143,14 +138,14 @@ void IfStmt::printAst(int aline,int level)
  void WhileStmt::printAst(int aline,int level)
  {
     printWhite(aline,level);
-    cout<<"while";
+    std::cout<<"while";
     pexpr->printAst(1,level+1);
     pstmt->printAst(1,level+1);
 }
 void ForStmt::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"for";
+    std::cout<<"for";
     if(poptexpr1!=NULL)
         poptexpr1->printAst(1,level+1);
     if(pexpr!=NULL)
@@ -162,25 +157,25 @@ void ForStmt::printAst(int aline,int level)
 void ReturnStmt::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"return";
+    std::cout<<"return";
     poptexpr->printAst(1,level+1);
 }
 void BreakStmt::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"break";
+    std::cout<<"break";
 }
 void PrintStmt::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"Print";
+    std::cout<<"Print";
     for(int i=0;i<pexprs->size();i++)
         (*pexprs)[i]->printAst(1,level+1);
 }
 void AssignExpr::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"=";
+    std::cout<<"=";
     plvalue->printAst(1,level+1);
     pexpr->printAst(1,level+1);
 }
@@ -188,21 +183,21 @@ void AssignExpr::printAst(int aline,int level)
 void ArithmeticExpr::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<opname;
+    std::cout<<opname;
     pexpr1->printAst(1,level+1);
     pexpr2->printAst(1,level+1);
 }
 void RelationExpr::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<opname;
+    std::cout<<opname;
     pexpr1->printAst(1,level+1);
     pexpr2->printAst(1,level+1);
 }
 void LogicalExpr::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<opname;
+    std::cout<<opname;
     pexpr1->printAst(1,level+1);
     pexpr2->printAst(1,level+1);
 }
@@ -210,7 +205,7 @@ void LogicalExpr::printAst(int aline,int level)
 void FieldAccess::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"FieldAccess ";
+    std::cout<<"FieldAccess ";
     if(pexpr!=NULL)
     {
         pexpr->printAst(0,level);
@@ -220,7 +215,7 @@ void FieldAccess::printAst(int aline,int level)
 void ArrayAccess::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"ArrayAccess ";
+    std::cout<<"ArrayAccess ";
     pexpr1->printAst(0,level);
     pexpr2->printAst(0,level);
 }
@@ -228,7 +223,7 @@ void ArrayAccess::printAst(int aline,int level)
 void Call::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"call";
+    std::cout<<"call";
     if(pexpr!=NULL)
         pexpr->printAst(1,level+1);
     pid->printAst(1,level+1);
@@ -238,24 +233,24 @@ void Call::printAst(int aline,int level)
 void This::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"this ";
+    std::cout<<"this ";
 }
 
 void ReadInteger::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"ReadInteger"<<endl;
+    std::cout<<"ReadInteger"<<std::endl;
 }
 void ReadLine::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"ReadLine"<<endl;
+    std::cout<<"ReadLine"<<std::endl;
 }
 
 void Instanceof::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"instanceof"<<endl;
+    std::cout<<"instanceof"<<std::endl;
     pexpr->printAst(1,level+1);
     pid->printAst(1,level+1);
 }
@@ -263,42 +258,42 @@ void Instanceof::printAst(int aline,int level)
 void NewExpr::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"New ";
+    std::cout<<"New ";
     pid->printAst(0,level);
 }
 
 void NewArrayExpr::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"New ";
+    std::cout<<"New ";
     ptype->printAst(0,level);
-    cout<<"[] ";
+    std::cout<<"[] ";
     pexpr->printAst(0,level);
 }
 void IntCon::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"intcon "<<value;
+    std::cout<<"intcon "<<value;
 }
 
 void BoolCon::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"boolcon ";
+    std::cout<<"boolcon ";
     if(value)
-        cout<<"true";
+        std::cout<<"true";
     else
-        cout<<"false";
+        std::cout<<"false";
 }
 void StringCon::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"stringcon "<<value;
+    std::cout<<"stringcon "<<value;
 }
 void NullCon::printAst(int aline,int level)
 {
     printWhite(aline,level);
-    cout<<"nullcon "<<"NULL";
+    std::cout<<"nullcon "<<"NULL";
 }
 
 
