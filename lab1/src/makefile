@@ -29,7 +29,7 @@ LD = g++
 LEX = flex
 YACC = bison
 
-CFLAGS = -g -Wall -Wno-unused -Wno-sign-compare 
+CFLAGS = -g -Wall -Wno-unused -Wno-sign-compare -std=c++11 -I.
 LEXFLAGS = 
 YACCFLAGS = -dvty
 LIBS = -lc -lm -ll
@@ -46,9 +46,12 @@ failtest:
 	./$(OBJDIR)decaf $(TESTDIR)funNotInClass_Shouldfail.decaf
 	@echo "---------->initVarWhenDeclared_Shouldfail.decaf"
 	./$(OBJDIR)decaf $(TESTDIR)initVarWhenDeclared_Shouldfail.decaf
+	
 
 passtest:
 	./$(OBJDIR)decaf $(TESTDIR)shouldpass.decaf
+	@echo "---------->varDeclBetweenStmts_Shouldpass.decaf"
+	./$(OBJDIR)decaf $(TESTDIR)varDeclBetweenStmts_Shouldpass.decaf
 
 clean:
 	@rm -f $(JUNK) $(PRODUCTS)

@@ -69,7 +69,6 @@
     vector<Decl*> *fields;
 
     vector<VarDecl*> *variables;
-    vector<VarDecl*> *vardecls;
 
     vector<Stmt*> *stmts;
 
@@ -134,7 +133,6 @@
 %type <decllist> DeclList
 %type <exprs> Exprs 
 %type <stmts> Stmts
-%type <vardecls> VarDecls
 %type <formals> Formals
 %type <variables> Variables
 %type <fields> Fields
@@ -217,18 +215,10 @@ Prototype  : Type T_Identifier LP Formals RP SEMI
                                      {  }
            ;                
 */    
-StmtBlock  : LC VarDecls Stmts RC  
-				{$$=new StmtBlock($2,$3);}
-           | LC VarDecls RC        
-				{$$=new StmtBlock($2,NULL);}
-     	   | LC Stmts RC        
-				{$$=new StmtBlock(NULL,$2);}
-           | LC RC 		{$$=new StmtBlock(NULL,NULL);}
+StmtBlock  : LC Stmts RC        {$$=new StmtBlock(NULL,$2);}
+           | LC RC 		        {$$=new StmtBlock(NULL,NULL);}
            ;
-           
-VarDecls   : VarDecls VarDecl  	{($$=$1)->push_back($2);}
-           | VarDecl            {($$=new vector<VarDecl*>)->push_back($1);}
-           ;
+
 
 Stmts      : Stmts Stmt         {($$=$1)->push_back($2);}
            | Stmt               {($$=new vector<Stmt*>)->push_back($1);}
@@ -242,6 +232,7 @@ Stmt       : OptExpr SEMI       {$$=$1;}
            | ReturnStmt		    {$$=$1;}
            | PrintStmt		    {$$=$1;}
            | StmtBlock		    {$$=$1;}
+           | VarDecl            {$$=$1;}
            ;
           
            

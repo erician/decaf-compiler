@@ -45,7 +45,7 @@ void Program::printAst(int aline,int level)
 
 void VarDecl::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    Decl::printWhite(aline,level);
     cout<<"VarDecl ";
     pid->printAst(0,level);
     ptype->printAst(0,level);
