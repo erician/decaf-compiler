@@ -1,0 +1,29 @@
+class Main{
+	static void main(){
+		int a;
+        int a1;
+        for(a = 1; a < 5; a = a + 1)
+        {
+            string name;
+            if(a = 1)
+            {
+                int b;
+                b = a;
+                while( b < 3 )
+                {
+                    int d;
+                    b = b + 1;
+                }
+            }
+            else
+            {
+                int c;
+                c = 4;
+            }
+        }
+
+        {
+            int aa;
+        }
+	}
+}

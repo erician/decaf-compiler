@@ -132,9 +132,11 @@ void ForScopeEntry::printSym(int aline, int level)
 
 void LocScope::printSym(int aline, int level)
 {
+    DC::UTILS::PRINT::printWhite(aline, level);
+    std::cout<<"SUB LOCAL SCOPE:";
     for(auto locScopeEntry : entries)
     {
-        locScopeEntry->printSym(1, level);
+        locScopeEntry->printSym(1, level+1);
     }
 }
 
@@ -152,10 +154,6 @@ void LocScopeEntry::printSym(int aline, int level)
         DC::UTILS::PRINT::printWhite(aline, level);
         std::cout<<"variable "<<name;
         typeInfo->printSym(0, level);
-        if(subLocScope != NULL)
-        {
-            subLocScope->printSym(1, level+1);
-        }
     }
 }
 

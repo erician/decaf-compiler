@@ -60,6 +60,8 @@ passtest:
 	./$(OBJDIR)decaf $(TESTDIR)withArray_shouldpass.decaf
 	@echo "---------->varDeclBetweenStmts_Shouldpass.decaf"
 	./$(OBJDIR)decaf $(TESTDIR)varDeclBetweenStmts_Shouldpass.decaf
+	@echo "---------->multipleNesting_shouldpass.decaf"
+	./$(OBJDIR)decaf $(TESTDIR)multipleNesting_shouldpass.decaf
 
 
 clean:

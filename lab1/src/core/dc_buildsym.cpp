@@ -246,27 +246,25 @@ Entry* IfStmt::buildLocalSym()
 
 Entry* WhileStmt::buildLocalSym()
 {
-    LocScope *locScope = new LocScope();
     if (pstmt != NULL)
     {
-        locScope->addEntry(pstmt->buildLocalSym());
+        return pstmt->buildLocalSym();
     }
-    LocScopeEntry *locScopeEntry = new LocScopeEntry();
-    locScopeEntry->setName("");
-    locScopeEntry->setSubLocScope(locScope);
-    return locScopeEntry;
+    else
+    {
+        return NULL;
+    }
 }
 
 Entry* ForStmt::buildLocalSym()
 {
-    LocScope *locScope = new LocScope();
     if (pstmt != NULL)
     {
-        locScope->addEntry(pstmt->buildLocalSym());
+        return pstmt->buildLocalSym();
     }
-    LocScopeEntry *locScopeEntry = new LocScopeEntry();
-    locScopeEntry->setName("");
-    locScopeEntry->setSubLocScope(locScope);
-    return locScopeEntry;
+    else
+    {
+        return NULL;
+    }
 }
 
