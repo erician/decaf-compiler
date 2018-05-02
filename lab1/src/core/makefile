@@ -10,3 +10,5 @@ $(OBJDIR)dc_symbol.cpp.o: $(COREDIR)dc_symbol.cpp
 	$(CC) $(CFLAGS) -c -o $@ $<
 $(OBJDIR)dc_buildsym.cpp.o: $(COREDIR)dc_buildsym.cpp
 	$(CC) $(CFLAGS) -c -o $@ $<
+$(OBJDIR)dc_printsym.cpp.o: $(COREDIR)dc_printsym.cpp
+	$(CC) $(CFLAGS) -c -o $@ $<

@@ -11,6 +11,10 @@ GloScope::GloScope()
 
 bool GloScope::addEntry(Entry* entry)
 {
+    if(entry == NULL)
+    {
+        return false;
+    }
     entries.push_back(entry);
     return true;
 }
@@ -56,7 +60,7 @@ bool GloScopeEntry::setClaDes(ClaDes* claDes)
     return true;
 }
 
-const ClaDes* GloScopeEntry::getClaDes() 
+ClaDes* GloScopeEntry::getClaDes() 
 {
     return claDes;
 }
@@ -85,7 +89,7 @@ bool ClaDes::setClaScope(ClaScope* claScope)
     return true;
 }
 
-const ClaScope* ClaDes::getClaScope()
+ClaScope* ClaDes::getClaScope()
 {
     return claScope;
 }
@@ -96,7 +100,7 @@ bool ClaDes::setParentClaDes(ClaDes* parentClaDes)
     return true;
 }
 
-const ClaDes* ClaDes::getParentClaDes()
+ClaDes* ClaDes::getParentClaDes()
 {
     return parentClaDes;
 }
@@ -108,10 +112,26 @@ ClaScope::ClaScope()
 }
 bool ClaScope::addEntry(Entry* entry)
 {
+    if(entry == NULL)
+    {
+        return false;
+    }
     this->entries.push_back(entry);
     return true;
 }
 
+bool ClaScope::setClassName(std::string className)
+{
+    this->className = className;
+    return true;
+}
+
+std::string ClaScope::getClassName()
+{
+    return className;
+}
+
+//type info
 TypeInfo::TypeInfo()
 {
     className = "";
@@ -138,6 +158,17 @@ bool TypeInfo::setArrayLevel(int level)
 int TypeInfo::getArrayLevel()
 {
     return arrayLevel;
+}
+
+bool TypeInfo::setArrayType(int type)
+{
+    this->arrayType = type;
+    return true;
+}
+
+int TypeInfo::getArrayType()
+{
+    return arrayType;
 }
 
 bool TypeInfo::setClassName(std::string className)
@@ -182,7 +213,7 @@ bool ClaScopeEntry::setTypeInfo(TypeInfo* typeInfo)
     return true;
 }
 
-const TypeInfo* ClaScopeEntry::getTypeInfo()
+TypeInfo* ClaScopeEntry::getTypeInfo()
 {
     return typeInfo;
 }
@@ -193,7 +224,7 @@ bool ClaScopeEntry::setFunDes(FunDes *funDes)
     return true;
 }
 
-const FunDes* ClaScopeEntry::getFunDes()
+FunDes* ClaScopeEntry::getFunDes()
 {
     return funDes;
 }
@@ -232,7 +263,7 @@ bool FunDes::setForScope(ForScope *forScope)
     return true;
 }
 
-const ForScope* FunDes::getForScope()
+ForScope* FunDes::getForScope()
 {
     return this->forScope;
 }
@@ -243,6 +274,10 @@ ForScope::ForScope()
 }
 bool ForScope::addEntry(Entry *entry)
 {
+    if(entry == NULL)
+    {
+        return false;
+    }
     this->entries.push_back(entry);
     return true;
 }
@@ -251,10 +286,22 @@ bool ForScope::setLocScopeEntry(Entry *locScopeEntry)
     this->locScopeEntry = (LocScopeEntry*)locScopeEntry;
     return true;
 }
-const LocScopeEntry* ForScope::getLocScopeEntry()
+LocScopeEntry* ForScope::getLocScopeEntry()
 {
     return this->locScopeEntry;
 }
+
+bool ForScope::setFunName(std::string funName)
+{
+    this->funName = funName;
+    return true;
+}
+
+std::string ForScope::getFunName()
+{
+    return funName;
+}
+
 //formal scope entry
 ForScopeEntry::ForScopeEntry()
 {
@@ -274,7 +321,7 @@ bool ForScopeEntry::setTypeInfo(TypeInfo *typeInfo)
     this->typeInfo = typeInfo;
     return true;
 }
-const TypeInfo* ForScopeEntry::getTypeInfo()
+TypeInfo* ForScopeEntry::getTypeInfo()
 {
     return this->typeInfo;
 }
@@ -285,6 +332,10 @@ LocScope::LocScope()
 }
 bool LocScope::addEntry(Entry* entry)
 {
+    if(entry == NULL)
+    {
+        return false;
+    }
     this->entries.push_back(entry);
     return true;
 }
@@ -318,17 +369,17 @@ bool LocScopeEntry::setTypeInfo(TypeInfo *typeInfo)
     return true;
 }
 
-const TypeInfo* LocScopeEntry::getTypeInfo()
+TypeInfo* LocScopeEntry::getTypeInfo()
 {
     return this->typeInfo;
 }
 
-bool LocScopeEntry::setSubLocScope(LocScope* subLocScopeEntry)
+bool LocScopeEntry::setSubLocScope(LocScope* subLocScope)
 {
     this->subLocScope = subLocScope;
     return true;
 }
-const LocScope* LocScopeEntry::getSubLocScope()
+LocScope* LocScopeEntry::getSubLocScope()
 {
     return subLocScope;
 }

@@ -46,12 +46,14 @@ class LocScopeEntry;
 
 class Entry
 {
-
+public:
+    virtual void printSym(int aline, int level) = 0;
 };
 
 class Scope
 {
-
+public:
+    virtual void printSym(int aline, int level) = 0;
 };
 
 //GloScope
@@ -62,6 +64,8 @@ private:
 public:
     GloScope();
     bool addEntry(Entry* entry);
+    
+    void printSym(int aline, int level);
 };
 
 //GloScopeEntry
@@ -81,7 +85,9 @@ public:
     int getCategory();
 
     bool setClaDes(ClaDes* claDes);
-    const ClaDes* getClaDes();
+    ClaDes* getClaDes();
+
+    void printSym(int aline, int level);
 };
 //ClaDes
 class ClaDes:public Scope
@@ -99,10 +105,12 @@ public:
     std::string getParentName();
 
     bool setClaScope(ClaScope* claScope);
-    const ClaScope* getClaScope();
+    ClaScope* getClaScope();
 
     bool setParentClaDes(ClaDes* parentClaDes);
-    const ClaDes* getParentClaDes();
+    ClaDes* getParentClaDes();
+
+    void printSym(int aline, int level);
 };
 
 //ClaScope
@@ -110,9 +118,15 @@ class ClaScope:public Scope
 {
 private:
     std::vector<Entry*> entries;
+    std::string className;
 public:
     ClaScope();
     bool addEntry(Entry* entry);
+
+    bool setClassName(std::string className);
+    std::string getClassName();
+
+    void printSym(int aline, int level);
 };
 
 //TypeInfo
@@ -122,6 +136,7 @@ private:
     int type;
     std::string className;
     int arrayLevel;
+    int arrayType;
 public:
     TypeInfo();
     bool setType(int type);
@@ -130,8 +145,13 @@ public:
     bool setArrayLevel(int level);
     int getArrayLevel();
 
+    bool setArrayType(int type);
+    int getArrayType();
+
     bool setClassName(std::string className);
     std::string getClassName();
+
+    void printSym(int aline, int level);
 };
 
 //ClaScopeEntry
@@ -152,14 +172,21 @@ public:
     int  getCategory();
     
     bool setTypeInfo(TypeInfo *typeInfo);
-    const TypeInfo* getTypeInfo();
+    TypeInfo* getTypeInfo();
     
     bool setFunDes(FunDes *funDes);
-    const FunDes* getFunDes();
+    FunDes* getFunDes();
+
+    void printSym(int aline, int level);
 };
 //function descriptor
 class FunDes:public Scope
 {
+private:
+    bool isStatic;
+    bool isMain;
+    ForScope *forScope;
+
 public:
     FunDes();
     bool setIsStatic(bool isStatic);
@@ -169,14 +196,10 @@ public:
     bool getIsMain();
 
     bool setForScope(ForScope *forScope);
-    const ForScope* getForScope();
+    ForScope* getForScope();
+
+    void printSym(int aline, int level);
     
-private:
-    bool isStatic;
-    bool isMain;
-    ForScope *forScope;
-    
-    std::vector<ForScope*> *pforscope;
 };
 //formal scope
 class ForScope:public Scope
@@ -184,12 +207,18 @@ class ForScope:public Scope
 private:
     std::vector<Entry*> entries;
     LocScopeEntry *locScopeEntry;
+    std::string funName;
 public:
     ForScope();
     bool addEntry(Entry* entry);
     
     bool setLocScopeEntry(Entry *locScopeEntry);
-    const LocScopeEntry* getLocScopeEntry();
+    LocScopeEntry* getLocScopeEntry();
+
+    bool setFunName(std::string funName);
+    std::string getFunName();
+
+    void printSym(int aline, int level);
 };
 //formal scope entry
 class ForScopeEntry: public Entry
@@ -203,7 +232,9 @@ public:
     std::string getName();
     
     bool setTypeInfo(TypeInfo *typeInfo);
-    const TypeInfo* getTypeInfo();
+    TypeInfo* getTypeInfo();
+
+    void printSym(int aline, int level);
     
 };
 //local scope
@@ -214,6 +245,8 @@ private:
 public:
     LocScope();
     bool addEntry(Entry* entry);
+
+    void printSym(int aline, int level);
 };
 //local scope entry
 class LocScopeEntry: public Entry
@@ -232,10 +265,12 @@ public:
     int  getCategory();
     
     bool setTypeInfo(TypeInfo *typeInfo);
-    const TypeInfo* getTypeInfo();
+    TypeInfo* getTypeInfo();
     
     bool setSubLocScope(LocScope *subLocScope);
-    const LocScope* getSubLocScope();
+    LocScope* getSubLocScope();
+
+    void printSym(int aline, int level);
 };
 
 

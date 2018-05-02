@@ -13,23 +13,13 @@
 #include <cstdlib>
 #include <cstring>
 
-void TreeNode::printWhite(int aline,int level)
-{
-    if(aline)
-    {
-        std::cout<<std::endl;
-        for(int i=0;i<level;i++)
-            std::cout<<"    ";
-    }
-    else
-    {
-        std::cout<<" ";
-    }
-} 
+#ifndef DC_UTILS_PRINT_DC_PRINT_H_
+#include "utils/print/dc_print.h"
+#endif
 
 void Id::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<name<<' ';
 }
 
@@ -43,14 +33,14 @@ void Program::printAst(int aline,int level)
 
 void VarDecl::printAst(int aline,int level)
 {
-    Decl::printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"VarDecl ";
     pid->printAst(0,level);
     ptype->printAst(0,level);
 }
 void FunDecl::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"FnDecl ";
     pid->printAst(0,level);
     if(isStatic)
@@ -58,7 +48,7 @@ void FunDecl::printAst(int aline,int level)
     ptype->printAst(0,level);
     if(pformals!=NULL)
     {
-        printWhite(1,level+1);
+        DC::UTILS::PRINT::printWhite(1,level+1);
         std::cout<<"formals";
         for(int i=0;i<pformals->size();i++)
             (*pformals)[i]->printAst(1,level+2);
@@ -67,7 +57,7 @@ void FunDecl::printAst(int aline,int level)
 }
 void ClassDecl::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"ClassDecl ";
     pid->printAst(0,level);
     if(pParentId != NULL)
@@ -80,40 +70,40 @@ void ClassDecl::printAst(int aline,int level)
 }
 void IntType::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"inttype ";
 }
 void BoolType::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"booltype ";
 }
 void StringType::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"stringtype ";
 }
 void VoidType::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"voidtype ";
 }
 void NamedType::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"classtype ";
     pid->printAst(0,level);
 }
 void ArrayType::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"arraytype ";
     nextArray->printAst(0,level);
 }
 
 void StmtBlock::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"StmtBlock";
     if(pstmts!=NULL)
     {
@@ -123,7 +113,7 @@ void StmtBlock::printAst(int aline,int level)
 }
 void IfStmt::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"if";
     pexpr->printAst(1,level+1);
     if(pstmt1!=NULL)
@@ -137,14 +127,14 @@ void IfStmt::printAst(int aline,int level)
 
  void WhileStmt::printAst(int aline,int level)
  {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"while";
     pexpr->printAst(1,level+1);
     pstmt->printAst(1,level+1);
 }
 void ForStmt::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"for";
     if(poptexpr1!=NULL)
         poptexpr1->printAst(1,level+1);
@@ -156,25 +146,25 @@ void ForStmt::printAst(int aline,int level)
 }
 void ReturnStmt::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"return";
     poptexpr->printAst(1,level+1);
 }
 void BreakStmt::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"break";
 }
 void PrintStmt::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"Print";
     for(int i=0;i<pexprs->size();i++)
         (*pexprs)[i]->printAst(1,level+1);
 }
 void AssignExpr::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"=";
     plvalue->printAst(1,level+1);
     pexpr->printAst(1,level+1);
@@ -182,21 +172,21 @@ void AssignExpr::printAst(int aline,int level)
 
 void ArithmeticExpr::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<opname;
     pexpr1->printAst(1,level+1);
     pexpr2->printAst(1,level+1);
 }
 void RelationExpr::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<opname;
     pexpr1->printAst(1,level+1);
     pexpr2->printAst(1,level+1);
 }
 void LogicalExpr::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<opname;
     pexpr1->printAst(1,level+1);
     pexpr2->printAst(1,level+1);
@@ -204,7 +194,7 @@ void LogicalExpr::printAst(int aline,int level)
 
 void FieldAccess::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"FieldAccess ";
     if(pexpr!=NULL)
     {
@@ -214,7 +204,7 @@ void FieldAccess::printAst(int aline,int level)
 }
 void ArrayAccess::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"ArrayAccess ";
     pexpr1->printAst(0,level);
     pexpr2->printAst(0,level);
@@ -222,7 +212,7 @@ void ArrayAccess::printAst(int aline,int level)
 
 void Call::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"call";
     if(pexpr!=NULL)
         pexpr->printAst(1,level+1);
@@ -232,24 +222,24 @@ void Call::printAst(int aline,int level)
     }
 void This::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"this ";
 }
 
 void ReadInteger::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"ReadInteger"<<std::endl;
 }
 void ReadLine::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"ReadLine"<<std::endl;
 }
 
 void Instanceof::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"instanceof"<<std::endl;
     pexpr->printAst(1,level+1);
     pid->printAst(1,level+1);
@@ -257,14 +247,14 @@ void Instanceof::printAst(int aline,int level)
 
 void NewExpr::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"New ";
     pid->printAst(0,level);
 }
 
 void NewArrayExpr::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"New ";
     ptype->printAst(0,level);
     std::cout<<"[] ";
@@ -272,13 +262,13 @@ void NewArrayExpr::printAst(int aline,int level)
 }
 void IntCon::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"intcon "<<value;
 }
 
 void BoolCon::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"boolcon ";
     if(value)
         std::cout<<"true";
@@ -287,12 +277,12 @@ void BoolCon::printAst(int aline,int level)
 }
 void StringCon::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"stringcon "<<value;
 }
 void NullCon::printAst(int aline,int level)
 {
-    printWhite(aline,level);
+    DC::UTILS::PRINT::printWhite(aline,level);
     std::cout<<"nullcon "<<"NULL";
 }
 

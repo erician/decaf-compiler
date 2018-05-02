@@ -11,9 +11,11 @@ private:
     std::map<std::string, bool> optionsDict;
 public:
     static const std::string PRINT_AST;
+    static const std::string PRINT_SYM;
     static const std::string OUTPUT;
     static const std::string SRC_FILE;
     static const std::string LEX_GRAMM_ANALYSIS;
+    static const std::string BUILD_SYMBOL_TABLE;
 public:
     Options();
     bool doesHaveKey(std::string key);

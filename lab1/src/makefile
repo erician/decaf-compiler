@@ -11,6 +11,7 @@ include yacc/makefile
 include lex/makefile
 include core/makefile
 include utils/args/makefile
+include utils/print/makefile
 include compiler/makefile
 
 # OBJS can deal with either .cc or .c 
@@ -19,8 +20,9 @@ OBJS += $(OBJDIR)dc_error.cpp.o
 OBJS += $(OBJDIR)dc_args.cpp.o $(OBJDIR)dc_options.cpp.o $(OBJDIR)dc_option_error.cpp.o 
 OBJS += $(OBJDIR)dc_compiler.cpp.o
 OBJS += $(OBJDIR)dc_symbol.cpp.o
+OBJS += $(OBJDIR)dc_print.cpp.o
 OBJS += $(OBJDIR)dc_genast.cpp.o $(OBJDIR)dc_printast.cpp.o 
-OBJS += $(OBJDIR)dc_buildsym.cpp.o
+OBJS += $(OBJDIR)dc_printsym.cpp.o $(OBJDIR)dc_buildsym.cpp.o 
 OBJS += $(OBJDIR)main.cpp.o
 
 JUNK = *~ $(OBJDIR)*.o  $(LEXDIR)lex.yy.c $(YACCDIR)y.tab.c $(YACCDIR)y.tab.h  $(YACCDIR)y.output

@@ -80,18 +80,19 @@ public:
     TreeNode();
     YYLTYPE* getplocation(){return plocation;}
     virtual void printAst(int aline,int level)=0;
-    virtual void printWhite(int aline,int level);
+    
 };
 
 class Program:public TreeNode
 {
 private:
     std::vector<Decl*> *pvecClassDecl;
-    GloScope gloScope;
+    GloScope *gloScope;
 public:
     Program(std::vector<Decl*> *s1);
-    void buildSym();
     void printAst(int aline,int level);
+    void buildSym();
+    void printSym(int aline, int level);
 };
 
 class Id:public TreeNode
@@ -110,7 +111,7 @@ public:
     Id *pid;
     Decl(Id* s);
     TypeInfo* getTypeInfoFromType(Type* type);
-    virtual Entry *buildClassSym(); 
+    virtual Entry *buildClassSym(std::string name); 
     virtual Entry *buildGlobalSym(); 
 };
 
@@ -119,7 +120,7 @@ class Stmt:public TreeNode
 {
 public:
     Stmt();
-    virtual Entry* buildLocalSym();   
+    virtual Entry *buildLocalSym();   
 };
 
 class VarDecl:public Decl, public Stmt
@@ -128,7 +129,7 @@ public:
     Type* ptype;
     VarDecl(Type* s1,Id* s2);
     void printAst(int aline,int level);
-    Entry* buildClassSym();
+    Entry* buildClassSym(std::string name);
     Entry* buildFormalSym();
     Entry* buildLocalSym();
 };
@@ -142,7 +143,7 @@ public:
     bool isStatic;
     FunDecl(int s,Type* s1,Id* s2,std::vector<VarDecl*>* s4,StmtBlock* s6);
     void printAst(int aline,int level);
-    Entry *buildClassSym();   
+    Entry *buildClassSym(std::string name);   
 };
 
 class ClassDecl:public Decl
@@ -211,6 +212,7 @@ public:
     void printAst(int aline,int level);
     Type* getNextArray();
     int getArrayLevel();
+    Type* getArrayType();
     
 };
 /***********stmt***********/
@@ -233,7 +235,7 @@ public:
     Stmt *pstmt2;
     IfStmt(Expr *s3,Stmt *s5,const char *s6,Stmt *s7);
     void printAst(int aline,int level);
-    Entry* buildLocalSym(); 
+    Entry *buildLocalSym(); 
 };
 class WhileStmt:public Stmt
 {

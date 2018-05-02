@@ -6,7 +6,7 @@
 
 namespace DC{
     const std::string MAIN = "main";
-    
+
 };
 
 #endif

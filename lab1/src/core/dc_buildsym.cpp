@@ -55,6 +55,22 @@ int ArrayType::getArrayLevel()
     }
     return level;
 }
+Type* ArrayType::getArrayType()
+{
+    Type *arrayType = nextArray;
+    do{
+        if (arrayType->getType() == DC::TYPE::DC_ARRAY)
+        {
+            arrayType = ((ArrayType*)arrayType)->getNextArray();
+        }
+        else
+        {
+            break;
+        }
+        
+    }while(true);
+    return arrayType;
+}
 //type info
 TypeInfo* Decl::getTypeInfoFromType(Type* type)
 {
@@ -66,24 +82,30 @@ TypeInfo* Decl::getTypeInfoFromType(Type* type)
             typeInfo->setClassName(((NamedType*)type)->getClassName());
             break;
         case(DC::TYPE::DC_ARRAY):
+            Type* arrayType = ((ArrayType*)type)->getArrayType();
+            if (arrayType->getType() == DC::TYPE::DC_NAMED)
+            {
+                typeInfo->setClassName(((NamedType*)arrayType)->getClassName());
+            }
+            typeInfo->setArrayType(arrayType->getType());
             typeInfo->setArrayLevel(((ArrayType*)type)->getArrayLevel());
             break;
-        default:
-            break;
+        
     }
     return typeInfo;
 }
 
 //program
 void Program::buildSym()
-{     
+{    
+    gloScope = new GloScope();
     for(int i=0; i<pvecClassDecl->size(); i++)
     {
-        gloScope.addEntry(((*pvecClassDecl)[i])->buildGlobalSym()); 
+        gloScope->addEntry(((*pvecClassDecl)[i])->buildGlobalSym()); 
     }
 }
 
-Entry* Decl::buildClassSym()
+Entry* Decl::buildClassSym(std::string name)
 {
     return NULL;
 }
@@ -110,14 +132,15 @@ Entry* ClassDecl::buildGlobalSym()
         ClaScope *claScope = new ClaScope();
         for(int i=0; i<pfields->size(); i++)
         {
-            claScope->addEntry(((*pfields)[i])->buildClassSym());
+            claScope->addEntry(((*pfields)[i])->buildClassSym(pid->getidname()));
         }
+        claScope->setClassName(pid->getidname());
         claDes->setClaScope(claScope);
     }
     return new GloScopeEntry(pid->getidname(), claDes);
 }
 
-Entry* VarDecl::buildClassSym()
+Entry* VarDecl::buildClassSym(std::string name)
 {
     ClaScopeEntry *claScopeEntry = new ClaScopeEntry();
     claScopeEntry->setName(pid->getidname());
@@ -127,7 +150,7 @@ Entry* VarDecl::buildClassSym()
     return claScopeEntry;
 }
 
-Entry* FunDecl::buildClassSym()
+Entry* FunDecl::buildClassSym(std::string className)
 {
     ClaScopeEntry *claScopeEntry = new ClaScopeEntry();
     claScopeEntry->setCategory(DC::CATEGORY::DC_FUN);
@@ -152,8 +175,7 @@ Entry* FunDecl::buildClassSym()
         forScopeEntry->setName("this");
         TypeInfo *typeInfo = new TypeInfo();
         typeInfo->setType(DC::TYPE::DC_NAMED);
-        //may be we don't need the class name
-        typeInfo->setClassName("");
+        typeInfo->setClassName(className);
         forScopeEntry->setTypeInfo(typeInfo);
         forScope->addEntry(forScopeEntry);
     }
@@ -163,6 +185,7 @@ Entry* FunDecl::buildClassSym()
     }
     //set local scope
     forScope->setLocScopeEntry(pstmtblock->buildLocalSym());
+    forScope->setFunName(pid->getidname());
     funDes->setForScope(forScope);
     claScopeEntry->setFunDes(funDes);
     return claScopeEntry;
