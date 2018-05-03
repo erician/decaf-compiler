@@ -1,5 +1,5 @@
-lab1:
-    词法分析和语法分析，生成抽象语法书(AST)
-
-
-
+1.environment:ubuntu16.04 64-bit
+2.make
+	make //compile decaf
+	make clean 
+	make test  
