@@ -10,6 +10,8 @@
 #include "core/dc_error.h"
 #endif
 
+#include <map>
+
 bool Program::checkStaticSemantic()
 {
     return gloScope->check();
@@ -17,7 +19,9 @@ bool Program::checkStaticSemantic()
 
 bool GloScope::check()
 {
-    if(this->checkUndefinedClass() == false)
+    if(checkUndefinedClass() == false)
+        return false;
+    if(checkRedefinedClass() == false)
         return false;
     
     return true;
@@ -25,7 +29,6 @@ bool GloScope::check()
 
 GloScopeEntry* GloScope::findClass(std::string className)
 {
-    
     for(auto gloScopeEntry : entries)
     {
         if(((GloScopeEntry*)gloScopeEntry) -> getClassName() == className)
@@ -38,7 +41,7 @@ GloScopeEntry* GloScope::findClass(std::string className)
 
 bool GloScope::checkUndefinedClass()
 {
-    bool doesHaveError = false;
+    bool noErrors = true;
     for(auto gloScopeEntry : entries)
     {
         ClaDes* claDes = ((GloScopeEntry*)gloScopeEntry)->getClaDes();
@@ -47,8 +50,8 @@ bool GloScope::checkUndefinedClass()
             GloScopeEntry* parentGloScopeEntry = findClass(claDes->getParentName());
             if(parentGloScopeEntry == NULL)
             {
-                doesHaveError = true;
-                IssueError::UnDefinedClass(((GloScopeEntry*)gloScopeEntry)->getParentClassLocation(), claDes->getParentName());
+                noErrors = false;
+                IssueError::UndefinedClass(((GloScopeEntry*)gloScopeEntry)->getParentClassLocation(), claDes->getParentName());
             }
             else
             {
@@ -56,8 +59,29 @@ bool GloScope::checkUndefinedClass()
             }
         }
     }
-    return doesHaveError;
+    return noErrors;
 }
+
+bool GloScope::checkRedefinedClass()
+{
+    bool noErrors = true;
+    std::map<std::string, bool> doesClassExistMap;
+    for(auto gloScopeEntry : entries)
+    {
+        std::string className = ((GloScopeEntry*)gloScopeEntry) -> getClassName();
+        if(doesClassExistMap.find(className) == doesClassExistMap.end())
+        {
+            doesClassExistMap[className] = true;
+        }
+        else
+        {
+            noErrors = false;
+            IssueError::RedefinedClass(((GloScopeEntry*)gloScopeEntry) -> getLocation(), ((GloScopeEntry*)gloScopeEntry) -> getClassName());
+        }
+    }
+    return noErrors;
+}
+
 
 
 

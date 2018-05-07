@@ -75,6 +75,7 @@ public:
 
     bool check();
     bool checkUndefinedClass();
+    bool checkRedefinedClass();
 };
 
 //GloScopeEntry

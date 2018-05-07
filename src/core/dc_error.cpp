@@ -63,12 +63,17 @@ void IssueError::Printyyerror(const YYLTYPE *pyylloc,std::string str)
     IssueError::PrintLocation(pyylloc);
 }
 
-void IssueError::UnDefinedClass(const YYLTYPE *pyylloc, std::string idname)
+void IssueError::UndefinedClass(const YYLTYPE *pyylloc, std::string idname)
 {
     std::cout << "undefined class " << idname <<" ";
     IssueError::PrintLocation(pyylloc);
 }
 
+void IssueError::RedefinedClass(const YYLTYPE *pyylloc, std::string idname)
+{
+    std::cout << "redefined class " << idname <<" ";
+    IssueError::PrintLocation(pyylloc);
+}
 
 
 

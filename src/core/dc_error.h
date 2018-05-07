@@ -22,7 +22,7 @@ class IssueError
 public:
     static void UnMachedChar(const YYLTYPE *pyylloc, char c);
     static void Printyyerror(const YYLTYPE *pyylloc, std::string str);
-	static void UnDefinedClass(const YYLTYPE *pyylloc, std::string idname);
+	static void UndefinedClass(const YYLTYPE *pyylloc, std::string idname);
 	static void RedefinedClass(const YYLTYPE *pyylloc, std::string idname);
 private:
     static void FlagErrorPlace(const YYLTYPE *pyylloc);

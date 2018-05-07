@@ -55,6 +55,8 @@ failtest:
 	./$(OBJDIR)/decaf $(TESTDIR)/initVarWhenDeclared_Shouldfail.decaf
 	@echo "---------->undefinedClass_Shouldfail"
 	./$(OBJDIR)/decaf $(TESTDIR)/undefinedClass_Shouldfail.decaf
+	@echo "---------->redefinedClass_Shouldfail"
+	./$(OBJDIR)/decaf $(TESTDIR)/redefinedClass_Shouldfail.decaf
 
 passtest:
 	@echo "---------->simpleTest_shouldpass.decaf"
