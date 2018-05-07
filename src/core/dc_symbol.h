@@ -48,6 +48,10 @@ class Entry
 {
 public:
     virtual void printSym(int aline, int level) = 0;
+    bool setLocation(YYLTYPE* location);
+    YYLTYPE* getLocation(); 
+private:
+    YYLTYPE *location;
 };
 
 class Scope
@@ -66,6 +70,11 @@ public:
     bool addEntry(Entry* entry);
     
     void printSym(int aline, int level);
+
+    GloScopeEntry* findClass(std::string className);
+
+    bool check();
+    bool checkUndefinedClass();
 };
 
 //GloScopeEntry
@@ -75,9 +84,9 @@ private:
     std::string className;
     int category;
     ClaDes *claDes;
+    YYLTYPE *parentClassLocation;
 public:
     GloScopeEntry();
-    GloScopeEntry(std::string className, ClaDes* claDes);
     bool setClassName(std::string);
     std::string getClassName();
 
@@ -86,6 +95,9 @@ public:
 
     bool setClaDes(ClaDes* claDes);
     ClaDes* getClaDes();
+
+    bool setParentClassLocation(YYLTYPE *location);
+    YYLTYPE* getParentClassLocation();
 
     void printSym(int aline, int level);
 };

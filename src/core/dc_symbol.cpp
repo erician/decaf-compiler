@@ -3,6 +3,18 @@
 #include "core/dc_symbol.h"
 #endif
 
+//Entry
+bool Entry::setLocation(YYLTYPE* location)
+{
+    this->location = location;
+    return true;
+}
+
+YYLTYPE* Entry::getLocation()
+{
+    return this->location;
+}
+
 //GloScope
 GloScope::GloScope()
 {
@@ -25,12 +37,6 @@ GloScopeEntry::GloScopeEntry()
     category = DC::CATEGORY::DC_CLASS;
 }
 
-GloScopeEntry::GloScopeEntry(std::string className, ClaDes* claDes)
-{
-    category = DC::CATEGORY::DC_CLASS;
-    this->className = className;
-    this->claDes = claDes;
-}
 
 bool GloScopeEntry::setCategory(int category)
 {
@@ -63,6 +69,17 @@ bool GloScopeEntry::setClaDes(ClaDes* claDes)
 ClaDes* GloScopeEntry::getClaDes() 
 {
     return claDes;
+}
+
+bool GloScopeEntry::setParentClassLocation(YYLTYPE *location)
+{
+    this->parentClassLocation = location;
+    return true;
+}
+
+YYLTYPE* GloScopeEntry::getParentClassLocation()
+{
+    return parentClassLocation;
 }
 
 //ClaDes

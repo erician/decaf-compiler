@@ -137,7 +137,13 @@ Entry* ClassDecl::buildGlobalSym()
         claScope->setClassName(pid->getidname());
         claDes->setClaScope(claScope);
     }
-    return new GloScopeEntry(pid->getidname(), claDes);
+    GloScopeEntry *gloScopeEntry = new GloScopeEntry();
+    gloScopeEntry->setClassName(pid->getidname());
+    gloScopeEntry->setClaDes(claDes);
+    gloScopeEntry->setLocation(pid->getplocation());
+    if(claDes->getParentName() != "")
+        gloScopeEntry->setParentClassLocation(pParentId->getplocation());
+    return gloScopeEntry;
 }
 
 Entry* VarDecl::buildClassSym(std::string name)
@@ -147,6 +153,7 @@ Entry* VarDecl::buildClassSym(std::string name)
     claScopeEntry->setCategory(DC::CATEGORY::DC_VAR);
     claScopeEntry->setTypeInfo(getTypeInfoFromType(ptype));
     claScopeEntry->setFunDes(NULL);
+    claScopeEntry->setLocation(pid->getplocation());
     return claScopeEntry;
 }
 
@@ -188,6 +195,7 @@ Entry* FunDecl::buildClassSym(std::string className)
     forScope->setFunName(pid->getidname());
     funDes->setForScope(forScope);
     claScopeEntry->setFunDes(funDes);
+    claScopeEntry->setLocation(pid->getplocation());
     return claScopeEntry;
 }
 
@@ -196,6 +204,7 @@ Entry* VarDecl::buildFormalSym()
     ForScopeEntry *forScopeEntry = new ForScopeEntry();
     forScopeEntry->setName(pid->getidname());
     forScopeEntry->setTypeInfo(getTypeInfoFromType(ptype));
+    forScopeEntry->setLocation(pid->getplocation());
     return forScopeEntry;
 }
 
@@ -206,6 +215,7 @@ Entry* VarDecl::buildLocalSym()
     locScopeEntry->setCategory(DC::CATEGORY::DC_VAR);
     locScopeEntry->setTypeInfo(getTypeInfoFromType(ptype));
     locScopeEntry->setSubLocScope(NULL);
+    locScopeEntry->setLocation(pid->getplocation());
     return locScopeEntry;
 }
 

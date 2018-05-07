@@ -1,0 +1,13 @@
+class Mac extends Computer{
+	int mouse;
+	void Crash(int numTimes){
+		Print("ack!");
+	}
+}
+class Main{
+	static void main(){
+		class Mac powerbook;
+		powerbook=new Mac();
+		powerbook.Crash(2);
+	}
+}

@@ -7,8 +7,8 @@
 #include <fstream>
 #include "compiler/dc_compiler.h"
 
-using namespace std;
 extern Program *program;
+extern int errornum;
 extern int yyparse();
 extern FILE *yyin;
 extern void InitFlex();
@@ -21,7 +21,8 @@ int main(int argc,char *argv[])
     yyin =  fopen(args.get(Options::SRC_FILE).c_str(), "r");
     if (yyin != 0)
     {
-        if (yyparse() == 0)
+        yyparse();
+        if ( errornum == 0)
         {   
             Compiler compiler(args, *program);
             compiler.parseArgs();

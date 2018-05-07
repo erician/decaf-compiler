@@ -43,4 +43,10 @@ void Compiler::parseArgs()
             fclose(stdout);
         }
     }
+
+    if(args.doesOnlyHaveSrc())
+    {
+        program.buildSym();
+        program.checkStaticSemantic();
+    }
 }

@@ -16,10 +16,12 @@ public:
     static const std::string SRC_FILE;
     static const std::string LEX_GRAMM_ANALYSIS;
     static const std::string BUILD_SYMBOL_TABLE;
+    static const std::string CHECK_STATIC_SEMANTIC;
 public:
     Options();
     bool doesHaveKey(std::string key);
     bool doesHaveValue(std::string key);
+ 
 };
 
 #endif

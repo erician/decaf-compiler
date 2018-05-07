@@ -13,16 +13,21 @@
 #include "yacc/location.h"
 #endif
 
+#ifndef DC_LEX_FLEX_H_
+#include "lex/flex.h"
+#endif
+
 class IssueError
 {
-private:
-    static void flagErrorPlace(YYLTYPE *pyylloc);
-	static std::string replaceTabByBlank(std::string str);
-
 public:
-    static void UnMachedChar(YYLTYPE *pyylloc,char c);
-    static void Printyyerror(YYLTYPE *pyylloc,std::string str);
-	
+    static void UnMachedChar(const YYLTYPE *pyylloc, char c);
+    static void Printyyerror(const YYLTYPE *pyylloc, std::string str);
+	static void UnDefinedClass(const YYLTYPE *pyylloc, std::string idname);
+	static void RedefinedClass(const YYLTYPE *pyylloc, std::string idname);
+private:
+    static void FlagErrorPlace(const YYLTYPE *pyylloc);
+	static std::string ReplaceTabByBlank(std::string str);
+	static void PrintLocation(const YYLTYPE *pyylloc);
 };
 
 #endif

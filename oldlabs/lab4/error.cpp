@@ -46,8 +46,8 @@ void IssueError::Redefinition(YYLTYPE *pyylloc,string str)
     cout<<pyylloc->first_line<<":"<<pyylloc->first_column<<": ";
     cout<<"error: "<<"redefinition of"<<"\'"<<str<<"\' "<<endl;
     cout<<"    "<<savedlines[pyylloc->first_line-1]<<endl;
-    flag_errorplace(pyylloc);
     
+    flag_errorplace(pyylloc);
 }
 void IssueError::Dir_typeerror(YYLTYPE *pyylloc,string str,string wrongtype)
 {

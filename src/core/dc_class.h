@@ -93,6 +93,9 @@ public:
     void printAst(int aline,int level);
     void buildSym();
     void printSym(int aline, int level);
+    
+    //returnval: true means no error, or false
+    bool checkStaticSemantic();
 };
 
 class Id:public TreeNode

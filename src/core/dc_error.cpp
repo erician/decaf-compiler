@@ -22,29 +22,7 @@
 #include "core/dc_error.h"
 #endif
 
-void IssueError::flagErrorPlace(YYLTYPE *pyylloc)
-{
-    std::cout<<"    ";
-    for(int i=0;i<pyylloc->first_column-1;i++)
-        std::cout<<' ';
-    std::cout<<'^'<<std::endl;
-}
-void IssueError::UnMachedChar(YYLTYPE *pyylloc,char c)
-{
-    std::cout<<pyylloc->first_line<<":"<<pyylloc->first_column<<": ";
-    std::cout<<"error: "<<"\'"<<c<<"\' "<<"unmatched char "<<std::endl;
-    std::cout<<"    "<<replaceTabByBlank(savedlines[pyylloc->first_line-1])<<std::endl;
-    flagErrorPlace(pyylloc);
-}
-void IssueError::Printyyerror(YYLTYPE *pyylloc,std::string str)
-{
-    std::cout<<pyylloc->first_line<<":"<<pyylloc->first_column<<": ";
-    std::cout<<"syntax error: "<<"\'"<<str<<"\' "<<std::endl;
-    std::cout<<"    "<<replaceTabByBlank(savedlines[pyylloc->first_line-1])<<std::endl;
-    flagErrorPlace(pyylloc);
-}
-
-std::string IssueError::replaceTabByBlank(std::string str)
+std::string IssueError::ReplaceTabByBlank(std::string str)
 {
     do{
         long long pos = str.find('\t');
@@ -57,3 +35,41 @@ std::string IssueError::replaceTabByBlank(std::string str)
     }while(true);
     return str;
 }
+
+void IssueError::FlagErrorPlace(const YYLTYPE *pyylloc)
+{
+    std::cout<<"    ";
+    for(int i=0;i<pyylloc->first_column-1;i++)
+        std::cout<<' ';
+    std::cout<<'^'<<std::endl;
+}
+
+void IssueError::PrintLocation(const YYLTYPE *pyylloc)
+{
+    std::cout<<pyylloc->first_line<<":"<<pyylloc->first_column<<":"<<std::endl;
+    std::cout<<"    "<<ReplaceTabByBlank(savedlines[pyylloc->first_line-1])<<std::endl;
+    FlagErrorPlace(pyylloc);
+}
+
+void IssueError::UnMachedChar(const YYLTYPE *pyylloc,char c)
+{
+    std::cout<<"error: "<<"\'"<<c<<"\' "<<"unmatched char ";
+    IssueError::PrintLocation(pyylloc);
+}
+
+void IssueError::Printyyerror(const YYLTYPE *pyylloc,std::string str)
+{
+    std::cout<<"syntax error: "<<"\'"<<str<<"\' ";
+    IssueError::PrintLocation(pyylloc);
+}
+
+void IssueError::UnDefinedClass(const YYLTYPE *pyylloc, std::string idname)
+{
+    std::cout << "undefined class " << idname <<" ";
+    IssueError::PrintLocation(pyylloc);
+}
+
+
+
+
+

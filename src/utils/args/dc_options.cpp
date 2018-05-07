@@ -8,6 +8,7 @@ const std::string Options::OUTPUT = "o";
 const std::string Options::SRC_FILE = "src";
 const std::string Options::LEX_GRAMM_ANALYSIS = "--lex-gramm-analysis";
 const std::string Options::BUILD_SYMBOL_TABLE = "--build-symbol-table";
+const std::string Options::CHECK_STATIC_SEMANTIC = "--check-static-semantic";
 
 Options::Options()
 {
@@ -16,6 +17,7 @@ Options::Options()
     optionsDict[PRINT_AST] = false;
     optionsDict[LEX_GRAMM_ANALYSIS] = false;
     optionsDict[BUILD_SYMBOL_TABLE] = false;
+    optionsDict[CHECK_STATIC_SEMANTIC] = false;
 }
 
 bool Options::doesHaveKey(std::string key)
@@ -33,3 +35,4 @@ bool Options::doesHaveValue(std::string key)
     else
         return false;
 }
+

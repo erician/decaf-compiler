@@ -12,3 +12,5 @@ $(OBJDIR)/dc_buildsym.cpp.o: $(COREDIR)/dc_buildsym.cpp
 	$(CC) $(CFLAGS) -c -o $@ $<
 $(OBJDIR)/dc_printsym.cpp.o: $(COREDIR)/dc_printsym.cpp
 	$(CC) $(CFLAGS) -c -o $@ $<
+$(OBJDIR)/dc_check.cpp.o: $(COREDIR)/dc_check.cpp
+	$(CC) $(CFLAGS) -c -o $@ $<

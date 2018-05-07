@@ -9,6 +9,11 @@ void Args::set(std::string key, std::string value)
     argDict[key] = value;
 }
 
+bool Args::doesOnlyHaveSrc()
+{
+    return argDict.size() == 1;
+}
+
 bool Args::hasKey(std::string key)
 {
     if (argDict.find(key) != argDict.end())

@@ -24,6 +24,7 @@ OBJS += $(OBJDIR)/dc_symbol.cpp.o
 OBJS += $(OBJDIR)/dc_print.cpp.o
 OBJS += $(OBJDIR)/dc_genast.cpp.o $(OBJDIR)/dc_printast.cpp.o 
 OBJS += $(OBJDIR)/dc_printsym.cpp.o $(OBJDIR)/dc_buildsym.cpp.o 
+OBJS += $(OBJDIR)/dc_check.cpp.o 
 OBJS += $(OBJDIR)/main.cpp.o
 
 JUNK = *~ $(OBJDIR)/*.o $(OBJDIR)/*.a  $(LEXDIR)/lex.yy.c $(YACCDIR)/y.tab.c $(YACCDIR)/y.tab.h  $(YACCDIR)/y.output
@@ -50,8 +51,10 @@ $(COMPILER) : $(OBJS)
 failtest:
 	@echo "---------->funNotInClass_Shouldfail" 
 	./$(OBJDIR)/decaf $(TESTDIR)/funNotInClass_Shouldfail.decaf
-	@echo "---------->initVarWhenDeclared_Shouldfail.decaf"
+	@echo "---------->initVarWhenDeclared_Shouldfail"
 	./$(OBJDIR)/decaf $(TESTDIR)/initVarWhenDeclared_Shouldfail.decaf
+	@echo "---------->undefinedClass_Shouldfail"
+	./$(OBJDIR)/decaf $(TESTDIR)/undefinedClass_Shouldfail.decaf
 
 passtest:
 	@echo "---------->simpleTest_shouldpass.decaf"

@@ -28,6 +28,7 @@ public:
     void set(std::string, std::string value);
     std::string get(std::string key);
     bool hasKey(std::string key);
+    bool doesOnlyHaveSrc();
 };
 
 #endif
