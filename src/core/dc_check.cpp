@@ -33,7 +33,8 @@ bool GloScope::check()
 {
     if(checkClass() == false)
         return false;
-    return checkMain();
+    checkMain();
+    return checkAttributesAndMethods();
     
 }
 
