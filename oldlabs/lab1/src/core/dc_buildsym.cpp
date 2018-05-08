@@ -217,9 +217,13 @@ Entry* Stmt::buildLocalSym()
 Entry* StmtBlock::buildLocalSym()
 {
     LocScope *locScope = new LocScope();
-    for (auto pstmt : *(pstmts))
+    if(pstmts != NULL)
     {
-        locScope->addEntry(pstmt->buildLocalSym());
+        for (auto pstmt : *(pstmts))
+        {
+            if(pstmt != NULL)
+                locScope->addEntry(pstmt->buildLocalSym());
+        }
     }
     LocScopeEntry *locScopeEntry = new LocScopeEntry();
     locScopeEntry->setName("");
