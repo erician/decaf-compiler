@@ -108,7 +108,8 @@ void StmtBlock::printAst(int aline,int level)
     if(pstmts!=NULL)
     {
         for(int i=0;i<pstmts->size();i++)
-            (*pstmts)[i]->printAst(1,level+1);
+            if((*pstmts)[i] != NULL)
+                (*pstmts)[i]->printAst(1,level+1);
     }
 }
 void IfStmt::printAst(int aline,int level)
