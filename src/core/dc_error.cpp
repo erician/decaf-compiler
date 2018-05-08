@@ -46,6 +46,8 @@ void IssueError::FlagErrorPlace(const YYLTYPE *pyylloc)
 
 void IssueError::PrintLocation(const YYLTYPE *pyylloc)
 {
+    if (pyylloc == NULL)
+        return;
     std::cout<<pyylloc->first_line<<":"<<pyylloc->first_column<<":"<<std::endl;
     std::cout<<"    "<<ReplaceTabByBlank(savedlines[pyylloc->first_line-1])<<std::endl;
     FlagErrorPlace(pyylloc);
@@ -62,16 +64,37 @@ void IssueError::Printyyerror(const YYLTYPE *pyylloc,std::string str)
     std::cout<<"syntax error: "<<"\'"<<str<<"\' ";
     IssueError::PrintLocation(pyylloc);
 }
-
+//class
 void IssueError::UndefinedClass(const YYLTYPE *pyylloc, std::string idname)
 {
     std::cout << "undefined class " << idname <<" ";
     IssueError::PrintLocation(pyylloc);
 }
 
-void IssueError::RedefinedClass(const YYLTYPE *pyylloc, std::string idname)
+void IssueError::RedefinedClass(const YYLTYPE *pyylloc, std::string idname, const YYLTYPE *firstDefinedLocation)
 {
     std::cout << "redefined class " << idname <<" ";
+    IssueError::PrintLocation(pyylloc);
+    std::cout << "first defined here: ";
+    IssueError::PrintLocation(firstDefinedLocation);
+}
+
+//main
+void IssueError::UndefinedMain()
+{
+    std::cout << "    undefined main "<<std::endl;
+    std::cout << std::endl;
+}
+void IssueError::RedefinedMain(const YYLTYPE *pyylloc, const YYLTYPE *firstDefinedLocation)
+{
+    std::cout << "redefined main ";
+    IssueError::PrintLocation(pyylloc);
+    std::cout << "first defined here: ";
+    IssueError::PrintLocation(firstDefinedLocation);
+}
+void IssueError::MainIsNotStatic(const YYLTYPE *pyylloc)
+{
+    std::cout << "main is not static ";
     IssueError::PrintLocation(pyylloc);
 }
 

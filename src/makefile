@@ -53,10 +53,18 @@ failtest:
 	./$(OBJDIR)/decaf $(TESTDIR)/funNotInClass_Shouldfail.decaf
 	@echo "---------->initVarWhenDeclared_Shouldfail"
 	./$(OBJDIR)/decaf $(TESTDIR)/initVarWhenDeclared_Shouldfail.decaf
+	@#class 
 	@echo "---------->undefinedClass_Shouldfail"
 	./$(OBJDIR)/decaf $(TESTDIR)/undefinedClass_Shouldfail.decaf
 	@echo "---------->redefinedClass_Shouldfail"
 	./$(OBJDIR)/decaf $(TESTDIR)/redefinedClass_Shouldfail.decaf
+	@#main
+	@echo "---------->redefinedMain_Shouldfail"
+	./$(OBJDIR)/decaf $(TESTDIR)/redefinedMain_Shouldfail.decaf
+	@echo "---------->undefinedMain_Shouldfail"
+	./$(OBJDIR)/decaf $(TESTDIR)/undefinedMain_Shouldfail.decaf
+	@echo "---------->notStaticMain_Shouldfail"
+	./$(OBJDIR)/decaf $(TESTDIR)/notStaticMain_Shouldfail.decaf
 
 passtest:
 	@echo "---------->simpleTest_shouldpass.decaf"

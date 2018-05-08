@@ -74,8 +74,13 @@ public:
     GloScopeEntry* findClass(std::string className);
 
     bool check();
+    //class
+    bool checkClass();
     bool checkUndefinedClass();
     bool checkRedefinedClass();
+    //main
+    bool checkMain();
+    
 };
 
 //GloScopeEntry
@@ -135,6 +140,7 @@ private:
 public:
     ClaScope();
     bool addEntry(Entry* entry);
+    std::vector<Entry*> getEntries();
 
     bool setClassName(std::string className);
     std::string getClassName();

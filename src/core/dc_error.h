@@ -22,8 +22,13 @@ class IssueError
 public:
     static void UnMachedChar(const YYLTYPE *pyylloc, char c);
     static void Printyyerror(const YYLTYPE *pyylloc, std::string str);
+	//class
 	static void UndefinedClass(const YYLTYPE *pyylloc, std::string idname);
-	static void RedefinedClass(const YYLTYPE *pyylloc, std::string idname);
+	static void RedefinedClass(const YYLTYPE *pyylloc, std::string idname, const YYLTYPE *firstDefinedLocation);
+	//main
+	static void UndefinedMain();
+	static void RedefinedMain(const YYLTYPE *pyylloc, const YYLTYPE *firstDefinedLocation);
+	static void MainIsNotStatic(const YYLTYPE *pyylloc);
 private:
     static void FlagErrorPlace(const YYLTYPE *pyylloc);
 	static std::string ReplaceTabByBlank(std::string str);

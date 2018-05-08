@@ -137,6 +137,11 @@ bool ClaScope::addEntry(Entry* entry)
     return true;
 }
 
+std::vector<Entry*> ClaScope::getEntries()
+{
+    return entries;
+}
+
 bool ClaScope::setClassName(std::string className)
 {
     this->className = className;
