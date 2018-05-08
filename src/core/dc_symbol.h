@@ -80,7 +80,8 @@ public:
     bool checkRedefinedClass();
     //main
     bool checkMain();
-    
+    //attributes and methods
+    bool checkAttributesAndMethods();
 };
 
 //GloScopeEntry

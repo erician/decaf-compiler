@@ -29,6 +29,10 @@ public:
 	static void UndefinedMain();
 	static void RedefinedMain(const YYLTYPE *pyylloc, const YYLTYPE *firstDefinedLocation);
 	static void MainIsNotStatic(const YYLTYPE *pyylloc);
+	//attribute and method
+	static void RedefinedVarOrMethod(const YYLTYPE *pyylloc, std::string idname, const YYLTYPE *firstDefinedLocation, int category);
+	static void AttributeAndMethodWithTheSameName(const YYLTYPE *pyylloc, std::string idname, const YYLTYPE *firstDefinedLocation);
+	
 private:
     static void FlagErrorPlace(const YYLTYPE *pyylloc);
 	static std::string ReplaceTabByBlank(std::string str);

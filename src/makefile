@@ -65,6 +65,13 @@ failtest:
 	./$(OBJDIR)/decaf $(TESTDIR)/undefinedMain_Shouldfail.decaf
 	@echo "---------->notStaticMain_Shouldfail"
 	./$(OBJDIR)/decaf $(TESTDIR)/notStaticMain_Shouldfail.decaf
+	@#attribute and method
+	@echo "---------->redefinedAttribute_Shouldfail"
+	./$(OBJDIR)/decaf $(TESTDIR)/redefinedAttribute_Shouldfail.decaf
+	@echo "---------->redefinedMethod_Shouldfail"
+	./$(OBJDIR)/decaf $(TESTDIR)/redefinedMethod_Shouldfail.decaf
+	@echo "---------->attributeAndMethodWithTheSameName_Shouldfail"
+	./$(OBJDIR)/decaf $(TESTDIR)/attributeAndMethodWithTheSameName_Shouldfail.decaf
 
 passtest:
 	@echo "---------->simpleTest_shouldpass.decaf"

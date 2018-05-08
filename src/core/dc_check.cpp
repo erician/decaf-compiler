@@ -139,6 +139,41 @@ bool GloScope::checkMain()
     }
     return noErrors;
 }
+//attributes and methods
+bool GloScope::checkAttributesAndMethods()
+{
+    bool noErrors = true;
+    std::map<std::string, YYLTYPE*> doesAttributeOrMethodExistMap; 
+    std::map<std::string, int> attributeOrMethodCategory; 
+    for(auto gloScopeEntry : entries)
+    {
+        ClaScope* claScope = ((GloScopeEntry*)gloScopeEntry)->getClaDes()->getClaScope();
+        for(auto claScopeEntry : claScope->getEntries())
+        {
+            std::string name =  ((ClaScopeEntry*)claScopeEntry)->getName();
+            if(doesAttributeOrMethodExistMap.find(name) == doesAttributeOrMethodExistMap.end())
+            {
+                doesAttributeOrMethodExistMap[name] = ((ClaScopeEntry*)claScopeEntry) -> getLocation();
+                attributeOrMethodCategory[name] = ((ClaScopeEntry*)claScopeEntry) -> getCategory();
+            }
+            else
+            {
+                noErrors = false;
+                if(((ClaScopeEntry*)claScopeEntry) -> getCategory() == attributeOrMethodCategory[name])
+                {
+                    IssueError::RedefinedVarOrMethod(((ClaScopeEntry*)claScopeEntry) -> getLocation(),\
+                     name, doesAttributeOrMethodExistMap[name], attributeOrMethodCategory[name]);
+                }
+                else
+                {
+                    IssueError::AttributeAndMethodWithTheSameName(((ClaScopeEntry*)claScopeEntry)->getLocation(),\
+                     name, doesAttributeOrMethodExistMap[name]);
+                }
+            }
+        }
+    }
+    return noErrors;
+}
 
 
 

@@ -22,6 +22,10 @@
 #include "core/dc_error.h"
 #endif
 
+#ifndef DC_CORE_DC_ENUM_H_
+#include "core/dc_enum.h"
+#endif
+
 std::string IssueError::ReplaceTabByBlank(std::string str)
 {
     do{
@@ -96,6 +100,26 @@ void IssueError::MainIsNotStatic(const YYLTYPE *pyylloc)
 {
     std::cout << "main is not static ";
     IssueError::PrintLocation(pyylloc);
+}
+
+//attribute and method
+void IssueError::RedefinedVarOrMethod(const YYLTYPE *pyylloc, std::string idname, const YYLTYPE *firstDefinedLocation, int category)
+{
+    std::cout << "redefined ";
+    if(category == DC::CATEGORY::DC_FUN)
+        std::cout << "method: " << idname << " ";
+    else
+        std::cout << "attribute " << idname << " ";
+    IssueError::PrintLocation(pyylloc);
+    std::cout << "first defined here: ";
+    IssueError::PrintLocation(firstDefinedLocation);    
+}
+void IssueError::AttributeAndMethodWithTheSameName(const YYLTYPE *pyylloc, std::string idname, const YYLTYPE *firstDefinedLocation)
+{
+    std::cout << "attribute and method can not be with the same name: " << idname << "";
+    IssueError::PrintLocation(pyylloc);
+    std::cout << "first defined here: ";
+    IssueError::PrintLocation(firstDefinedLocation); 
 }
 
 
