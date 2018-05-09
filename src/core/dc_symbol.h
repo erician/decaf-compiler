@@ -107,6 +107,8 @@ public:
     YYLTYPE* getParentClassLocation();
 
     void printSym(int aline, int level);
+
+    bool checkUndefinedClass(GloScope* gloScope);
 };
 //ClaDes
 class ClaDes:public Scope
@@ -130,6 +132,8 @@ public:
     ClaDes* getParentClaDes();
 
     void printSym(int aline, int level);
+
+
 };
 
 //ClaScope
@@ -147,6 +151,8 @@ public:
     std::string getClassName();
 
     void printSym(int aline, int level);
+
+    bool checkUndefinedClass(GloScope* gloScope);
 };
 
 //TypeInfo
@@ -157,6 +163,7 @@ private:
     std::string className;
     int arrayLevel;
     int arrayType;
+    YYLTYPE *location;
 public:
     TypeInfo();
     bool setType(int type);
@@ -170,6 +177,9 @@ public:
 
     bool setClassName(std::string className);
     std::string getClassName();
+
+    bool setLocation(YYLTYPE* location);
+    YYLTYPE* getLocation(); 
 
     void printSym(int aline, int level);
 };
@@ -198,6 +208,8 @@ public:
     FunDes* getFunDes();
 
     void printSym(int aline, int level);
+
+    bool checkUndefinedClass(GloScope* gloScope);
 };
 //function descriptor
 class FunDes:public Scope
@@ -239,6 +251,8 @@ public:
     std::string getFunName();
 
     void printSym(int aline, int level);
+
+    bool checkUndefinedClass(GloScope* gloScope);
 };
 //formal scope entry
 class ForScopeEntry: public Entry
@@ -256,6 +270,7 @@ public:
 
     void printSym(int aline, int level);
     
+    bool checkUndefinedClass(GloScope* gloScope);
 };
 //local scope
 class LocScope:public Scope
@@ -267,6 +282,8 @@ public:
     bool addEntry(Entry* entry);
 
     void printSym(int aline, int level);
+
+    bool checkUndefinedClass(GloScope* gloScope);
 };
 //local scope entry
 class LocScopeEntry: public Entry
@@ -291,6 +308,8 @@ public:
     LocScope* getSubLocScope();
 
     void printSym(int aline, int level);
+
+    bool checkUndefinedClass(GloScope* gloScope);
 };
 
 

@@ -35,7 +35,6 @@ bool GloScope::check()
         return false;
     checkMain();
     return checkAttributesAndMethods();
-    
 }
 
 GloScopeEntry* GloScope::findClass(std::string className)
@@ -62,20 +61,104 @@ bool GloScope::checkUndefinedClass()
     bool noErrors = true;
     for(auto gloScopeEntry : entries)
     {
-        ClaDes* claDes = ((GloScopeEntry*)gloScopeEntry)->getClaDes();
-        if (claDes->getParentName() != "")
+        noErrors = ((GloScopeEntry*)gloScopeEntry) -> checkUndefinedClass(this) ? noErrors : false;
+    }
+    return noErrors;
+}
+
+bool GloScopeEntry::checkUndefinedClass(GloScope* gloScope)
+{
+    bool noErrors = true;
+    if (claDes->getParentName() != "")
+    {
+        GloScopeEntry* parentGloScopeEntry = gloScope->findClass(claDes->getParentName());
+        if(parentGloScopeEntry == NULL)
         {
-            GloScopeEntry* parentGloScopeEntry = findClass(claDes->getParentName());
-            if(parentGloScopeEntry == NULL)
-            {
-                noErrors = false;
-                IssueError::UndefinedClass(((GloScopeEntry*)gloScopeEntry)->getParentClassLocation(), claDes->getParentName());
-            }
-            else
-            {
-                claDes->setParentClaDes(parentGloScopeEntry->getClaDes());
-            }
+            noErrors = false;
+            IssueError::UndefinedClass(parentClassLocation, claDes->getParentName());
         }
+        else
+        {
+            claDes->setParentClaDes(parentGloScopeEntry->getClaDes());
+        }
+    }
+    noErrors = claDes->getClaScope()->checkUndefinedClass(gloScope) ? noErrors : false;
+    return noErrors;
+}
+
+bool ClaScope::checkUndefinedClass(GloScope* gloScope)
+{
+    bool noErrors = true;
+    for(auto claScopeEntry : entries)
+    {
+        noErrors = ((ClaScopeEntry*)claScopeEntry)->checkUndefinedClass(gloScope) ? noErrors : false;
+    }
+    return noErrors;
+}
+
+bool ClaScopeEntry::checkUndefinedClass(GloScope* gloScope)
+{
+    bool noErrors = true;
+    std::string className = typeInfo->getClassName();
+    if(className != "" && gloScope -> findClass(className) == NULL)
+    {
+        noErrors = false;
+        IssueError::UndefinedClass(typeInfo->getLocation(), className);
+    }
+    if(category == DC::CATEGORY::DC_FUN)
+    {
+        noErrors = funDes->getForScope()->checkUndefinedClass(gloScope) ? noErrors : false;
+    }
+    return noErrors;    
+}
+
+bool ForScope::checkUndefinedClass(GloScope* gloScope)
+{
+    bool noErrors = true;
+    for(auto forScopeEntry : entries)
+        noErrors = ((ForScopeEntry*)forScopeEntry)->checkUndefinedClass(gloScope) ? noErrors : false;
+    if(locScopeEntry != NULL)
+        noErrors = locScopeEntry->checkUndefinedClass(gloScope) ? noErrors : false;  
+    return noErrors;
+}
+
+bool ForScopeEntry::checkUndefinedClass(GloScope* gloScope)
+{
+    std::string className = typeInfo->getClassName();
+    if(className != "" && gloScope -> findClass(className) == NULL)
+    {
+        IssueError::UndefinedClass(typeInfo->getLocation(), className);
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
+bool LocScope::checkUndefinedClass(GloScope* gloScope)
+{
+    bool noErrors = true;
+    for(auto locScopeEntry : entries)
+        noErrors = ((LocScopeEntry*)locScopeEntry)->checkUndefinedClass(gloScope) ? noErrors : false;
+    return noErrors;
+}
+
+bool LocScopeEntry::checkUndefinedClass(GloScope* gloScope)
+{
+    bool noErrors = true;
+    if(name != "")
+    {
+        std::string className = typeInfo->getClassName();
+        if(className != "" && gloScope -> findClass(className) == NULL)
+        {
+            IssueError::UndefinedClass(typeInfo->getLocation(), className);
+            noErrors = false;
+        }
+    }
+    if(subLocScope != NULL)
+    {
+        noErrors = subLocScope -> checkUndefinedClass(gloScope) ? noErrors : false;
     }
     return noErrors;
 }

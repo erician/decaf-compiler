@@ -199,6 +199,20 @@ bool TypeInfo::setClassName(std::string className)
     return true;
 }
 
+std::string TypeInfo::getClassName()
+{
+    return this -> className;
+}
+
+bool TypeInfo::setLocation(YYLTYPE* location)
+{
+    this -> location = location;
+    return true;
+}
+YYLTYPE* TypeInfo::getLocation()
+{
+    return this -> location;
+}
 
 
 //ClaScopeEntry

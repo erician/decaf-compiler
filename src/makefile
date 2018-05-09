@@ -56,6 +56,8 @@ failtest:
 	@#class 
 	@echo "---------->undefinedClass_Shouldfail"
 	./$(OBJDIR)/decaf $(TESTDIR)/undefinedClass_Shouldfail.decaf
+	@echo "---------->undefinedClassInVars_Shouldfail"
+	./$(OBJDIR)/decaf $(TESTDIR)/undefinedClassInVars_Shouldfail.decaf
 	@echo "---------->redefinedClass_Shouldfail"
 	./$(OBJDIR)/decaf $(TESTDIR)/redefinedClass_Shouldfail.decaf
 	@#main
@@ -72,6 +74,7 @@ failtest:
 	./$(OBJDIR)/decaf $(TESTDIR)/redefinedMethod_Shouldfail.decaf
 	@echo "---------->attributeAndMethodWithTheSameName_Shouldfail"
 	./$(OBJDIR)/decaf $(TESTDIR)/attributeAndMethodWithTheSameName_Shouldfail.decaf
+
 
 passtest:
 	@echo "---------->simpleTest_shouldpass.decaf"

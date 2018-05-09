@@ -38,6 +38,10 @@ std::string NamedType::getClassName()
 {
     return pid->getidname();
 }
+Id* NamedType::getpid()
+{
+    return this->pid;
+}
 
 //ArrayType
 Type* ArrayType::getNextArray()
@@ -80,6 +84,7 @@ TypeInfo* Decl::getTypeInfoFromType(Type* type)
     {
         case(DC::TYPE::DC_NAMED):
             typeInfo->setClassName(((NamedType*)type)->getClassName());
+            typeInfo->setLocation(((NamedType*)type)->getpid()->getplocation());
             break;
         case(DC::TYPE::DC_ARRAY):
             Type* arrayType = ((ArrayType*)type)->getArrayType();
