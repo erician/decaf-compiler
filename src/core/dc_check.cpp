@@ -148,6 +148,8 @@ bool GloScope::checkAttributesAndMethods()
     std::map<std::string, int> attributeOrMethodCategory; 
     for(auto gloScopeEntry : entries)
     {
+        doesAttributeOrMethodExistMap.clear();
+        attributeOrMethodCategory.clear();
         ClaScope* claScope = ((GloScopeEntry*)gloScopeEntry)->getClaDes()->getClaScope();
         for(auto claScopeEntry : claScope->getEntries())
         {
