@@ -17,7 +17,7 @@
 GTEST_DIR = unittest/googletest/googletest
 
 # Where to find user code.
-USER_TEST_DIR = unittest/utils
+USER_TEST_DIR = unittest/utils/args
 USER_DIR = utils/args
 
 # Flags passed to the preprocessor.
@@ -33,7 +33,7 @@ CXXFLAGS += -g -Wall -Wno-unused -Wno-sign-compare -Wextra -pthread
 
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
-TESTS = $(OBJDIR)/dc_args_unittest
+TESTS = $(OBJDIR)/utils_dc_args_unittest
 
 # All Google Test headers.  Usually you shouldn't change this
 # definition.
@@ -43,37 +43,19 @@ GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h $(GTEST_DIR)/include/gtest/intern
 
 all : $(TESTS)
 
-# Builds gtest.a and gtest_main.a.
-
-# Usually you shouldn't tweak such internal variables, indicated by a
-# trailing _.
-GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
-
-# For simplicity and to avoid depending on Google Test's
-# implementation details, the dependencies specified below are
-# conservative and not optimized.  This is fine as Google Test
-# compiles fast and for ordinary users its source rarely changes.
-$(OBJDIR)/gtest-all.o : $(GTEST_SRCS_)
-	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c $(GTEST_DIR)/src/gtest-all.cc
-
-$(OBJDIR)/gtest_main.o : $(GTEST_SRCS_)
-	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c $(GTEST_DIR)/src/gtest_main.cc
-
-$(OBJDIR)/gtest.a : $(OBJDIR)/gtest-all.o
-	$(AR) $(ARFLAGS) $@ $^
-
-$(OBJDIR)/gtest_main.a : $(OBJDIR)/gtest-all.o $(OBJDIR)/gtest_main.o
-	$(AR) $(ARFLAGS) $@ $^
-
 # Builds a sample test.  A test should link with either gtest.a or
 # gtest_main.a, depending on whether it defines its own main()
 # function.
 
 $(OBJDIR)/dc_args.o : $(USER_DIR)/dc_args.cpp $(USER_DIR)/dc_args.h $(GTEST_HEADERS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/dc_args.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/dc_args.cpp -o $@
+$(OBJDIR)/dc_options.o : $(USER_DIR)/dc_options.cpp $(USER_DIR)/dc_options.h $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/dc_options.cpp -o $@
+$(OBJDIR)/dc_option_error.o : $(USER_DIR)/dc_option_error.cpp $(USER_DIR)/dc_option_error.h $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/dc_option_error.cpp -o $@
 
 $(OBJDIR)/dc_args_unittest.o : $(USER_TEST_DIR)/dc_args_unittest.cpp $(USER_DIR)/dc_args.h $(GTEST_HEADERS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/dc_args_unittest.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_TEST_DIR)/dc_args_unittest.cpp -o $@
 
-$(OBJDIR)/dc_args_unittest : $(OBJDIR)/dc_args.o $(OBJDIR)/dc_args_unittest.o $(OBJDIR)/gtest_main.a
+$(OBJDIR)/utils_dc_args_unittest : $(OBJDIR)/dc_args.o $(OBJDIR)/dc_options.o $(OBJDIR)/dc_option_error.o $(OBJDIR)/dc_args_unittest.o $(OBJDIR)/gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@

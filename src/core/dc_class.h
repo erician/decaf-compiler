@@ -94,8 +94,9 @@ public:
     void buildSym();
     void printSym(int aline, int level);
     
-    //returnval: true means no error, or false
     bool checkStaticSemantic();
+    bool checkScope();
+    bool checkStmt();
 };
 
 class Id:public TreeNode

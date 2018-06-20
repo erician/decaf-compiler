@@ -1,3 +1,4 @@
+#googletest main cpp.o
 # A sample Makefile for building Google Test and using it in user
 # tests.  Please tweak it to suit your environment and project.  You
 # may want to move it to your project's root directory.
@@ -16,24 +17,17 @@
 # Remember to tweak this if you move this file.
 GTEST_DIR = unittest/googletest/googletest
 
-# Where to find user code.
-USER_TEST_DIR = unittest/utils/print
-USER_DIR = utils/print
-
 # Flags passed to the preprocessor.
 # Set Google Test's header directory as a system directory, such that
 # the compiler doesn't generate warnings in Google Test headers.
 CPPFLAGS += -isystem $(GTEST_DIR)/include
 
-#USER_DIR headers
-CPPFLAGS += -I .
 
 # Flags passed to the C++ compiler.
 CXXFLAGS += -g -Wall -Wno-unused -Wno-sign-compare -Wextra -pthread
 
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
-TESTS = $(OBJDIR)/utils_dc_print_unittest
 
 # All Google Test headers.  Usually you shouldn't change this
 # definition.
@@ -41,17 +35,28 @@ GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h $(GTEST_DIR)/include/gtest/intern
 
 # House-keeping build targets.
 
-all : $(TESTS)
+all : $(OBJDIR)/gtest_main.a
 
-# Builds a sample test.  A test should link with either gtest.a or
-# gtest_main.a, depending on whether it defines its own main()
-# function.
+# Builds gtest.a and gtest_main.a.
 
-$(OBJDIR)/dc_print.o : $(USER_DIR)/dc_print.cpp $(USER_DIR)/dc_print.h $(GTEST_HEADERS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/dc_print.cpp -o $@
+# Usually you shouldn't tweak such internal variables, indicated by a
+# trailing _.
+GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
 
-$(OBJDIR)/dc_print_unittest.o : $(USER_TEST_DIR)/dc_print_unittest.cpp $(USER_DIR)/dc_print.h $(GTEST_HEADERS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_TEST_DIR)/dc_print_unittest.cpp -o $@
+# For simplicity and to avoid depending on Google Test's
+# implementation details, the dependencies specified below are
+# conservative and not optimized.  This is fine as Google Test
+# compiles fast and for ordinary users its source rarely changes.
+$(OBJDIR)/gtest-all.o : $(GTEST_SRCS_)
+	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c $(GTEST_DIR)/src/gtest-all.cc -o $@
 
-$(OBJDIR)/utils_dc_print_unittest : $(OBJDIR)/dc_print.o $(OBJDIR)/dc_print_unittest.o $(OBJDIR)/gtest_main.a
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
+$(OBJDIR)/gtest_main.o : $(GTEST_SRCS_)
+	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c $(GTEST_DIR)/src/gtest_main.cc -o $@
+
+$(OBJDIR)/gtest.a : $(OBJDIR)/gtest-all.o
+	$(AR) $(ARFLAGS) $@ $^
+
+$(OBJDIR)/gtest_main.a : $(OBJDIR)/gtest-all.o $(OBJDIR)/gtest_main.o
+	$(AR) $(ARFLAGS) $@ $^
+
+

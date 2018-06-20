@@ -15,6 +15,7 @@ void Compiler::parseArgs()
 
     if (args.hasKey(Options::PRINT_AST))
     {
+        std::cout << "ass" << std::endl;
         program.printAst(1, 0);
     }
 

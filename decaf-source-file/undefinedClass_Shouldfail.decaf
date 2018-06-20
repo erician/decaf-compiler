@@ -6,6 +6,7 @@ class Mac extends Computer{
 }
 class Main{
 	static void main(){
+		class A a;
 		class Mac powerbook;
 		powerbook=new Mac();
 		powerbook.Crash(2);

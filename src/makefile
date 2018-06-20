@@ -14,6 +14,8 @@ include utils/args/makefile
 include utils/print/makefile
 include compiler/makefile
 include unittest/utils/print/makefile
+include unittest/utils/args/makefile
+include unittest/makefile
 
 # OBJS can deal with either .cc or .c 
 OBJS = $(OBJDIR)/y.tab.o $(OBJDIR)/lex.yy.o 
@@ -74,6 +76,8 @@ failtest:
 	./$(OBJDIR)/decaf $(TESTDIR)/redefinedMethod_Shouldfail.decaf
 	@echo "---------->attributeAndMethodWithTheSameName_Shouldfail"
 	./$(OBJDIR)/decaf $(TESTDIR)/attributeAndMethodWithTheSameName_Shouldfail.decaf
+	@echo "---------->redefinedLocalVariables_Shouldfail"
+	./$(OBJDIR)/decaf $(TESTDIR)/redefinedLocalVariables_Shouldfail.decaf
 
 
 passtest:
@@ -94,6 +98,8 @@ passtest:
 
 unittest-utils-print: $(OBJDIR)/utils_dc_print_unittest
 	./$(OBJDIR)/utils_dc_print_unittest
+unittest-utils-args: $(OBJDIR)/utils_dc_args_unittest
+	./$(OBJDIR)/utils_dc_args_unittest
 
 clean:
 	@rm -f $(JUNK) $(PRODUCTS) decaf

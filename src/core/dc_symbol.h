@@ -82,6 +82,8 @@ public:
     bool checkMain();
     //attributes and methods
     bool checkAttributesAndMethods();
+    //variables: redefined 
+    bool checkRedefinedLocalVariables();
 };
 
 //GloScopeEntry
@@ -108,7 +110,9 @@ public:
 
     void printSym(int aline, int level);
 
+    //check
     bool checkUndefinedClass(GloScope* gloScope);
+    
 };
 //ClaDes
 class ClaDes:public Scope
@@ -133,7 +137,6 @@ public:
 
     void printSym(int aline, int level);
 
-
 };
 
 //ClaScope
@@ -152,7 +155,9 @@ public:
 
     void printSym(int aline, int level);
 
+    //check
     bool checkUndefinedClass(GloScope* gloScope);
+   
 };
 
 //TypeInfo
@@ -209,7 +214,9 @@ public:
 
     void printSym(int aline, int level);
 
+    //check
     bool checkUndefinedClass(GloScope* gloScope);
+
 };
 //function descriptor
 class FunDes:public Scope
@@ -252,7 +259,9 @@ public:
 
     void printSym(int aline, int level);
 
+    //check
     bool checkUndefinedClass(GloScope* gloScope);
+
 };
 //formal scope entry
 class ForScopeEntry: public Entry
@@ -270,6 +279,7 @@ public:
 
     void printSym(int aline, int level);
     
+    //check
     bool checkUndefinedClass(GloScope* gloScope);
 };
 //local scope
@@ -283,7 +293,9 @@ public:
 
     void printSym(int aline, int level);
 
+    //check
     bool checkUndefinedClass(GloScope* gloScope);
+    bool checkRedefinedLocalVariables();
 };
 //local scope entry
 class LocScopeEntry: public Entry
@@ -309,7 +321,9 @@ public:
 
     void printSym(int aline, int level);
 
+    //check
     bool checkUndefinedClass(GloScope* gloScope);
+ 
 };
 
 

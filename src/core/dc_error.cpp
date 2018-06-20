@@ -122,6 +122,14 @@ void IssueError::AttributeAndMethodWithTheSameName(const YYLTYPE *pyylloc, std::
     IssueError::PrintLocation(firstDefinedLocation); 
 }
 
+void IssueError::RedefinedLocalVariable(const YYLTYPE *pyylloc, std::string idname, const YYLTYPE *firstDefinedLocation)
+{
+    std::cout << "redefined local variable: " << idname << " ";
+    IssueError::PrintLocation(pyylloc);
+    std::cout << "first defined here: ";
+    IssueError::PrintLocation(firstDefinedLocation);  
+}
+
 
 
 

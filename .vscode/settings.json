@@ -28,6 +28,14 @@
         "tuple": "cpp",
         "type_traits": "cpp",
         "typeinfo": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "cmath": "cpp",
+        "ctime": "cpp",
+        "deque": "cpp",
+        "vector": "cpp",
+        "functional": "cpp",
+        "iomanip": "cpp",
+        "memory": "cpp",
+        "cinttypes": "cpp"
     }
 }

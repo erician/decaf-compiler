@@ -24,17 +24,37 @@
 
 #include <map>
 
+//returnval: true means no error, or false
 bool Program::checkStaticSemantic()
+{
+    return checkScope() == false ? false : checkStmt(); 
+}
+
+//mainly check things about undefine and redefine 
+bool Program::checkScope()
 {
     return gloScope->check();
 }
 
+//mainly check whether statement is legal 
+bool Program::checkStmt()
+{
+    return true;
+}
+
+/*
+ * check scope 
+*/
 bool GloScope::check()
 {
+    //we will set the order of checking later and when to return false.
     if(checkClass() == false)
         return false;
-    checkMain();
-    return checkAttributesAndMethods();
+    if(checkMain() == false)
+        return false;
+    if(checkAttributesAndMethods() == false)
+        return false;
+    return checkRedefinedLocalVariables();
 }
 
 GloScopeEntry* GloScope::findClass(std::string className)
@@ -223,7 +243,7 @@ bool GloScope::checkMain()
     }
     return noErrors;
 }
-//attributes and methods
+//check attributes and methods in class scope about redefined and having the same name with others
 bool GloScope::checkAttributesAndMethods()
 {
     bool noErrors = true;
@@ -260,6 +280,64 @@ bool GloScope::checkAttributesAndMethods()
     }
     return noErrors;
 }
+
+bool GloScope::checkRedefinedLocalVariables()
+{
+    bool noErrors = true;
+    for(auto gloScopeEntry : entries)
+    {
+        std::vector<Entry*> claScopeEntries = ((GloScopeEntry*)gloScopeEntry) \
+            -> getClaDes() -> getClaScope() -> getEntries();
+        for(auto claScopeEntry : claScopeEntries)
+        {
+            if(((ClaScopeEntry*)claScopeEntry) -> getCategory() == DC::CATEGORY::CATEGORY::DC_FUN)
+            {
+                LocScope *locScope = ((ClaScopeEntry*)claScopeEntry) -> getFunDes() \
+                    -> getForScope() -> getLocScopeEntry() -> getSubLocScope();
+                if(locScope != NULL)
+                    noErrors = locScope -> checkRedefinedLocalVariables() ? noErrors : false;
+            }
+                
+        }
+    }
+    return noErrors;
+}
+
+bool LocScope::checkRedefinedLocalVariables()
+{
+    bool noErrors = true;
+    std::map<std::string, YYLTYPE*> doesVariablesExist; 
+    for(auto locScopeEntry : entries)
+    {
+        LocScope* subLocScope = ((LocScopeEntry*)locScopeEntry) -> getSubLocScope();
+        if(subLocScope != NULL)
+            noErrors = subLocScope -> checkRedefinedLocalVariables() ? noErrors : false;
+        else
+        {
+            std::string name = ((LocScopeEntry*)locScopeEntry) -> getName();
+            if(doesVariablesExist.find(name) == doesVariablesExist.end())
+                doesVariablesExist[name] = ((LocScopeEntry*)locScopeEntry) -> getLocation();
+            else
+            {
+                noErrors = false;
+                IssueError::RedefinedLocalVariable(((LocScopeEntry*)locScopeEntry) -> getLocation(), name, \
+                    doesVariablesExist[name]);
+            }
+        }
+    }
+    return noErrors;
+}
+
+
+
+
+/*
+ * check stmt 
+*/
+
+//check whether dot(.) is used right, 
+//which includes checking undefine method for an object
+
 
 
 

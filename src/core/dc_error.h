@@ -32,6 +32,8 @@ public:
 	//attribute and method
 	static void RedefinedVarOrMethod(const YYLTYPE *pyylloc, std::string idname, const YYLTYPE *firstDefinedLocation, int category);
 	static void AttributeAndMethodWithTheSameName(const YYLTYPE *pyylloc, std::string idname, const YYLTYPE *firstDefinedLocation);
+	//local variable
+	static void RedefinedLocalVariable(const YYLTYPE *pyylloc, std::string idname, const YYLTYPE *firstDefinedLocation);
 	
 private:
     static void FlagErrorPlace(const YYLTYPE *pyylloc);
