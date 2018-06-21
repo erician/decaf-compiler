@@ -196,8 +196,9 @@ Entry* FunDecl::buildClassSym(std::string className)
         forScope->addEntry((*pformals)[i]->buildFormalSym());
     }
     //set local scope
-    forScope->setLocScopeEntry(pstmtblock->buildLocalSym());
+    forScope->setLocScopeEntry(pstmtblock->buildLocalSym(forScope));
     forScope->setFunName(pid->getidname());
+    forScope->setClassName(className);
     funDes->setForScope(forScope);
     claScopeEntry->setFunDes(funDes);
     claScopeEntry->setLocation(pid->getplocation());
@@ -213,7 +214,7 @@ Entry* VarDecl::buildFormalSym()
     return forScopeEntry;
 }
 
-Entry* VarDecl::buildLocalSym()
+Entry* VarDecl::buildLocalSym(Scope* parentScope)
 {
     LocScopeEntry *locScopeEntry = new LocScopeEntry();
     locScopeEntry->setName(pid->getidname());
@@ -224,20 +225,21 @@ Entry* VarDecl::buildLocalSym()
     return locScopeEntry;
 }
 
-Entry* Stmt::buildLocalSym()
+Entry* Stmt::buildLocalSym(Scope* parentScope)
 {
     return NULL;
 }
 
-Entry* StmtBlock::buildLocalSym()
+Entry* StmtBlock::buildLocalSym(Scope* parentScope)
 {
     LocScope *locScope = new LocScope();
+    locScope -> setParentScope(parentScope);
     if(pstmts != NULL)
     {
         for (auto pstmt : *(pstmts))
         {
             if(pstmt != NULL)
-                locScope->addEntry(pstmt->buildLocalSym());
+                locScope->addEntry(pstmt->buildLocalSym(locScope));
         }
     }
     
@@ -247,16 +249,17 @@ Entry* StmtBlock::buildLocalSym()
     return locScopeEntry;
 }
 
-Entry* IfStmt::buildLocalSym()
+Entry* IfStmt::buildLocalSym(Scope* parentScope)
 {
     LocScope *locScope = new LocScope();
+    locScope -> setParentScope(parentScope);
     if(pstmt1 != NULL)
     {
-        locScope->addEntry(pstmt1->buildLocalSym());
+        locScope->addEntry(pstmt1->buildLocalSym(locScope));
     }
     if(pstmt2 != NULL)
     {
-        locScope->addEntry(pstmt2->buildLocalSym());
+        locScope->addEntry(pstmt2->buildLocalSym(locScope));
     }
     LocScopeEntry *locScopeEntry = new LocScopeEntry();
     locScopeEntry->setName("");
@@ -264,11 +267,11 @@ Entry* IfStmt::buildLocalSym()
     return locScopeEntry;
 }
 
-Entry* WhileStmt::buildLocalSym()
+Entry* WhileStmt::buildLocalSym(Scope* parentScope)
 {
     if (pstmt != NULL)
     {
-        return pstmt->buildLocalSym();
+        return pstmt->buildLocalSym(parentScope);
     }
     else
     {
@@ -276,11 +279,11 @@ Entry* WhileStmt::buildLocalSym()
     }
 }
 
-Entry* ForStmt::buildLocalSym()
+Entry* ForStmt::buildLocalSym(Scope* parentScope)
 {
     if (pstmt != NULL)
     {
-        return pstmt->buildLocalSym();
+        return pstmt->buildLocalSym(parentScope);
     }
     else
     {

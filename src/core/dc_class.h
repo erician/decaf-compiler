@@ -124,7 +124,7 @@ class Stmt:public TreeNode
 {
 public:
     Stmt();
-    virtual Entry *buildLocalSym();   
+    virtual Entry *buildLocalSym(Scope* parentScope);   
 };
 
 class VarDecl:public Decl, public Stmt
@@ -135,7 +135,7 @@ public:
     void printAst(int aline,int level);
     Entry* buildClassSym(std::string name);
     Entry* buildFormalSym();
-    Entry* buildLocalSym();
+    Entry* buildLocalSym(Scope* parentScope);
 };
 
 class FunDecl:public Decl
@@ -227,7 +227,7 @@ public:
     StmtBlock(std::vector<Stmt*> *s2);
     void printAst(int aline,int level);
     //return LocScopeEntry with name="" and subLocScope not NULL;
-    Entry* buildLocalSym();     
+    Entry* buildLocalSym(Scope* parentScope);     
 
 };
 class IfStmt:public Stmt
@@ -239,7 +239,7 @@ public:
     Stmt *pstmt2;
     IfStmt(Expr *s3,Stmt *s5,const char *s6,Stmt *s7);
     void printAst(int aline,int level);
-    Entry *buildLocalSym(); 
+    Entry *buildLocalSym(Scope* parentScope); 
 };
 class WhileStmt:public Stmt
 {
@@ -248,7 +248,7 @@ public:
     Stmt *pstmt;
     WhileStmt(Expr *s3,Stmt *s5);
     void printAst(int aline,int level);
-    Entry* buildLocalSym(); 
+    Entry* buildLocalSym(Scope* parentScope); 
 };
 class ForStmt:public Stmt
 {
@@ -259,7 +259,7 @@ public:
     Stmt* pstmt;
     ForStmt(Expr* s3,Expr* s5,Expr* s7,Stmt* s9);
     void printAst(int aline,int level);
-    Entry* buildLocalSym(); 
+    Entry* buildLocalSym(Scope* parentScope); 
 };
 class ReturnStmt:public Stmt
 {

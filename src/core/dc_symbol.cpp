@@ -306,7 +306,7 @@ ForScope* FunDes::getForScope()
 //formal scope
 ForScope::ForScope()
 {
-
+    this -> className = "";
 }
 bool ForScope::addEntry(Entry *entry)
 {
@@ -338,6 +338,17 @@ std::string ForScope::getFunName()
     return funName;
 }
 
+bool ForScope::setClassName(std::string className)
+{
+    this->className = className;
+    return true;
+}
+
+std::string ForScope::getClassName()
+{
+    return this -> className;
+}
+
 //formal scope entry
 ForScopeEntry::ForScopeEntry()
 {
@@ -364,7 +375,7 @@ TypeInfo* ForScopeEntry::getTypeInfo()
 //local scope
 LocScope::LocScope()
 {
-
+    parentScope = NULL;
 }
 bool LocScope::addEntry(Entry* entry)
 {
@@ -374,6 +385,15 @@ bool LocScope::addEntry(Entry* entry)
     }
     this->entries.push_back(entry);
     return true;
+}
+bool LocScope::setParentScope(Scope* parentScope)
+{
+    this->parentScope = parentScope;
+    return true;
+}
+Scope* LocScope::getParentScope()
+{
+    return this->parentScope;
 }
 //local scope entry
 LocScopeEntry::LocScopeEntry()

@@ -39,6 +39,7 @@ bool Program::checkScope()
 //mainly check whether statement is legal 
 bool Program::checkStmt()
 {
+
     return true;
 }
 
@@ -328,17 +329,15 @@ bool LocScope::checkRedefinedLocalVariables()
     return noErrors;
 }
 
-
-
-
 /*
  * check stmt 
 */
 
+//check undefined variables
+
+
+
 //check whether dot(.) is used right, 
-//which includes checking undefine method for an object
-
-
 
 
 

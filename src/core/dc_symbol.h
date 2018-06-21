@@ -120,7 +120,7 @@ class ClaDes:public Scope
 private:
     //仅支持单继承
     std::string parentName;
-    //parentClaDes可以在后面绑定，在创建该类的时候并不着急指定它的值.只要确定parentName
+    //parentClaDes可以在后面绑定，在创建该类的时候并不着急指定它的值.只要确定parentName,将在声明有关的check中设置
     ClaDes* parentClaDes;
     ClaScope* claScope;
 public:
@@ -247,6 +247,7 @@ private:
     std::vector<Entry*> entries;
     LocScopeEntry *locScopeEntry;
     std::string funName;
+    std::string className;
 public:
     ForScope();
     bool addEntry(Entry* entry);
@@ -256,6 +257,9 @@ public:
 
     bool setFunName(std::string funName);
     std::string getFunName();
+
+    bool setClassName(std::string className);
+    std::string getClassName();    
 
     void printSym(int aline, int level);
 
@@ -287,11 +291,14 @@ class LocScope:public Scope
 {
 private:
     std::vector<Entry*> entries;
+    Scope *parentScope;
 public:
     LocScope();
     bool addEntry(Entry* entry);
-
     void printSym(int aline, int level);
+
+    bool setParentScope(Scope* parentScope);
+    Scope* getParentScope();
 
     //check
     bool checkUndefinedClass(GloScope* gloScope);
