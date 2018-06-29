@@ -35,6 +35,9 @@ public:
 	//local variable
 	static void RedefinedLocalVariable(const YYLTYPE *pyylloc, std::string idname, const YYLTYPE *firstDefinedLocation);
 	
+
+	//internal error
+	static void InternalError(const std::string filename, int lineno);
 private:
     static void FlagErrorPlace(const YYLTYPE *pyylloc);
 	static std::string ReplaceTabByBlank(std::string str);

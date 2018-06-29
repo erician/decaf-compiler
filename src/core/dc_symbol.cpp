@@ -15,6 +15,13 @@ YYLTYPE* Entry::getLocation()
     return this->location;
 }
 
+//Scope
+
+Scope* Scope::getParentScope()
+{
+    return NULL;
+}
+
 //GloScope
 GloScope::GloScope()
 {
@@ -29,6 +36,11 @@ bool GloScope::addEntry(Entry* entry)
     }
     entries.push_back(entry);
     return true;
+}
+
+std::vector<Entry*> GloScope::getEntries()
+{
+    return entries;
 }
 
 //GloScopeEntry
@@ -213,8 +225,6 @@ YYLTYPE* TypeInfo::getLocation()
 {
     return this -> location;
 }
-
-
 //ClaScopeEntry
 ClaScopeEntry::ClaScopeEntry()
 {
@@ -376,6 +386,7 @@ TypeInfo* ForScopeEntry::getTypeInfo()
 LocScope::LocScope()
 {
     parentScope = NULL;
+    start = 0;
 }
 bool LocScope::addEntry(Entry* entry)
 {
@@ -386,6 +397,12 @@ bool LocScope::addEntry(Entry* entry)
     this->entries.push_back(entry);
     return true;
 }
+
+std::vector<Entry*> LocScope::getEntries()
+{
+    return entries;
+}
+
 bool LocScope::setParentScope(Scope* parentScope)
 {
     this->parentScope = parentScope;
@@ -435,6 +452,7 @@ bool LocScopeEntry::setSubLocScope(LocScope* subLocScope)
     this->subLocScope = subLocScope;
     return true;
 }
+
 LocScope* LocScopeEntry::getSubLocScope()
 {
     return subLocScope;

@@ -23,6 +23,7 @@
 #endif
 
 #include <map>
+#include <typeinfo>
 
 //returnval: true means no error, or false
 bool Program::checkStaticSemantic()
@@ -39,8 +40,7 @@ bool Program::checkScope()
 //mainly check whether statement is legal 
 bool Program::checkStmt()
 {
-
-    return true;
+    return checkUndefinedVariables(gloScope, gloScope);
 }
 
 /*
@@ -68,6 +68,27 @@ GloScopeEntry* GloScope::findClass(std::string className)
         }
     }
     return NULL;
+}
+
+LocScope* LocScope::nextSubLocScope()
+{
+    if(start >= entries.size())
+        return NULL;
+    for(int i = start; i < entries.size(); i++)
+    {
+        if(entries[i]->getSubLocScope() != NULL)
+        {
+            start = i + 1;
+            return entries[i]->getSubLocScope();
+        }
+    }
+    start = entries.size();
+    return NULL;
+}
+
+bool LocScope::findId(std::string idName, YYLTYPE *plocation)
+{
+    
 }
 
 //class
@@ -333,7 +354,209 @@ bool LocScope::checkRedefinedLocalVariables()
  * check stmt 
 */
 
-//check undefined variables
+//check undefined variables, note: we see fun as variable
+bool TreeNode::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+{
+    return true;
+}
+
+bool Program::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+{
+    bool noErrors = true;
+    std::vector<Entry *> gloScopeEntries = gloScope.getEntries();
+    for(int i=0; i < pvecClassDecl.size(); i++)
+    {
+        noErrors = pvecClassDecl[i] -> checkUndefinedVariables(gloScope, \
+        ((GloScopeEntry*)gloScopeEntries[i])->getClaDes()->getClaScope()) \
+        ? noErrors : true;
+    }
+    return noErrors;
+}
+
+bool ClassDecl::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+{
+    bool noErrors = true;
+    std::vector<Entry*> claScopeEntries = ((ClaScope*)currentScope)->getEntries();
+    for(int i=0; i<pfields.size(); i++)
+    {
+        FunDes *funDes = claScopeEntries[i]->getFunDes();
+        if(funDes != NULL)
+            noErrors = pfields[i]->checkUndefinedVariables(gloScope,funDes->getForScope())\
+            ? noErrors : false;
+    }
+    return noErrors;
+}
+
+bool FunDecl::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+{
+    return pstmtblock -> checkUndefinedVariables(gloScope, \
+    ((ForScope*)currentScope)->getLocScopeEntry()->getSubLocScope());
+}
+
+bool StmtBlock::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+{
+    bool noErrors = true;
+    for(auto stmt : pstmts)
+    {
+        if(typeid(*stmt).name() == typeid(StmtBlock).name())
+        {
+            LocScope *subLocScope = ((LocScope*)currentScope)->nextSubLocScope();
+            if(subLocScope != NULL)
+            {
+                noErrors = stmt->checkUndefinedVariables(gloScope, subLocScope ? noErrors : false;
+            }
+            else
+            {
+                IssueError::InternalError(__FILE__, __LINE__);
+                return false;
+            }
+        }
+        else
+        {
+            noErrors = stmt->checkUndefinedVariables(gloScope, currentScope) ? noErrors : false;
+        }
+    }
+    return noErrors;
+}
+
+bool IfStmt::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+{
+    bool noErrors = true;
+    noErrors = pexpr -> checkUndefinedVariables(gloScope, currentScope);
+    if(pstmt1 != NULL)
+        if(typeid(*pstmt1).name() == typeid(StmtBlock).name())
+            noErrors = pstmt1 -> checkUndefinedVariables(gloScope, ((LocScope*)currentScope)->nextSubLocScope()) ? noErrors : false;
+        else
+            noErrors = pstmt1 -> checkUndefinedVariables(gloScope, currentScope) ? noErrors : false;
+    if(pstmt2 != NULL)
+        if(typeid(*pstmt2).name() == typeid(StmtBlock).name())
+            noErrors = pstmt2 -> checkUndefinedVariables(gloScope, ((LocScope*)currentScope)->nextSubLocScope()) ? noErrors : false;
+        else
+            noErrors = pstmt2 -> checkUndefinedVariables(gloScope, currentScope) ? noErrors : false;
+    return noErrors;
+}
+
+bool WhileStmt::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+{
+    bool noErrors = true;
+    noErrors = pexpr -> checkUndefinedVariables(gloScope, currentScope);
+    if(pstmt != NULL)
+        if(typeid(*pstmt).name() == typeid(StmtBlock).name())
+            noErrors = pstmt -> checkUndefinedVariables(gloScope, ((LocScope*)currentScope)->nextSubLocScope()) ? noErrors : false;
+        else
+            noErrors = pstmt -> checkUndefinedVariables(gloScope, currentScope) ? noErrors : false;
+    return noErrors;
+}
+
+bool ForStmt::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+{
+    bool noErrors = true;
+    noErrors = pexpr -> checkUndefinedVariables(gloScope, currentScope);
+    if(pstmt != NULL)
+        if(typeid(*pstmt).name() == typeid(StmtBlock).name())
+            noErrors = pstmt -> checkUndefinedVariables(gloScope, ((LocScope*)currentScope)->nextSubLocScope()) ? noErrors : false;
+        else
+            noErrors = pstmt -> checkUndefinedVariables(gloScope, currentScope) ? noErrors : false;
+    return noErrors;
+}
+
+bool ReturnStmt::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+{
+    return poptexpr != NULL ? poptexpr -> checkUndefinedVariables(gloScope, currentScope) : true;
+}
+
+bool BreakStmt::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+{
+    return true;
+}
+
+bool PrintStmt::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+{
+    bool noErrors = true;
+    for(auto expr : pexprs)
+    {
+        noErrors = expr -> checkUndefinedVariables(gloScope, currentScope) ? noErrors : false;
+    }
+    return noErrors;
+}
+
+bool AssignExpr::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+{
+    bool noErrors = true;
+    noErrors = plvalue -> checkUndefinedVariables(gloScope, currentScope);
+    noErrors = pexpr -> checkUndefinedVariables(gloScope, currentScope) ? noErrors : false;
+    return noErrors;
+}
+
+bool ArithmeticExpr::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+{
+    bool noErrors = true;
+    noErrors = pexpr1 -> checkUndefinedVariables(gloScope, currentScope);
+    noErrors = pexpr2 -> checkUndefinedVariables(gloScope, currentScope) ? noErrors : false;
+    return noErrors;
+}
+
+bool RelationExpr::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+{
+    bool noErrors = true;
+    noErrors = pexpr1 -> checkUndefinedVariables(gloScope, currentScope);
+    noErrors = pexpr2 -> checkUndefinedVariables(gloScope, currentScope) ? noErrors : false;
+    return noErrors;
+}
+
+bool LogicalExpr::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+{
+    bool noErrors = true;
+    noErrors = pexpr1 -> checkUndefinedVariables(gloScope, currentScope);
+    noErrors = pexpr2 -> checkUndefinedVariables(gloScope, currentScope) ? noErrors : false;
+    return noErrors;
+}
+
+bool FieldAccess::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+{
+    bool noErrors = true;
+    if(pexpr != NULL)
+        noErrors = pexpr -> checkUndefinedVariables(gloScope, currentScope);
+    noErrors = id -> checkUndefinedVariables(gloScope, currentScope) ? noErrors : false;
+    return noErrors;
+}
+
+bool Id::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+{
+    //find id in loccal scope first
+    while(true)
+    {
+        
+
+    }
+
+    //if not found, find the id in class scope
+
+
+}
+
+bool ArrayAccess::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+{
+    bool noErrors = true;
+    noErrors = pexpr1 -> checkUndefinedVariables(gloScope, currentScope);
+    noErrors = pexpr2 -> checkUndefinedVariables(gloScope, currentScope) ? noErrors : false;
+    return noErrors;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

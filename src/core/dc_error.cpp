@@ -131,5 +131,11 @@ void IssueError::RedefinedLocalVariable(const YYLTYPE *pyylloc, std::string idna
 }
 
 
+//internale error
+void IssueError::InternalError(const std::string filename, int lineno)
+{   
+    std::cout << "internal error: " << filename << ", " << lineno << std::endl;
+}
+
 
 

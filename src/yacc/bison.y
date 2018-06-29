@@ -240,7 +240,7 @@ Stmt       : OptExpr SEMI       {$$=$1;}
            | StmtBlock		    {$$=$1;}
            | VarDecl            {$$=$1;}
            ;
-          
+         
 IfStmt     : IF LP Expr RP Stmt %prec LOWER_THAN_ELSE
                                 {$$=new IfStmt($3,$5,"",NULL);}
            | IF LP Expr RP Stmt ELSE Stmt
@@ -353,15 +353,15 @@ OptExpr    : Expr		{$$=$1;}
            |            {$$=NULL;}
            ;
             
-LValue     : FieldAccess    {$$=$1;}
-           | ArrayAccess 	{$$=$1;}
+LValue     : FieldAccess    {$$=$1;} 
+           | ArrayAccess 	{$$=$1;} 
            ; 
 
-FieldAccess : ID           	{$$=new FieldAccess(NULL,new Id($1,@1));}
-            | Expr DOT ID	{$$=new FieldAccess($1,new Id($3,@3));}
+FieldAccess : ID           	{$$=new FieldAccess(NULL,new Id($1,@1));} 
+            | Expr DOT ID	{$$=new FieldAccess($1,new Id($3,@3));} 
             ;
 
-Call       : ID LP Actuals RP 
+Call       : ID LP Actuals RP
                             {$$=new Call(NULL,new Id($1,@1),$3);} 
            | Expr DOT ID LP Actuals RP
                             {$$=new Call($1,new Id($3,@3),$5);}

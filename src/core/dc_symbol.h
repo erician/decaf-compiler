@@ -51,13 +51,14 @@ public:
     bool setLocation(YYLTYPE* location);
     YYLTYPE* getLocation(); 
 private:
-    YYLTYPE *location;
+    YYLTYPE *location; 
 };
 
 class Scope
 {
 public:
     virtual void printSym(int aline, int level) = 0;
+    virtual Scope* getParentScope();
 };
 
 //GloScope
@@ -68,6 +69,7 @@ private:
 public:
     GloScope();
     bool addEntry(Entry* entry);
+    std::vector<Entry*> getEntries();
     
     void printSym(int aline, int level);
 
@@ -245,7 +247,7 @@ class ForScope:public Scope
 {
 private:
     std::vector<Entry*> entries;
-    LocScopeEntry *locScopeEntry;
+    LocScopeEntry * ;
     std::string funName;
     std::string className;
 public:
@@ -265,7 +267,6 @@ public:
 
     //check
     bool checkUndefinedClass(GloScope* gloScope);
-
 };
 //formal scope entry
 class ForScopeEntry: public Entry
@@ -292,9 +293,13 @@ class LocScope:public Scope
 private:
     std::vector<Entry*> entries;
     Scope *parentScope;
+    //used by nextSubLocScope as the pos to start to find
+    int start;
 public:
     LocScope();
     bool addEntry(Entry* entry);
+    std::vector<Entry*> getEntries();
+
     void printSym(int aline, int level);
 
     bool setParentScope(Scope* parentScope);
@@ -303,6 +308,9 @@ public:
     //check
     bool checkUndefinedClass(GloScope* gloScope);
     bool checkRedefinedLocalVariables();
+
+    int nextSubLocScope();
+    bool findId(std::string idName, YYLTYPE *plocation);
 };
 //local scope entry
 class LocScopeEntry: public Entry
