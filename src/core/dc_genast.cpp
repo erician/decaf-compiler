@@ -188,17 +188,17 @@ Call::Call(Expr* s1,Id* s3,std::vector<Expr*> *s5)
     pexpr=s1;
     pactuals=s5;
 }
-This::This()
+This::This(YYLTYPE loc)
 {
-    
+    plocation=new YYLTYPE(loc);
 }
-ReadInteger::ReadInteger()
+ReadInteger::ReadInteger(YYLTYPE loc)
 {
-
+    plocation=new YYLTYPE(loc);
 }
-ReadLine::ReadLine()
+ReadLine::ReadLine(YYLTYPE loc)
 {
-    
+    plocation=new YYLTYPE(loc);
 }
 Instanceof::Instanceof(Expr* s3,Id* s5)
 {
@@ -209,9 +209,10 @@ NewExpr::NewExpr(Id* s2)
 {
     pid=s2;
 }
-NewArrayExpr::NewArrayExpr(Type* s2,Expr* s4)
+NewArrayExpr::NewArrayExpr(Type* s2, YYLTYPE loc, Expr* s4)
 {
     ptype=s2;
+    plocation=new YYLTYPE(loc);
     pexpr=s4;
 }
 /**************constant*************/

@@ -37,7 +37,7 @@ LD = g++
 LEX = flex
 YACC = bison
 
-CFLAGS = -g -Wall -Wno-unused -Wno-sign-compare -std=c++11 -I.
+CFLAGS = -g -Wall -Wno-unused -Wno-sign-compare -Wno-parentheses -std=c++11 -I.
 
 LEXFLAGS = 
 YACCFLAGS = -dvty
@@ -78,7 +78,12 @@ failtest:
 	./$(OBJDIR)/decaf $(TESTDIR)/attributeAndMethodWithTheSameName_Shouldfail.decaf
 	@echo "---------->redefinedLocalVariables_Shouldfail"
 	./$(OBJDIR)/decaf $(TESTDIR)/redefinedLocalVariables_Shouldfail.decaf
-
+	@#undefined variables
+	@echo "---------->undefinedVariables_Shouldfail"
+	./$(OBJDIR)/decaf $(TESTDIR)/undefinedVariables_Shouldfail.decaf
+	@#uncorrectly dot used
+	@echo "---------->unCorrectlyDotUsed_Shouldfail"
+	./$(OBJDIR)/decaf $(TESTDIR)/unCorrectlyDotUsed_Shouldfail.decaf
 
 passtest:
 	@echo "---------->simpleTest_shouldpass.decaf"

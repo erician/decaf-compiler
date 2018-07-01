@@ -59,6 +59,8 @@ class Scope
 public:
     virtual void printSym(int aline, int level) = 0;
     virtual Scope* getParentScope();
+    virtual bool findId(std::string idName, YYLTYPE *plocation);
+    virtual TypeInfo* getType(std::string idName, YYLTYPE *plocation);
 };
 
 //GloScope
@@ -159,7 +161,9 @@ public:
 
     //check
     bool checkUndefinedClass(GloScope* gloScope);
-   
+
+    bool findId(std::string idName, YYLTYPE *plocation);
+    TypeInfo* getType(std::string idName, YYLTYPE *plocation);
 };
 
 //TypeInfo
@@ -170,6 +174,7 @@ private:
     std::string className;
     int arrayLevel;
     int arrayType;
+    std::string name;
     YYLTYPE *location;
 public:
     TypeInfo();
@@ -184,6 +189,9 @@ public:
 
     bool setClassName(std::string className);
     std::string getClassName();
+
+    bool setName(std::string name);
+    std::string getName();
 
     bool setLocation(YYLTYPE* location);
     YYLTYPE* getLocation(); 
@@ -247,7 +255,7 @@ class ForScope:public Scope
 {
 private:
     std::vector<Entry*> entries;
-    LocScopeEntry * ;
+    LocScopeEntry * locScopeEntry;
     std::string funName;
     std::string className;
 public:
@@ -267,6 +275,8 @@ public:
 
     //check
     bool checkUndefinedClass(GloScope* gloScope);
+    bool findId(std::string idName, YYLTYPE *plocation);
+    TypeInfo* getType(std::string idName, YYLTYPE *plocation);
 };
 //formal scope entry
 class ForScopeEntry: public Entry
@@ -295,6 +305,7 @@ private:
     Scope *parentScope;
     //used by nextSubLocScope as the pos to start to find
     int start;
+    
 public:
     LocScope();
     bool addEntry(Entry* entry);
@@ -309,8 +320,10 @@ public:
     bool checkUndefinedClass(GloScope* gloScope);
     bool checkRedefinedLocalVariables();
 
-    int nextSubLocScope();
+    LocScope* nextSubLocScope();
     bool findId(std::string idName, YYLTYPE *plocation);
+    int cmpYyltype(YYLTYPE *l1, YYLTYPE *l2);
+    TypeInfo* getType(std::string idName, YYLTYPE *plocation);
 };
 //local scope entry
 class LocScopeEntry: public Entry

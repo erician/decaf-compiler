@@ -274,20 +274,20 @@ PrintStmt  : PRINT LP Exprs RP SEMI
 Expr       :  AssignExpr        {$$=$1;}
            |  Constant		    {$$=$1;}
            |  LValue		    {$$=$1;}
-           |  THIS              {$$=new This();}
+           |  THIS              {$$=new This(@1);}
            |  Call		        {$$=$1;}
            |  LP Expr RP        {$$=$2;}
            |  ArithmeticExpr	{$$=$1;}
            |  RelationalExpr	{$$=$1;}
            |  LogicalExpr	    {$$=$1;}
     	   |  READINTEGER LP RP 
-				{$$=new ReadInteger();}
+				{$$=new ReadInteger(@1);}
            |  READLINE LP RP    
-				{$$=new ReadLine();}
+				{$$=new ReadLine(@1);}
 	       |  INSTANCEOF LP Expr COMMA ID RP 
 				{$$=new Instanceof($3,new Id($5,@5));}
            |  NewExpr
-                {$$=$1;} 
+                {$$=$1;}
            |  NewArrayExpr
 				{$$=$1;}
 		   ;
@@ -299,7 +299,7 @@ NewExpr        : NEW ID LP RP
                 {$$=new NewExpr(new Id($2,@2));}
                ;
 NewArrayExpr   : NEWARRAY LP Type COMMA Expr RP
-                {$$=new NewArrayExpr($3,$5);}
+                {$$=new NewArrayExpr($3,@3,$5);}
                ;
 
 AssignExpr     : LValue ASSIGNOP Expr     

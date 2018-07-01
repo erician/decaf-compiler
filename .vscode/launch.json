@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/obj/decaf",
             "args": [
-                "decaf-source-file/undefinedClassInVars_Shouldfail.decaf"
+                "decaf-source-file/undefinedVariables_Shouldfail.decaf"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

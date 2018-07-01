@@ -130,6 +130,24 @@ void IssueError::RedefinedLocalVariable(const YYLTYPE *pyylloc, std::string idna
     IssueError::PrintLocation(firstDefinedLocation);  
 }
 
+void IssueError::UndefinedVariables(const YYLTYPE *pyylloc, std::string idname)
+{
+    std::cout << "undefined variable " << idname <<" ";
+    IssueError::PrintLocation(pyylloc);
+}
+
+void IssueError::ClassDoesNotHaveTheAttriOrMethod(std::string classname, const YYLTYPE *pyylloc, std::string idname)
+{   
+    std::cout << "the class of " << classname << " doesnot have the attribute or method " << idname << " ";
+    IssueError::PrintLocation(pyylloc);
+}
+
+void IssueError::UnCorrectlyDotUsed(const YYLTYPE *pyylloc, std::string idname)
+{
+    std::cout << "'.' is not correctly used, not a class type " << idname << " ";
+    IssueError::PrintLocation(pyylloc);
+}
+
 
 //internale error
 void IssueError::InternalError(const std::string filename, int lineno)

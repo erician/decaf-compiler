@@ -7,3 +7,6 @@
 	make //compile decaf
 	make clean 
 	make test  
+
+4.notes
+(1)We doesn't follow the decaf standard totally, such as all attributes and methods are public.

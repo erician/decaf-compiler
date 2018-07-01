@@ -170,6 +170,7 @@ TypeInfo::TypeInfo()
 {
     className = "";
     arrayLevel = 0;
+    name = "";
 }
 
 bool TypeInfo::setType(int type)
@@ -214,6 +215,16 @@ bool TypeInfo::setClassName(std::string className)
 std::string TypeInfo::getClassName()
 {
     return this -> className;
+}
+
+bool TypeInfo::setName(std::string name)
+{
+    this -> name = name;
+    return true;
+}
+std::string TypeInfo::getName()
+{
+    return this -> name;
 }
 
 bool TypeInfo::setLocation(YYLTYPE* location)

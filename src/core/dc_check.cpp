@@ -40,7 +40,7 @@ bool Program::checkScope()
 //mainly check whether statement is legal 
 bool Program::checkStmt()
 {
-    return checkUndefinedVariables(gloScope, gloScope);
+    return checkUndefinedVariables(gloScope, NULL, gloScope);
 }
 
 /*
@@ -76,19 +76,102 @@ LocScope* LocScope::nextSubLocScope()
         return NULL;
     for(int i = start; i < entries.size(); i++)
     {
-        if(entries[i]->getSubLocScope() != NULL)
+        if(((LocScopeEntry*)entries[i])->getSubLocScope() != NULL)
         {
             start = i + 1;
-            return entries[i]->getSubLocScope();
+            return ((LocScopeEntry*)entries[i])->getSubLocScope();
         }
     }
     start = entries.size();
     return NULL;
 }
 
+//findId
+bool Scope::findId(std::string idName, YYLTYPE *plocation)
+{
+    return true;
+}
+
+//plocation is not used
+bool ClaScope::findId(std::string idName, YYLTYPE *plocation)
+{
+    for(auto entry : entries)
+    {
+        if(((ClaScopeEntry*)entry) -> getName() == idName)
+            return true;
+    }
+    return false;
+}
+
+bool ForScope::findId(std::string idName, YYLTYPE *plocation)
+{
+    for(auto entry : entries)
+    {
+        if(((ForScopeEntry*)entry) -> getName() == idName)
+            return true;
+    }
+    return false;
+}
+
 bool LocScope::findId(std::string idName, YYLTYPE *plocation)
 {
-    
+    for(auto entry : entries)
+    {
+        if(((LocScopeEntry*)entry) -> getName() == idName and \
+            cmpYyltype(entry -> getLocation(), plocation) == 1)
+            return true;
+    }
+    return false;
+}
+
+//get type
+TypeInfo* Scope::getType(std::string idName, YYLTYPE *plocation)
+{
+    return NULL;
+}
+
+//plocation is not used
+TypeInfo* ClaScope::getType(std::string idName, YYLTYPE *plocation)
+{
+    for(auto entry : entries)
+    {
+        if(((ClaScopeEntry*)entry) -> getName() == idName)
+            return ((ClaScopeEntry*)entry) -> getTypeInfo();
+    }
+    return NULL;
+}
+
+TypeInfo* ForScope::getType(std::string idName, YYLTYPE *plocation)
+{
+    for(auto entry : entries)
+    {
+        if(((ForScopeEntry*)entry) -> getName() == idName)
+            return ((ForScopeEntry*)entry) -> getTypeInfo();
+    }
+    return NULL;
+}
+
+int LocScope::cmpYyltype(YYLTYPE *l1, YYLTYPE *l2)
+{
+    if(l1 -> first_line < l2 -> first_line)
+        return 1;
+    else if(l1 -> first_line > l2 -> first_line)
+        return -1;
+    else
+        if(l1 -> first_column < l2 -> first_column)
+            return 1;
+    return -1;
+}
+
+TypeInfo* LocScope::getType(std::string idName, YYLTYPE *plocation)
+{
+    for(auto entry : entries)
+    {
+        if(((LocScopeEntry*)entry) -> getName() == idName and \
+            cmpYyltype(entry -> getLocation(), plocation) == 1)
+            return ((LocScopeEntry*)entry) -> getTypeInfo();
+    }
+    return NULL;
 }
 
 //class
@@ -355,55 +438,77 @@ bool LocScope::checkRedefinedLocalVariables()
 */
 
 //check undefined variables, note: we see fun as variable
-bool TreeNode::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+bool TreeNode::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     return true;
 }
 
-bool Program::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+bool Id::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+{
+    //find id in loccal scope first
+    while(true)
+    {   
+        if(currentScope -> findId(name, plocation) == true)
+            return true;
+        if((currentScope = currentScope -> getParentScope()) == NULL)
+            break;
+    }
+    //if not found, find the id in class scope: this class first, then parent class
+    if(claDes -> getClaScope() -> findId(name, plocation) == true)
+        return true;
+    if(claDes -> getParentClaDes() != NULL && \
+        claDes -> getParentClaDes() -> getClaScope() -> findId(name, plocation))
+        return true;
+    IssueError::UndefinedVariables(plocation, name);
+    return false;
+}
+
+bool Program::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     bool noErrors = true;
-    std::vector<Entry *> gloScopeEntries = gloScope.getEntries();
-    for(int i=0; i < pvecClassDecl.size(); i++)
+    std::vector<Entry*> gloScopeEntries = gloScope -> getEntries();
+    for(int i=0; i < pvecClassDecl -> size(); i++)
     {
-        noErrors = pvecClassDecl[i] -> checkUndefinedVariables(gloScope, \
+        noErrors = (*pvecClassDecl)[i] -> checkUndefinedVariables( \
+        gloScope,\
+        ((GloScopeEntry*)gloScopeEntries[i])->getClaDes(), \
         ((GloScopeEntry*)gloScopeEntries[i])->getClaDes()->getClaScope()) \
         ? noErrors : true;
     }
     return noErrors;
 }
 
-bool ClassDecl::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+bool ClassDecl::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     bool noErrors = true;
     std::vector<Entry*> claScopeEntries = ((ClaScope*)currentScope)->getEntries();
-    for(int i=0; i<pfields.size(); i++)
+    for(int i=0; i<pfields -> size(); i++)
     {
-        FunDes *funDes = claScopeEntries[i]->getFunDes();
+        FunDes *funDes = ((ClaScopeEntry*)claScopeEntries[i])->getFunDes();
         if(funDes != NULL)
-            noErrors = pfields[i]->checkUndefinedVariables(gloScope,funDes->getForScope())\
+            noErrors = (*pfields)[i]->checkUndefinedVariables(gloScope, claDes,funDes->getForScope())\
             ? noErrors : false;
     }
     return noErrors;
 }
 
-bool FunDecl::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+bool FunDecl::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
-    return pstmtblock -> checkUndefinedVariables(gloScope, \
+    return pstmtblock -> checkUndefinedVariables(gloScope, claDes, \
     ((ForScope*)currentScope)->getLocScopeEntry()->getSubLocScope());
 }
 
-bool StmtBlock::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+bool StmtBlock::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     bool noErrors = true;
-    for(auto stmt : pstmts)
+    for(auto stmt : *pstmts)
     {
         if(typeid(*stmt).name() == typeid(StmtBlock).name())
         {
             LocScope *subLocScope = ((LocScope*)currentScope)->nextSubLocScope();
             if(subLocScope != NULL)
             {
-                noErrors = stmt->checkUndefinedVariables(gloScope, subLocScope ? noErrors : false;
+                noErrors = stmt->checkUndefinedVariables(gloScope, claDes, subLocScope) ? noErrors : false;
             }
             else
             {
@@ -413,135 +518,533 @@ bool StmtBlock::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
         }
         else
         {
-            noErrors = stmt->checkUndefinedVariables(gloScope, currentScope) ? noErrors : false;
+            noErrors = stmt->checkUndefinedVariables(gloScope, claDes, currentScope) ? noErrors : false;
         }
     }
     return noErrors;
 }
 
-bool IfStmt::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+bool IfStmt::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     bool noErrors = true;
-    noErrors = pexpr -> checkUndefinedVariables(gloScope, currentScope);
+    noErrors = pexpr -> checkUndefinedVariables(gloScope, claDes, currentScope);
     if(pstmt1 != NULL)
         if(typeid(*pstmt1).name() == typeid(StmtBlock).name())
-            noErrors = pstmt1 -> checkUndefinedVariables(gloScope, ((LocScope*)currentScope)->nextSubLocScope()) ? noErrors : false;
+            noErrors = pstmt1 -> checkUndefinedVariables(gloScope, claDes, ((LocScope*)currentScope)->nextSubLocScope()) ? noErrors : false;
         else
-            noErrors = pstmt1 -> checkUndefinedVariables(gloScope, currentScope) ? noErrors : false;
+            noErrors = pstmt1 -> checkUndefinedVariables(gloScope, claDes, currentScope) ? noErrors : false;
     if(pstmt2 != NULL)
         if(typeid(*pstmt2).name() == typeid(StmtBlock).name())
-            noErrors = pstmt2 -> checkUndefinedVariables(gloScope, ((LocScope*)currentScope)->nextSubLocScope()) ? noErrors : false;
+            noErrors = pstmt2 -> checkUndefinedVariables(gloScope, claDes, ((LocScope*)currentScope)->nextSubLocScope()) ? noErrors : false;
         else
-            noErrors = pstmt2 -> checkUndefinedVariables(gloScope, currentScope) ? noErrors : false;
+            noErrors = pstmt2 -> checkUndefinedVariables(gloScope, claDes, currentScope) ? noErrors : false;
     return noErrors;
 }
 
-bool WhileStmt::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+bool WhileStmt::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     bool noErrors = true;
-    noErrors = pexpr -> checkUndefinedVariables(gloScope, currentScope);
+    noErrors = pexpr -> checkUndefinedVariables(gloScope, claDes, currentScope);
     if(pstmt != NULL)
         if(typeid(*pstmt).name() == typeid(StmtBlock).name())
-            noErrors = pstmt -> checkUndefinedVariables(gloScope, ((LocScope*)currentScope)->nextSubLocScope()) ? noErrors : false;
+            noErrors = pstmt -> checkUndefinedVariables(gloScope, claDes, ((LocScope*)currentScope)->nextSubLocScope()) ? noErrors : false;
         else
-            noErrors = pstmt -> checkUndefinedVariables(gloScope, currentScope) ? noErrors : false;
+            noErrors = pstmt -> checkUndefinedVariables(gloScope, claDes, currentScope) ? noErrors : false;
     return noErrors;
 }
 
-bool ForStmt::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+bool ForStmt::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     bool noErrors = true;
-    noErrors = pexpr -> checkUndefinedVariables(gloScope, currentScope);
+    noErrors = pexpr -> checkUndefinedVariables(gloScope, claDes, currentScope);
     if(pstmt != NULL)
         if(typeid(*pstmt).name() == typeid(StmtBlock).name())
-            noErrors = pstmt -> checkUndefinedVariables(gloScope, ((LocScope*)currentScope)->nextSubLocScope()) ? noErrors : false;
+            noErrors = pstmt -> checkUndefinedVariables(gloScope, claDes, ((LocScope*)currentScope)->nextSubLocScope()) ? noErrors : false;
         else
-            noErrors = pstmt -> checkUndefinedVariables(gloScope, currentScope) ? noErrors : false;
+            noErrors = pstmt -> checkUndefinedVariables(gloScope, claDes, currentScope) ? noErrors : false;
     return noErrors;
 }
 
-bool ReturnStmt::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+bool ReturnStmt::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
-    return poptexpr != NULL ? poptexpr -> checkUndefinedVariables(gloScope, currentScope) : true;
+    return poptexpr != NULL ? poptexpr -> checkUndefinedVariables(gloScope, claDes, currentScope) : true;
 }
 
-bool BreakStmt::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+bool BreakStmt::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     return true;
 }
 
-bool PrintStmt::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+bool PrintStmt::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     bool noErrors = true;
-    for(auto expr : pexprs)
+    for(auto expr : *pexprs)
     {
-        noErrors = expr -> checkUndefinedVariables(gloScope, currentScope) ? noErrors : false;
+        noErrors = expr -> checkUndefinedVariables(gloScope, claDes, currentScope) ? noErrors : false;
     }
     return noErrors;
 }
 
-bool AssignExpr::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+bool AssignExpr::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     bool noErrors = true;
-    noErrors = plvalue -> checkUndefinedVariables(gloScope, currentScope);
-    noErrors = pexpr -> checkUndefinedVariables(gloScope, currentScope) ? noErrors : false;
+    noErrors = plvalue -> checkUndefinedVariables(gloScope, claDes, currentScope);
+    noErrors = pexpr -> checkUndefinedVariables(gloScope, claDes, currentScope) ? noErrors : false;
     return noErrors;
 }
 
-bool ArithmeticExpr::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+bool ArithmeticExpr::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     bool noErrors = true;
-    noErrors = pexpr1 -> checkUndefinedVariables(gloScope, currentScope);
-    noErrors = pexpr2 -> checkUndefinedVariables(gloScope, currentScope) ? noErrors : false;
+    noErrors = pexpr1 -> checkUndefinedVariables(gloScope, claDes, currentScope);
+    noErrors = pexpr2 -> checkUndefinedVariables(gloScope, claDes, currentScope) ? noErrors : false;
     return noErrors;
 }
 
-bool RelationExpr::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+bool RelationExpr::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     bool noErrors = true;
-    noErrors = pexpr1 -> checkUndefinedVariables(gloScope, currentScope);
-    noErrors = pexpr2 -> checkUndefinedVariables(gloScope, currentScope) ? noErrors : false;
+    noErrors = pexpr1 -> checkUndefinedVariables(gloScope, claDes, currentScope);
+    noErrors = pexpr2 -> checkUndefinedVariables(gloScope, claDes, currentScope) ? noErrors : false;
     return noErrors;
 }
 
-bool LogicalExpr::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+bool LogicalExpr::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     bool noErrors = true;
-    noErrors = pexpr1 -> checkUndefinedVariables(gloScope, currentScope);
-    noErrors = pexpr2 -> checkUndefinedVariables(gloScope, currentScope) ? noErrors : false;
+    noErrors = pexpr1 -> checkUndefinedVariables(gloScope, claDes, currentScope);
+    noErrors = pexpr2 -> checkUndefinedVariables(gloScope, claDes, currentScope) ? noErrors : false;
     return noErrors;
 }
 
-bool FieldAccess::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+bool FieldAccess::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+{
+    if(pexpr == NULL)
+        return pid -> checkUndefinedVariables(gloScope, claDes, currentScope);
+    else
+    {
+        if(pexpr -> checkUndefinedVariables(gloScope, claDes, currentScope) == false)
+            return false;
+        TypeInfo* typeInfo = pexpr -> getType(gloScope, claDes, currentScope);
+        if(typeInfo == NULL)
+            return false;
+        else
+        {
+            if(typeInfo -> getClassName() == "")
+            {
+                IssueError::UnCorrectlyDotUsed(typeInfo -> getLocation(), typeInfo -> getName());
+                return false;
+            }
+            else
+            {
+                ClaDes* claDes = gloScope -> findClass(typeInfo -> getClassName()) -> getClaDes();
+                if(((typeInfo = claDes -> getClaScope() -> getType(pid -> getidname(), pid -> getLocation()))!=NULL) \
+                ||  (claDes -> getParentClaDes() != NULL \
+                    && (typeInfo=claDes->getParentClaDes()->getClaScope()->getType(pid->getidname(), pid->getLocation()))!=NULL))
+                    return true;
+                else
+                    IssueError::ClassDoesNotHaveTheAttriOrMethod(typeInfo -> getClassName(), pid -> getLocation(), pid -> getidname());
+            }
+        }
+    }   
+    return false;
+}
+
+bool ArrayAccess::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+{
+    bool noErrors = true;
+    noErrors = pexpr1 -> checkUndefinedVariables(gloScope, claDes, currentScope);
+    noErrors = pexpr2 -> checkUndefinedVariables(gloScope, claDes, currentScope) ? noErrors : false;
+    return noErrors;
+}
+
+bool Call::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+{
+    bool noErrors = true;
+    if(pactuals != NULL)
+    {
+        for(auto expr : *pactuals)
+        {
+            noErrors = expr -> checkUndefinedVariables(gloScope, claDes, currentScope) ? noErrors : false;
+        }
+    }
+
+    if(pexpr == NULL)
+        return pid -> checkUndefinedVariables(gloScope, claDes, currentScope) ? noErrors : false;
+    else
+    {
+        if(pexpr -> checkUndefinedVariables(gloScope, claDes, currentScope) == false)
+            return false;
+        TypeInfo* typeInfo = pexpr -> getType(gloScope, claDes, currentScope);
+        if(typeInfo == NULL)
+            return false;
+        else
+        {
+            if(typeInfo -> getClassName() == "")
+            {
+                IssueError::UnCorrectlyDotUsed(typeInfo->getLocation(), typeInfo->getName());
+                return false;
+            }
+            else
+            {
+                ClaDes* claDes = gloScope -> findClass(typeInfo -> getClassName()) -> getClaDes();
+                if(((claDes -> getClaScope() -> getType(pid -> getidname(), pid -> getLocation()))!=NULL) \
+                ||  (claDes -> getParentClaDes() != NULL \
+                    && (claDes->getParentClaDes()->getClaScope()->getType(pid->getidname(), pid->getLocation()))!=NULL))
+                    ;
+                else
+                {
+                    IssueError::ClassDoesNotHaveTheAttriOrMethod(typeInfo -> getClassName(), pid -> getLocation(), pid -> getidname());
+                    noErrors = false;
+                }
+            }
+        }
+    }   
+    return noErrors;
+}
+
+bool Instanceof::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     bool noErrors = true;
     if(pexpr != NULL)
-        noErrors = pexpr -> checkUndefinedVariables(gloScope, currentScope);
-    noErrors = id -> checkUndefinedVariables(gloScope, currentScope) ? noErrors : false;
+        noErrors = pexpr -> checkUndefinedVariables(gloScope, claDes, currentScope);
+    if(pid != NULL)
+        noErrors = pid -> checkUndefinedVariables(gloScope, claDes, currentScope) ? noErrors : false;
     return noErrors;
 }
 
-bool Id::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+bool NewExpr::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
+    if(gloScope -> findClass(pid -> getidname()) == NULL)
+    {
+        IssueError::UndefinedClass(pid -> getplocation(), pid -> getidname());
+        return false;
+    }
+    return true;
+}
+
+bool NewArrayExpr::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+{
+    if(pexpr != NULL)
+        return pexpr -> checkUndefinedVariables(gloScope, claDes, currentScope);
+    return true;
+}
+
+//expr get type
+TypeInfo* TreeNode::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+{
+    return NULL;
+}
+
+TypeInfo* Id::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+{
+    TypeInfo *typeInfo = NULL;
     //find id in loccal scope first
     while(true)
-    {
-        
-
+    {   
+        if((typeInfo = currentScope -> getType(name, plocation)) != NULL)
+            break;
+        if((currentScope = currentScope -> getParentScope()) == NULL)
+            break;
     }
-
-    //if not found, find the id in class scope
-
-
+    //if not found, find the id in class scope: this class first, then parent class
+    
+    if((typeInfo != NULL) \
+    || ((typeInfo = claDes -> getClaScope() -> getType(name, plocation)) != NULL) \
+    || (claDes -> getParentClaDes() != NULL \
+        && (typeInfo=claDes->getParentClaDes()->getClaScope()->getType(name, plocation)) != NULL))
+    {
+        typeInfo -> setLocation(plocation);
+        typeInfo -> setName(name);
+        return typeInfo;
+    }
+    IssueError::UndefinedVariables(plocation, name);
+    return NULL;
 }
 
-bool ArrayAccess::checkUndefinedVariables(GloScope* gloScope, Scope* currentScope)
+TypeInfo* AssignExpr::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
-    bool noErrors = true;
-    noErrors = pexpr1 -> checkUndefinedVariables(gloScope, currentScope);
-    noErrors = pexpr2 -> checkUndefinedVariables(gloScope, currentScope) ? noErrors : false;
-    return noErrors;
+    return plvalue -> getType(gloScope, claDes, currentScope);
 }
+
+TypeInfo* ArithmeticExpr::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+{
+    return pexpr1 -> getType(gloScope, claDes, currentScope);
+}
+
+TypeInfo* RelationExpr::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+{
+    TypeInfo *typeInfo = new TypeInfo();
+    typeInfo -> setType(DC::TYPE::TYPE::DC_BOOL);
+    typeInfo -> setLocation(pexpr1 -> getLocation());
+    typeInfo -> setName("anonymous variable");
+    return typeInfo;
+}
+
+TypeInfo* LogicalExpr::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+{
+    TypeInfo *typeInfo = new TypeInfo();
+    typeInfo -> setType(DC::TYPE::TYPE::DC_BOOL);
+    typeInfo -> setLocation(pexpr1 -> getLocation());
+    typeInfo -> setName("anonymous variable");
+    return typeInfo;
+}
+
+TypeInfo* FieldAccess::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+{
+    if(pexpr == NULL)
+        return pid -> getType(gloScope, claDes, currentScope);
+    else
+    {
+        TypeInfo* typeInfo = pexpr -> getType(gloScope, claDes, currentScope);
+        if(typeInfo == NULL)
+            return NULL;
+        else
+        {
+            if(typeInfo -> getClassName() == "")
+            {
+                IssueError::UnCorrectlyDotUsed(typeInfo->getLocation(), typeInfo->getName());
+                return NULL;
+            }
+            else
+            {
+                ClaDes* claDes = gloScope -> findClass(typeInfo -> getClassName()) -> getClaDes();
+                if(((typeInfo = claDes -> getClaScope() -> getType(pid -> getidname(), pid -> getLocation()))!=NULL) \
+                ||  (claDes -> getParentClaDes() != NULL \
+                    && (typeInfo=claDes->getParentClaDes()->getClaScope()->getType(pid->getidname(), pid->getLocation()))!=NULL))
+                    return typeInfo;
+            }
+        }
+    }
+    return NULL;
+}
+
+TypeInfo* ArrayAccess::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+{
+    return pexpr1 -> getType(gloScope, claDes, currentScope);
+}
+
+TypeInfo* Call::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+{
+    if(pexpr == NULL)
+        return pid -> getType(gloScope, claDes, currentScope);
+    else
+    {
+        TypeInfo* typeInfo = pexpr -> getType(gloScope, claDes, currentScope);
+        if(typeInfo -> getClassName() == "")
+        {
+            IssueError::UnCorrectlyDotUsed(typeInfo->getLocation(), typeInfo->getName());
+            return NULL;
+        }
+        else
+        {
+            ClaDes* claDes = gloScope -> findClass(typeInfo -> getClassName()) -> getClaDes();
+            if(((typeInfo = claDes -> getClaScope() -> getType(pid -> getidname(), pid -> getLocation()))!=NULL) \
+            ||  (claDes -> getParentClaDes() != NULL \
+                && (typeInfo=claDes->getParentClaDes()->getClaScope()->getType(pid->getidname(), pid->getLocation()))!=NULL))
+                return typeInfo;
+        }
+    }
+    return NULL;
+}
+
+TypeInfo* This::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+{
+    TypeInfo *typeInfo = new TypeInfo();
+    typeInfo -> setType(DC::TYPE::TYPE::DC_NAMED);
+    for(auto entry : gloScope -> getEntries())
+    {
+        if(((GloScopeEntry*)entry) -> getClaDes() == claDes)
+        {
+            typeInfo -> setClassName(((GloScopeEntry*)entry) -> getClassName());
+            break;
+        }
+    }
+    
+    typeInfo -> setName("this");
+    return typeInfo;
+}
+
+TypeInfo* ReadInteger::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+{
+    TypeInfo *typeInfo = new TypeInfo();
+    typeInfo -> setType(DC::TYPE::TYPE::DC_INT);
+    typeInfo -> setName("ReadInteger");
+    return typeInfo;
+}
+
+TypeInfo* ReadLine::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+{
+    TypeInfo *typeInfo = new TypeInfo();
+    typeInfo -> setType(DC::TYPE::TYPE::DC_INT);
+    typeInfo -> setName("ReadLine");
+    return typeInfo;
+}
+
+TypeInfo* Instanceof::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+{
+    TypeInfo *typeInfo = new TypeInfo();
+    typeInfo -> setType(DC::TYPE::TYPE::DC_BOOL);
+    return typeInfo;
+}
+
+TypeInfo* NewExpr::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+{
+    return pid -> getType(gloScope, claDes, currentScope);
+}
+
+TypeInfo* NewArrayExpr::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+{
+    TypeInfo *typeInfo = new TypeInfo();
+    typeInfo->setType(ptype->getType());
+    switch(ptype->getType())
+    {
+        case(DC::TYPE::DC_NAMED):
+            typeInfo->setClassName(((NamedType*)ptype)->getClassName());
+            break;
+        case(DC::TYPE::DC_ARRAY):
+            Type* arrayType = ((ArrayType*)ptype)->getArrayType();
+            if (arrayType->getType() == DC::TYPE::DC_NAMED)
+            {
+                typeInfo->setClassName(((NamedType*)arrayType)->getClassName());
+            }
+            typeInfo->setArrayType(arrayType->getType());
+            typeInfo->setArrayLevel(((ArrayType*)ptype)->getArrayLevel());
+            break;
+    }
+    typeInfo -> setName("newarray");
+    return typeInfo;
+}
+
+TypeInfo* IntCon::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+{
+    TypeInfo *typeInfo = new TypeInfo();
+    typeInfo -> setType(DC::TYPE::TYPE::DC_INT);
+    typeInfo -> setName(std::to_string(value));
+    return typeInfo;
+}
+
+TypeInfo* BoolCon::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+{
+    TypeInfo *typeInfo = new TypeInfo();
+    typeInfo -> setType(DC::TYPE::TYPE::DC_BOOL);
+    typeInfo -> setName(value == 1 ? "true" : "false");
+    return typeInfo;
+}
+
+TypeInfo* StringCon::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+{
+    TypeInfo *typeInfo = new TypeInfo();
+    typeInfo -> setType(DC::TYPE::TYPE::DC_STRING);
+    typeInfo -> setName(value);
+    return typeInfo;
+}
+
+TypeInfo* NullCon::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+{
+    TypeInfo *typeInfo = new TypeInfo();
+    typeInfo -> setType(DC::TYPE::TYPE::DC_INT);
+    typeInfo -> setName("null");
+    return typeInfo;
+}
+// get location
+YYLTYPE* TreeNode::getLocation()
+{
+    return NULL;
+}
+
+YYLTYPE* Id::getLocation()
+{
+    return plocation;
+}
+
+YYLTYPE* AssignExpr::getLocation()
+{
+    return plvalue -> getLocation();
+}
+
+YYLTYPE* ArithmeticExpr::getLocation()
+{
+    return pexpr1 -> getLocation();
+}
+
+YYLTYPE* RelationExpr::getLocation()
+{
+    return pexpr1 -> getLocation();
+}
+
+YYLTYPE* LogicalExpr::getLocation()
+{
+    return pexpr1 -> getLocation();
+}
+
+YYLTYPE* FieldAccess::getLocation()
+{
+    return pexpr!=NULL?pexpr->getLocation():pid->getLocation();
+}
+
+YYLTYPE* ArrayAccess::getLocation()
+{
+    return pexpr1 -> getLocation();
+}
+
+YYLTYPE* Call::getLocation()
+{
+    return pexpr!=NULL?pexpr->getLocation():pid->getLocation();
+}
+
+YYLTYPE* This::getLocation()
+{
+    return plocation;
+}
+
+YYLTYPE* ReadInteger::getLocation()
+{
+    return plocation;
+}
+
+YYLTYPE* ReadLine::getLocation()
+{
+    return plocation;
+}
+
+YYLTYPE* Instanceof::getLocation()
+{
+    return pexpr -> getLocation();
+}
+
+YYLTYPE* NewExpr::getLocation()
+{
+    return pid -> getLocation();
+}
+
+YYLTYPE* NewArrayExpr::getLocation()
+{
+    return plocation;
+}
+
+YYLTYPE* IntCon::getLocation()
+{
+    return plocation;
+}
+
+YYLTYPE* BoolCon::getLocation()
+{
+    return plocation;
+}
+
+YYLTYPE* StringCon::getLocation()
+{
+    return plocation;
+}
+
+YYLTYPE* NullCon::getLocation()
+{
+    return plocation;
+}
+
+
+
 
 
 

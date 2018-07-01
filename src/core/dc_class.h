@@ -81,7 +81,11 @@ public:
     YYLTYPE* getplocation(){return plocation;}
     virtual void printAst(int aline,int level)=0;
     //check
-    virtual bool checkUndefinedVariables(GloScope* gloScope, Scope* currentScope);
+    virtual bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    //get type
+    virtual TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    //get location
+    virtual YYLTYPE* getLocation();
 };
 
 class Program:public TreeNode
@@ -99,7 +103,7 @@ public:
     bool checkScope();
     bool checkStmt();
     //check
-    bool checkUndefinedVariables(GloScope* gloScope, Scope* currentScope);
+    bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
 };
 
 class Id:public TreeNode
@@ -110,7 +114,11 @@ public:
     void printAst(int aline,int level);
     std::string getidname();
     //check
-    bool checkUndefinedVariables(GloScope* gloScope, Scope* currentScope);
+    bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    //get type
+    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    //get location
+    YYLTYPE* getLocation();
 };
 
 /**************decl************/
@@ -154,7 +162,7 @@ public:
     void printAst(int aline,int level);
     Entry *buildClassSym(std::string name);   
     //check
-    bool checkUndefinedVariables(GloScope* gloScope, Scope* currentScope);
+    bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
 };
 
 class ClassDecl:public Decl
@@ -167,7 +175,7 @@ public:
     void printAst(int aline,int level);
     Entry* buildGlobalSym();
     //check
-    bool checkUndefinedVariables(GloScope* gloScope, Scope* currentScope);
+    bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
 };
 /**********type******************/
 class Type:public TreeNode
@@ -237,7 +245,7 @@ public:
     //return LocScopeEntry with name="" and subLocScope not NULL;
     Entry* buildLocalSym(Scope* parentScope);    
     //check
-    bool checkUndefinedVariables(GloScope* gloScope, Scope* currentScope); 
+    bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
 };
 class IfStmt:public Stmt
 {
@@ -250,7 +258,7 @@ public:
     void printAst(int aline,int level);
     Entry *buildLocalSym(Scope* parentScope); 
     //check
-    bool checkUndefinedVariables(GloScope* gloScope, Scope* currentScope); 
+    bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
 };
 class WhileStmt:public Stmt
 {
@@ -261,7 +269,7 @@ public:
     void printAst(int aline,int level);
     Entry* buildLocalSym(Scope* parentScope); 
     //check
-    bool checkUndefinedVariables(GloScope* gloScope, Scope* currentScope); 
+    bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
 };
 class ForStmt:public Stmt
 {
@@ -274,7 +282,7 @@ public:
     void printAst(int aline,int level);
     Entry* buildLocalSym(Scope* parentScope); 
     //check
-    bool checkUndefinedVariables(GloScope* gloScope, Scope* currentScope); 
+    bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
 };
 class ReturnStmt:public Stmt
 {
@@ -283,7 +291,7 @@ public:
     ReturnStmt(Expr* s2,YYLTYPE loc);
     void printAst(int aline,int level);
     //check
-    bool checkUndefinedVariables(GloScope* gloScope, Scope* currentScope); 
+    bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
 };
 class BreakStmt:public Stmt
 {
@@ -291,7 +299,7 @@ public:
     BreakStmt(YYLTYPE loc);
     void printAst(int aline,int level);
     //check
-    bool checkUndefinedVariables(GloScope* gloScope, Scope* currentScope); 
+    bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
 };
 class PrintStmt:public Stmt
 {
@@ -300,7 +308,7 @@ public:
     PrintStmt(std::vector<Expr*> *s3);
     void printAst(int aline,int level);
     //check
-    bool checkUndefinedVariables(GloScope* gloScope, Scope* currentScope); 
+    bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
 };
 /************expr*************/
 class Expr:public Stmt
@@ -316,7 +324,11 @@ public:
     AssignExpr(Lvalue* s1,Expr* s3);
     void printAst(int aline,int level);
     //check
-    bool checkUndefinedVariables(GloScope* gloScope, Scope* currentScope); 
+    bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
+    //get type
+    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    //get location
+    YYLTYPE* getLocation();
 };
 class ArithmeticExpr:public Expr
 {
@@ -327,7 +339,11 @@ public:
     ArithmeticExpr(Expr* s1,const char *s,Expr* s3);
     void printAst(int aline,int level);
     //check
-    bool checkUndefinedVariables(GloScope* gloScope, Scope* currentScope); 
+    bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
+    //get type
+    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    //get location
+    YYLTYPE* getLocation();
 };
 class RelationExpr:public Expr
 {
@@ -338,7 +354,11 @@ public:
     RelationExpr(Expr* s1,const char* s,Expr* s3);
     void printAst(int aline,int level);
     //check
-    bool checkUndefinedVariables(GloScope* gloScope, Scope* currentScope); 
+    bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
+    //get type
+    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    //get location
+    YYLTYPE* getLocation();
 };
 class LogicalExpr:public Expr
 {
@@ -349,7 +369,11 @@ public:
     LogicalExpr(Expr* s1,const char* s,Expr* s3);
     void printAst(int aline,int level);
     //check
-    bool checkUndefinedVariables(GloScope* gloScope, Scope* currentScope); 
+    bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
+    //get type
+    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    //get location
+    YYLTYPE* getLocation();
 };
 class Lvalue:public Expr
 {
@@ -366,7 +390,11 @@ public:
     FieldAccess(Expr* s1,Id* s3);
     void printAst(int aline,int level);
     //check
-    bool checkUndefinedVariables(GloScope* gloScope, Scope* currentScope); 
+    bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
+    //get type
+    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    //get location
+    YYLTYPE* getLocation();
 };
 class ArrayAccess:public Lvalue
 {
@@ -376,7 +404,11 @@ public:
     ArrayAccess(Expr* s1,Expr* s3);
     void printAst(int aline,int level);
     //check
-    bool checkUndefinedVariables(GloScope* gloScope, Scope* currentScope); 
+    bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
+    //get type
+    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    //get location
+    YYLTYPE* getLocation();
 };
 class Call:public Expr
 {
@@ -387,32 +419,42 @@ public:
     Call(Expr* s1,Id* s3,std::vector<Expr*> *s5);
     void printAst(int aline,int level);
     //check
-    bool checkUndefinedVariables(GloScope* gloScope, Scope* currentScope); 
+    bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
+    //get type
+    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    //get location
+    YYLTYPE* getLocation();
 };
 class This:public Expr
 {
     //这个class好像没什么用处
 public:
-    This();
+    This(YYLTYPE loc);
     void printAst(int aline,int level);
-    //check
-    bool checkUndefinedVariables(GloScope* gloScope, Scope* currentScope);
+    //get type
+    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    //get location
+    YYLTYPE* getLocation();
 };
 class ReadInteger:public Expr
 {
 public:
-    ReadInteger();
+    ReadInteger(YYLTYPE loc);
     void printAst(int aline,int level);
-    //check
-    bool checkUndefinedVariables(GloScope* gloScope, Scope* currentScope);
+    //get type
+    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    //get location
+    YYLTYPE* getLocation();
 };
 class ReadLine:public Expr
 {
 public:
-    ReadLine();
+    ReadLine(YYLTYPE loc);
     void printAst(int aline,int level);
-    //check
-    bool checkUndefinedVariables(GloScope* gloScope, Scope* currentScope);
+    //get type
+    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    //get location
+    YYLTYPE* getLocation();
 };
 class Instanceof:public Expr
 {
@@ -422,7 +464,11 @@ public:
     Instanceof(Expr* s3,Id* s5);
     void printAst(int aline,int level);
     //check
-    bool checkUndefinedVariables(GloScope* gloScope, Scope* currentScope); 
+    bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
+    //get type
+    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    //get location
+    YYLTYPE* getLocation();
 };
 class NewExpr:public Expr
 {
@@ -431,17 +477,25 @@ public:
     NewExpr(Id* s2);
     void printAst(int aline,int level);
     //check
-    bool checkUndefinedVariables(GloScope* gloScope, Scope* currentScope); 
+    bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
+    //get type
+    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    //get location
+    YYLTYPE* getLocation();
 };
 class NewArrayExpr:public Expr
 {
 public:
     Type* ptype;
     Expr* pexpr;
-    NewArrayExpr(Type* s2,Expr* s4);
+    NewArrayExpr(Type* s2, YYLTYPE loc, Expr* s4);
     void printAst(int aline,int level);
     //check
-    bool checkUndefinedVariables(GloScope* gloScope, Scope* currentScope); 
+    bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
+    //get type
+    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    //get location
+    YYLTYPE* getLocation();
 };
 /*********constant**********/
 class Constant:public Expr
@@ -455,6 +509,10 @@ public:
     int value;
     IntCon(int s1,YYLTYPE loc);
     void printAst(int aline,int level);
+    //get type
+    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    //get location
+    YYLTYPE* getLocation();
 };
 class BoolCon:public Constant
 {
@@ -462,6 +520,10 @@ public:
     int value;
     BoolCon(int s1,YYLTYPE loc);
     void printAst(int aline,int level);
+    //get type
+    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    //get location
+    YYLTYPE* getLocation();
 };
 class StringCon:public Constant
 {
@@ -469,6 +531,10 @@ public:
     std::string value;
     StringCon(const char *s1,YYLTYPE loc);
     void printAst(int aline,int level);
+    //get type
+    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    //get location
+    YYLTYPE* getLocation();
 };
 class NullCon:public Constant
 {
@@ -476,6 +542,10 @@ public:
     int value;
     NullCon(int s1,YYLTYPE loc);
     void printAst(int aline,int level);
+    //get type
+    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    //get location
+    YYLTYPE* getLocation();
 };
 
 #endif

@@ -34,7 +34,11 @@ public:
 	static void AttributeAndMethodWithTheSameName(const YYLTYPE *pyylloc, std::string idname, const YYLTYPE *firstDefinedLocation);
 	//local variable
 	static void RedefinedLocalVariable(const YYLTYPE *pyylloc, std::string idname, const YYLTYPE *firstDefinedLocation);
-	
+	//undefined variables
+	static void UndefinedVariables(const YYLTYPE *pyylloc, std::string idname);
+	static void ClassDoesNotHaveTheAttriOrMethod(std::string classname, const YYLTYPE *pyylloc, std::string idname);
+	//DOT(.) used unorrectly
+	static void UnCorrectlyDotUsed(const YYLTYPE *pyylloc, std::string idname);
 
 	//internal error
 	static void InternalError(const std::string filename, int lineno);
