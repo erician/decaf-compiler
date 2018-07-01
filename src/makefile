@@ -84,6 +84,10 @@ failtest:
 	@#uncorrectly dot used
 	@echo "---------->unCorrectlyDotUsed_Shouldfail"
 	./$(OBJDIR)/decaf $(TESTDIR)/unCorrectlyDotUsed_Shouldfail.decaf
+	@#uncorrectly break used
+	@echo "---------->unCorrectlyBreakUsed_Shouldfail"
+	./$(OBJDIR)/decaf $(TESTDIR)/unCorrectlyBreakUsed_Shouldfail.decaf
+
 
 passtest:
 	@echo "---------->simpleTest_shouldpass.decaf"

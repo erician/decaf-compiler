@@ -39,6 +39,8 @@ public:
 	static void ClassDoesNotHaveTheAttriOrMethod(std::string classname, const YYLTYPE *pyylloc, std::string idname);
 	//DOT(.) used unorrectly
 	static void UnCorrectlyDotUsed(const YYLTYPE *pyylloc, std::string idname);
+	//break is not in the right place
+	static void UnCorrectlyBreakUsed(const YYLTYPE *pyylloc);
 
 	//internal error
 	static void InternalError(const std::string filename, int lineno);

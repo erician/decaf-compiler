@@ -82,6 +82,7 @@ public:
     virtual void printAst(int aline,int level)=0;
     //check
     virtual bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    virtual bool checkBreak(bool isWhileOrForBlock);
     //get type
     virtual TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
@@ -104,6 +105,7 @@ public:
     bool checkStmt();
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    bool checkBreak(bool isWhileOrForBlock);
 };
 
 class Id:public TreeNode
@@ -163,6 +165,7 @@ public:
     Entry *buildClassSym(std::string name);   
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    bool checkBreak(bool isWhileOrForBlock);
 };
 
 class ClassDecl:public Decl
@@ -176,6 +179,7 @@ public:
     Entry* buildGlobalSym();
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    bool checkBreak(bool isWhileOrForBlock);
 };
 /**********type******************/
 class Type:public TreeNode
@@ -246,6 +250,7 @@ public:
     Entry* buildLocalSym(Scope* parentScope);    
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
+    bool checkBreak(bool isWhileOrForBlock);
 };
 class IfStmt:public Stmt
 {
@@ -259,6 +264,7 @@ public:
     Entry *buildLocalSym(Scope* parentScope); 
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
+    bool checkBreak(bool isWhileOrForBlock);
 };
 class WhileStmt:public Stmt
 {
@@ -270,6 +276,7 @@ public:
     Entry* buildLocalSym(Scope* parentScope); 
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
+    bool checkBreak(bool isWhileOrForBlock);
 };
 class ForStmt:public Stmt
 {
@@ -283,6 +290,7 @@ public:
     Entry* buildLocalSym(Scope* parentScope); 
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
+    bool checkBreak(bool isWhileOrForBlock);
 };
 class ReturnStmt:public Stmt
 {
@@ -299,7 +307,8 @@ public:
     BreakStmt(YYLTYPE loc);
     void printAst(int aline,int level);
     //check
-    bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
+    bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    bool checkBreak(bool isWhileOrForBlock);
 };
 class PrintStmt:public Stmt
 {

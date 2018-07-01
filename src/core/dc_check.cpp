@@ -40,7 +40,9 @@ bool Program::checkScope()
 //mainly check whether statement is legal 
 bool Program::checkStmt()
 {
-    return checkUndefinedVariables(gloScope, NULL, gloScope);
+    if(checkUndefinedVariables(gloScope, NULL, gloScope) == false)
+        return false;
+    return checkBreak(false);
 }
 
 /*
@@ -729,6 +731,86 @@ bool NewArrayExpr::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, S
         return pexpr -> checkUndefinedVariables(gloScope, claDes, currentScope);
     return true;
 }
+
+//check break
+bool TreeNode::checkBreak(bool isWhileOrForBlock)
+{
+    return true;
+}
+
+bool Program::checkBreak(bool isWhileOrForBlock)
+{
+    bool noErrors = true;
+    for(auto classDecl : *pvecClassDecl)
+    {
+        noErrors = classDecl -> checkBreak(isWhileOrForBlock)?noErrors:false;
+    }
+    return noErrors;
+}
+
+bool ClassDecl::checkBreak(bool isWhileOrForBlock)
+{
+    bool noErrors = true;
+    for(auto field : *pfields)
+    {
+        if(typeid(*field).name() == typeid(FunDecl).name())
+            noErrors = field -> checkBreak(isWhileOrForBlock)?noErrors:false;
+    }
+    return noErrors;
+}
+
+bool FunDecl::checkBreak(bool isWhileOrForBlock)
+{
+    return pstmtblock -> checkBreak(isWhileOrForBlock);
+}
+
+bool StmtBlock::checkBreak(bool isWhileOrForBlock)
+{
+    bool noErrors = true;
+    for(auto stmt : *pstmts)
+    {
+        noErrors = stmt -> checkBreak(isWhileOrForBlock)?noErrors:false;
+    }
+    return noErrors;
+}
+
+bool IfStmt::checkBreak(bool isWhileOrForBlock)
+{
+    bool noErrors = true;
+    if(pstmt1 != NULL)
+        noErrors = pstmt1 -> checkBreak(isWhileOrForBlock);
+    if(pstmt2 != NULL)
+        noErrors = pstmt2 -> checkBreak(isWhileOrForBlock)?noErrors:false;
+    return noErrors; 
+}
+
+bool WhileStmt::checkBreak(bool isWhileOrForBlock)
+{
+    return pstmt -> checkBreak(true);
+}
+
+bool ForStmt::checkBreak(bool isWhileOrForBlock)
+{
+    return pstmt -> checkBreak(true);
+}
+
+bool BreakStmt::checkBreak(bool isWhileOrForBlock)
+{
+    if(isWhileOrForBlock == true)
+        return true;
+    IssueError::UnCorrectlyBreakUsed(plocation);
+    return false;
+}
+
+
+
+
+
+
+
+
+
+
 
 //expr get type
 TypeInfo* TreeNode::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)

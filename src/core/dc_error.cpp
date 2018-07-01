@@ -148,6 +148,12 @@ void IssueError::UnCorrectlyDotUsed(const YYLTYPE *pyylloc, std::string idname)
     IssueError::PrintLocation(pyylloc);
 }
 
+void IssueError::UnCorrectlyBreakUsed(const YYLTYPE *pyylloc)
+{
+    std::cout << "'break' is not correctly used, not in a for or while scope ";
+    IssueError::PrintLocation(pyylloc);
+}
+
 
 //internale error
 void IssueError::InternalError(const std::string filename, int lineno)
