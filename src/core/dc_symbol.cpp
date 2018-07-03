@@ -168,9 +168,22 @@ std::string ClaScope::getClassName()
 //type info
 TypeInfo::TypeInfo()
 {
+    type = -1;
     className = "";
     arrayLevel = 0;
+    arrayType = -1;
     name = "";
+    location = NULL;
+}
+
+TypeInfo::TypeInfo(TypeInfo* typeInfo)
+{
+    this->setType(typeInfo->getType());
+    this->setClassName(typeInfo->getClassName());
+    this->setArrayLevel(typeInfo->getArrayLevel());
+    this->setArrayType(typeInfo->getArrayType());
+    this->setName(typeInfo->getName());
+    this->setLocation(typeInfo->getLocation());
 }
 
 bool TypeInfo::setType(int type)
@@ -179,10 +192,50 @@ bool TypeInfo::setType(int type)
     return true;
 }
 
+TypeInfo* TypeInfo::withType(int type)
+{
+    this -> type = type;
+    return this;
+}
+
 int TypeInfo::getType()
 {
     return type;
 }
+
+std::string TypeInfo::typeIntToString(int type)
+{
+    switch(type)
+    {
+        case DC::TYPE::TYPE::DC_BOOL:
+            return "bool";
+        case DC::TYPE::TYPE::DC_INT:
+            return "int";
+        case DC::TYPE::TYPE::DC_VOID:
+            return "void";
+        case DC::TYPE::TYPE::DC_STRING:
+            return "string";
+        case DC::TYPE::TYPE::DC_NAMED:
+            return std::string("class ") + className;
+        case DC::TYPE::TYPE::DC_ARRAY:
+        {
+            std::string returnVal = typeIntToString(arrayType);
+            for(int i=0; i < arrayLevel; i++)
+                returnVal += "[]";
+            return returnVal;
+        }
+        default:
+            ; 
+    }
+    return "";
+}
+
+std::string TypeInfo::getTypeName()
+{
+    return typeIntToString(type);
+}
+
+
 
 bool TypeInfo::setArrayLevel(int level)
 {
@@ -338,6 +391,12 @@ bool ForScope::addEntry(Entry *entry)
     this->entries.push_back(entry);
     return true;
 }
+
+std::vector<Entry*> ForScope::getEntries()
+{
+    return entries;
+}
+
 bool ForScope::setLocScopeEntry(Entry *locScopeEntry)
 {
     this->locScopeEntry = (LocScopeEntry*)locScopeEntry;

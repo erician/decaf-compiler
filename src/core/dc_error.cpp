@@ -148,12 +148,67 @@ void IssueError::UnCorrectlyDotUsed(const YYLTYPE *pyylloc, std::string idname)
     IssueError::PrintLocation(pyylloc);
 }
 
+void IssueError::UnCorrectlyDotUsedToAccessStaticMethod(const YYLTYPE *pyylloc, std::string idname)
+{
+    std::cout << "'.' is not correctly used to access static method " << idname << " ";
+    IssueError::PrintLocation(pyylloc);
+}
+
 void IssueError::UnCorrectlyBreakUsed(const YYLTYPE *pyylloc)
 {
     std::cout << "'break' is not correctly used, not in a for or while scope ";
     IssueError::PrintLocation(pyylloc);
 }
 
+void IssueError::MismatchType(std::string typeName1, const YYLTYPE *pyylloc1, std::string typeName2, const YYLTYPE *pyylloc2)
+{
+    std::cout << "mismatch type, cann't convert '" << typeName1 << "' to '" << typeName2 << "' ";
+    if(pyylloc1 != NULL)
+        IssueError::PrintLocation(pyylloc1);
+    if(pyylloc2 != NULL)
+        IssueError::PrintLocation(pyylloc2);
+}
+
+void IssueError::MismatchReturnType(std::string typeName1, const YYLTYPE *pyylloc1, std::string typeName2, const YYLTYPE *pyylloc2)
+{
+    std::cout << "mismatch type of return value, cann't convert '" << typeName1 << "' to '" << typeName2 << "' ";
+    if(pyylloc1 != NULL)
+        IssueError::PrintLocation(pyylloc1);
+    if(pyylloc2 != NULL)
+        IssueError::PrintLocation(pyylloc2);
+}
+
+void IssueError::ArrayAccessMismatchType(std::string typeName1, const YYLTYPE *pyylloc1, std::string typeName2, const YYLTYPE *pyylloc2)
+{
+    std::cout << "mismatch type of array access, cann't convert '" << typeName1 << "' to '" << typeName2 << "' ";
+    if(pyylloc1 != NULL)
+        IssueError::PrintLocation(pyylloc1);
+    if(pyylloc2 != NULL)
+        IssueError::PrintLocation(pyylloc2);
+}
+
+void IssueError::ActualsAndFormalsNumMismatch(int formalsNum, int actualsNum, const YYLTYPE *pyylloc)
+{
+    std::cout << "formals and actuals num mismatch, the former is " << formalsNum << ", the latter is " << actualsNum << " ";
+    if(pyylloc != NULL)
+        IssueError::PrintLocation(pyylloc);
+}
+
+void IssueError::ActualsAndFormalsTypeMismatch(std::string typeName1, const YYLTYPE *pyylloc1, std::string typeName2, const YYLTYPE *pyylloc2)
+{
+    std::cout << "formals and actuals type mismatch, cann't convert '" << typeName1 << "' to '" << typeName2 << "' ";
+    if(pyylloc1 != NULL)
+        IssueError::PrintLocation(pyylloc1);
+    if(pyylloc2 != NULL)
+        IssueError::PrintLocation(pyylloc2);
+}
+
+void IssueError::UnCorrectlyBracketsUsed(std::string idname, const YYLTYPE *pyylloc)
+{
+    std::cout << "'[]' is not correctly used, not an array type" << idname << " ";
+    if(pyylloc != NULL)
+        IssueError::PrintLocation(pyylloc);
+}
 
 //internale error
 void IssueError::InternalError(const std::string filename, int lineno)

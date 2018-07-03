@@ -78,7 +78,7 @@ failtest:
 	./$(OBJDIR)/decaf $(TESTDIR)/attributeAndMethodWithTheSameName_Shouldfail.decaf
 	@echo "---------->redefinedLocalVariables_Shouldfail"
 	./$(OBJDIR)/decaf $(TESTDIR)/redefinedLocalVariables_Shouldfail.decaf
-	@#undefined variables
+	@#undefined variables 
 	@echo "---------->undefinedVariables_Shouldfail"
 	./$(OBJDIR)/decaf $(TESTDIR)/undefinedVariables_Shouldfail.decaf
 	@#uncorrectly dot used
@@ -87,8 +87,24 @@ failtest:
 	@#uncorrectly break used
 	@echo "---------->unCorrectlyBreakUsed_Shouldfail"
 	./$(OBJDIR)/decaf $(TESTDIR)/unCorrectlyBreakUsed_Shouldfail.decaf
+	@#mismatch type
+	@echo "---------->mismatchType_Shouldfail"
+	./$(OBJDIR)/decaf $(TESTDIR)/mismatchType_Shouldfail.decaf
+	@#mismatch type
+	@echo "---------->mismatchReturnValue_Shouldfail"
+	./$(OBJDIR)/decaf $(TESTDIR)/mismatchReturnValue_Shouldfail.decaf
+	@#mismatch type
+	@echo "---------->mismatchActuals_Shouldfail"
+	./$(OBJDIR)/decaf $(TESTDIR)/mismatchActuals_Shouldfail.decaf
+	@#mismatch type
+	@echo "---------->mismatchArrayAccess_Shouldfail"
+	./$(OBJDIR)/decaf $(TESTDIR)/mismatchArrayAccess_Shouldfail.decaf
+	@#uncorrectly brackets used
+	@echo "---------->uncorrectlyBracketsUsed_Shouldfail"
+	./$(OBJDIR)/decaf $(TESTDIR)/uncorrectlyBracketsUsed_Shouldfail.decaf
 
 
+	
 passtest:
 	@echo "---------->simpleTest_shouldpass.decaf"
 	./$(OBJDIR)/decaf $(TESTDIR)/simpleTest_shouldpass.decaf

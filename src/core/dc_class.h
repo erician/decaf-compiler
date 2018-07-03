@@ -83,6 +83,9 @@ public:
     //check
     virtual bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     virtual bool checkBreak(bool isWhileOrForBlock);
+    virtual bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    bool checkExprType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope, Expr* pexpr, TypeInfo* properTypeInfo);
+    bool cmpTypeInfo(TypeInfo* typeInfo1, TypeInfo* typeInfo2);
     //get type
     virtual TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
@@ -106,6 +109,7 @@ public:
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     bool checkBreak(bool isWhileOrForBlock);
+    bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
 };
 
 class Id:public TreeNode
@@ -166,6 +170,7 @@ public:
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     bool checkBreak(bool isWhileOrForBlock);
+    bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
 };
 
 class ClassDecl:public Decl
@@ -180,6 +185,7 @@ public:
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     bool checkBreak(bool isWhileOrForBlock);
+    bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
 };
 /**********type******************/
 class Type:public TreeNode
@@ -251,6 +257,7 @@ public:
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
     bool checkBreak(bool isWhileOrForBlock);
+    bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
 };
 class IfStmt:public Stmt
 {
@@ -265,6 +272,7 @@ public:
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
     bool checkBreak(bool isWhileOrForBlock);
+    bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
 };
 class WhileStmt:public Stmt
 {
@@ -277,6 +285,7 @@ public:
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
     bool checkBreak(bool isWhileOrForBlock);
+    bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
 };
 class ForStmt:public Stmt
 {
@@ -291,6 +300,7 @@ public:
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
     bool checkBreak(bool isWhileOrForBlock);
+    bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
 };
 class ReturnStmt:public Stmt
 {
@@ -300,6 +310,8 @@ public:
     void printAst(int aline,int level);
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
+    bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    YYLTYPE* getLocation();
 };
 class BreakStmt:public Stmt
 {
@@ -309,6 +321,7 @@ public:
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     bool checkBreak(bool isWhileOrForBlock);
+    YYLTYPE* getLocation();
 };
 class PrintStmt:public Stmt
 {
@@ -318,6 +331,7 @@ public:
     void printAst(int aline,int level);
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
+    bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
 };
 /************expr*************/
 class Expr:public Stmt
@@ -334,6 +348,7 @@ public:
     void printAst(int aline,int level);
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
+    bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get type
     TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
@@ -349,6 +364,7 @@ public:
     void printAst(int aline,int level);
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
+    bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get type
     TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
@@ -364,6 +380,7 @@ public:
     void printAst(int aline,int level);
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
+    bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get type
     TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
@@ -379,6 +396,7 @@ public:
     void printAst(int aline,int level);
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
+    bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get type
     TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
@@ -400,6 +418,7 @@ public:
     void printAst(int aline,int level);
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
+    bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get type
     TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
@@ -414,6 +433,7 @@ public:
     void printAst(int aline,int level);
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
+    bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get type
     TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
@@ -429,6 +449,8 @@ public:
     void printAst(int aline,int level);
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
+    bool checkActualsAndFormalsMatch(GloScope* gloScope, ClaDes* claDes, Scope* currentScope, std::vector<Entry*> formals);
+    bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get type
     TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
@@ -436,7 +458,6 @@ public:
 };
 class This:public Expr
 {
-    //这个class好像没什么用处
 public:
     This(YYLTYPE loc);
     void printAst(int aline,int level);
@@ -501,6 +522,7 @@ public:
     void printAst(int aline,int level);
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
+    bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get type
     TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location

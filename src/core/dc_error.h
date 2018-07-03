@@ -39,9 +39,22 @@ public:
 	static void ClassDoesNotHaveTheAttriOrMethod(std::string classname, const YYLTYPE *pyylloc, std::string idname);
 	//DOT(.) used unorrectly
 	static void UnCorrectlyDotUsed(const YYLTYPE *pyylloc, std::string idname);
+	//not used
+	static void UnCorrectlyDotUsedToAccessStaticMethod(const YYLTYPE *pyylloc, std::string idname);
 	//break is not in the right place
 	static void UnCorrectlyBreakUsed(const YYLTYPE *pyylloc);
-
+	//mismatch type
+	static void MismatchType(std::string typeName1, const YYLTYPE *pyylloc1, \
+							 std::string typeName2, const YYLTYPE *pyylloc2);
+	static void MismatchReturnType(std::string typeName1, const YYLTYPE *pyylloc1, \
+							 std::string typeName2, const YYLTYPE *pyylloc2);
+	static void ArrayAccessMismatchType(std::string typeName1, const YYLTYPE *pyylloc1, \
+							 std::string typeName2, const YYLTYPE *pyylloc2);
+	static void ActualsAndFormalsNumMismatch(int formalsNum, int actualsNum, const YYLTYPE *pyylloc);
+	static void ActualsAndFormalsTypeMismatch(std::string typeName1, const YYLTYPE *pyylloc1, \
+							 std::string typeName2, const YYLTYPE *pyylloc2);
+	//not array type used the []
+	static void UnCorrectlyBracketsUsed(std::string idname, const YYLTYPE *pyylloc);
 	//internal error
 	static void InternalError(const std::string filename, int lineno);
 private:

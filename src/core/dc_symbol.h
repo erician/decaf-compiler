@@ -176,10 +176,14 @@ private:
     int arrayType;
     std::string name;
     YYLTYPE *location;
+    std::string typeIntToString(int type);
 public:
     TypeInfo();
+    TypeInfo(TypeInfo* typeInfo);
     bool setType(int type);
+    TypeInfo* withType(int type);
     int getType();
+    std::string getTypeName();
 
     bool setArrayLevel(int level);
     int getArrayLevel();
@@ -261,6 +265,7 @@ private:
 public:
     ForScope();
     bool addEntry(Entry* entry);
+    std::vector<Entry*> getEntries();
     
     bool setLocScopeEntry(Entry *locScopeEntry);
     LocScopeEntry* getLocScopeEntry();
