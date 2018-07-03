@@ -1,0 +1,5 @@
+1   lexical_and_grammatical_analysisand gennerate ast --> finished
+2   build_symbol_table --> finished
+3   static_semantic_check --> finished
+4   gennerate tac --> not start
+5   gennerate mips code --> not start
