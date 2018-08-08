@@ -12,9 +12,10 @@ class Computer{
 class Mac extends Computer{
 	int mouse;
     string [] e;
-    string [][] g;
+    int [] g;
 	void Crash(int numTimes){
-        g = newarray(int, 4);
+        e = newarray(string, 4);
+		g = newarray(int , 2);
 		Print("ack!");
 	}
 }

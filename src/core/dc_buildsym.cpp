@@ -76,7 +76,7 @@ Type* ArrayType::getArrayType()
     return arrayType;
 }
 //type info
-TypeInfo* Decl::getTypeInfoFromType(Type* type)
+TypeInfo* TreeNode::getTypeInfoFromType(Type* type)
 {
     TypeInfo *typeInfo = new TypeInfo();
     typeInfo->setType(type->getType());

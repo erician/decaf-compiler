@@ -87,7 +87,8 @@ public:
     bool checkExprType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope, Expr* pexpr, TypeInfo* properTypeInfo);
     bool cmpTypeInfo(TypeInfo* typeInfo1, TypeInfo* typeInfo2);
     //get type
-    virtual TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    virtual TypeInfo* getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    TypeInfo* getTypeInfoFromType(Type* type);
     //get location
     virtual YYLTYPE* getLocation();
 };
@@ -107,6 +108,7 @@ public:
     bool checkScope();
     bool checkStmt();
     //check
+    void resetStart(GloScope *gloScope);
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     bool checkBreak(bool isWhileOrForBlock);
     bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
@@ -122,24 +124,23 @@ public:
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get type
-    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    TypeInfo* getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
     YYLTYPE* getLocation();
 };
 
 /**************decl************/
-class Decl:public TreeNode
+class Decl:virtual public TreeNode
 {
 public:
     Id *pid;
     Decl(Id* s);
-    TypeInfo* getTypeInfoFromType(Type* type);
     virtual Entry *buildClassSym(std::string name); 
     virtual Entry *buildGlobalSym(); 
 };
 
 /**************stmt************/
-class Stmt:public TreeNode
+class Stmt:virtual public TreeNode
 {
 public:
     Stmt();
@@ -350,7 +351,7 @@ public:
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
     bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get type
-    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    TypeInfo* getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
     YYLTYPE* getLocation();
 };
@@ -366,7 +367,7 @@ public:
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
     bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get type
-    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    TypeInfo* getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
     YYLTYPE* getLocation();
 };
@@ -382,7 +383,7 @@ public:
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
     bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get type
-    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    TypeInfo* getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
     YYLTYPE* getLocation();
 };
@@ -398,7 +399,7 @@ public:
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
     bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get type
-    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    TypeInfo* getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
     YYLTYPE* getLocation();
 };
@@ -420,7 +421,7 @@ public:
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
     bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get type
-    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    TypeInfo* getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
     YYLTYPE* getLocation();
 };
@@ -435,7 +436,7 @@ public:
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
     bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get type
-    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    TypeInfo* getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
     YYLTYPE* getLocation();
 };
@@ -452,7 +453,7 @@ public:
     bool checkActualsAndFormalsMatch(GloScope* gloScope, ClaDes* claDes, Scope* currentScope, std::vector<Entry*> formals);
     bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get type
-    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    TypeInfo* getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
     YYLTYPE* getLocation();
 };
@@ -462,7 +463,7 @@ public:
     This(YYLTYPE loc);
     void printAst(int aline,int level);
     //get type
-    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    TypeInfo* getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
     YYLTYPE* getLocation();
 };
@@ -472,7 +473,7 @@ public:
     ReadInteger(YYLTYPE loc);
     void printAst(int aline,int level);
     //get type
-    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    TypeInfo* getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
     YYLTYPE* getLocation();
 };
@@ -482,7 +483,7 @@ public:
     ReadLine(YYLTYPE loc);
     void printAst(int aline,int level);
     //get type
-    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    TypeInfo* getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
     YYLTYPE* getLocation();
 };
@@ -496,7 +497,7 @@ public:
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
     //get type
-    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    TypeInfo* getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
     YYLTYPE* getLocation();
 };
@@ -509,7 +510,7 @@ public:
     //check
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
     //get type
-    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    TypeInfo* getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
     YYLTYPE* getLocation();
 };
@@ -524,7 +525,7 @@ public:
     bool checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* currentScope); 
     bool checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get type
-    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    TypeInfo* getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
     YYLTYPE* getLocation();
 };
@@ -541,7 +542,7 @@ public:
     IntCon(int s1,YYLTYPE loc);
     void printAst(int aline,int level);
     //get type
-    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    TypeInfo* getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
     YYLTYPE* getLocation();
 };
@@ -552,7 +553,7 @@ public:
     BoolCon(int s1,YYLTYPE loc);
     void printAst(int aline,int level);
     //get type
-    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    TypeInfo* getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
     YYLTYPE* getLocation();
 };
@@ -563,7 +564,7 @@ public:
     StringCon(const char *s1,YYLTYPE loc);
     void printAst(int aline,int level);
     //get type
-    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    TypeInfo* getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
     YYLTYPE* getLocation();
 };
@@ -574,7 +575,7 @@ public:
     NullCon(int s1,YYLTYPE loc);
     void printAst(int aline,int level);
     //get type
-    TypeInfo* getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
+    TypeInfo* getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope);
     //get location
     YYLTYPE* getLocation();
 };

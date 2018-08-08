@@ -482,6 +482,11 @@ Scope* LocScope::getParentScope()
 {
     return this->parentScope;
 }
+
+void LocScope::setStart(int start)
+{
+    this->start = start;
+}
 //local scope entry
 LocScopeEntry::LocScopeEntry()
 {

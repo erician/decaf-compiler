@@ -110,7 +110,6 @@ class Decl:public TreeNode
 public:
     Id *pid;
     Decl(Id* s);
-    TypeInfo* getTypeInfoFromType(Type* type);
     virtual Entry *buildClassSym(std::string name); 
     virtual Entry *buildGlobalSym(); 
 };

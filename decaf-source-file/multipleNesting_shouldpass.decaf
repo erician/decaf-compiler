@@ -2,10 +2,23 @@ class Main{
 	static void main(){
 		int a;
         int a1;
+
+        if(a == 2)
+        {
+            int bb;
+            bb = 3;
+        }
+
+        while(a==1)
+        {
+            int aaa;
+            aaa = 3;
+        }
+
         for(a = 1; a < 5; a = a + 1)
         {
             string name;
-            if(a = 1)
+            if(a == 1)
             {
                 int b;
                 b = a;
@@ -21,9 +34,9 @@ class Main{
                 c = 4;
             }
         }
-
         {
             int aa;
+            aa = 2;
         }
 	}
 }

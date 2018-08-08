@@ -23,6 +23,7 @@
 #endif
 
 #include <map>
+#include <queue>
 #include <typeinfo>
 
 bool noErrors = true;
@@ -46,7 +47,42 @@ bool Program::checkStmt()
         return false;
     if(checkBreak(false) == false)
         return false;
+    resetStart(gloScope);
     return checkMismatchType(gloScope, NULL, gloScope);
+}
+
+/*reset all the attribute of start to 0 */
+void Program::resetStart(GloScope *gloScope)
+{
+    bool noErrors = true;
+    for(auto gloScopeEntry : gloScope->getEntries())
+    {
+        std::vector<Entry*> claScopeEntries = ((GloScopeEntry*)gloScopeEntry) \
+            -> getClaDes() -> getClaScope() -> getEntries();
+        for(auto claScopeEntry : claScopeEntries)
+        {
+            if(((ClaScopeEntry*)claScopeEntry) -> getCategory() == DC::CATEGORY::CATEGORY::DC_FUN)
+            {
+                LocScope *locScope = ((ClaScopeEntry*)claScopeEntry) -> getFunDes() \
+                    -> getForScope() -> getLocScopeEntry() -> getSubLocScope();
+                std::queue<LocScope*> locScopeQueue;
+                locScopeQueue.push(locScope);
+                LocScope *subLocScope;
+                while(locScopeQueue.size() != 0)
+                {
+                    LocScope* locScope = locScopeQueue.front();
+                    locScope->setStart(0);
+                    locScopeQueue.pop();
+                    for(auto locScopeEntry : locScope->getEntries())
+                    {
+                        if((subLocScope = ((LocScopeEntry*)locScopeEntry)->getSubLocScope()) != NULL)
+                            locScopeQueue.push(subLocScope);
+                    }
+                }
+            }
+        }
+    }
+    return ;
 }
 
 /*
@@ -131,13 +167,13 @@ bool LocScope::findId(std::string idName, YYLTYPE *plocation)
 }
 
 //get type
-TypeInfo* Scope::getType(std::string idName, YYLTYPE *plocation)
+TypeInfo* Scope::getTypeInfo(std::string idName, YYLTYPE *plocation)
 {
     return NULL;
 }
 
 //plocation is not used
-TypeInfo* ClaScope::getType(std::string idName, YYLTYPE *plocation)
+TypeInfo* ClaScope::getTypeInfo(std::string idName, YYLTYPE *plocation)
 {
     for(auto entry : entries)
     {
@@ -147,7 +183,7 @@ TypeInfo* ClaScope::getType(std::string idName, YYLTYPE *plocation)
     return NULL;
 }
 
-TypeInfo* ForScope::getType(std::string idName, YYLTYPE *plocation)
+TypeInfo* ForScope::getTypeInfo(std::string idName, YYLTYPE *plocation)
 {
     for(auto entry : entries)
     {
@@ -169,7 +205,7 @@ int LocScope::cmpYyltype(YYLTYPE *l1, YYLTYPE *l2)
     return -1;
 }
 
-TypeInfo* LocScope::getType(std::string idName, YYLTYPE *plocation)
+TypeInfo* LocScope::getTypeInfo(std::string idName, YYLTYPE *plocation)
 {
     for(auto entry : entries)
     {
@@ -408,7 +444,6 @@ bool GloScope::checkRedefinedLocalVariables()
                 if(locScope != NULL)
                     noErrors = locScope -> checkRedefinedLocalVariables() ? noErrors : false;
             }
-                
         }
     }
     return noErrors;
@@ -511,7 +546,7 @@ bool StmtBlock::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scop
     bool noErrors = true;
     for(auto stmt : *pstmts)
     {
-        if(typeid(*stmt).name() == typeid(StmtBlock).name())
+        if(stmt != NULL && typeid(*stmt).name() == typeid(StmtBlock).name())
         {
             LocScope *subLocScope = ((LocScope*)currentScope)->nextSubLocScope();
             if(subLocScope != NULL)
@@ -524,7 +559,7 @@ bool StmtBlock::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scop
                 return false;
             }
         }
-        else
+        else if(stmt != NULL)
         {
             noErrors = stmt->checkUndefinedVariables(gloScope, claDes, currentScope) ? noErrors : false;
         }
@@ -536,6 +571,7 @@ bool IfStmt::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* 
 {
     bool noErrors = true;
     noErrors = pexpr -> checkUndefinedVariables(gloScope, claDes, currentScope);
+    currentScope = ((LocScope*)currentScope)->nextSubLocScope();
     if(pstmt1 != NULL)
         if(typeid(*pstmt1).name() == typeid(StmtBlock).name())
             noErrors = pstmt1 -> checkUndefinedVariables(gloScope, claDes, ((LocScope*)currentScope)->nextSubLocScope()) ? noErrors : false;
@@ -637,7 +673,7 @@ bool FieldAccess::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Sc
     {
         if(pexpr -> checkUndefinedVariables(gloScope, claDes, currentScope) == false)
             return false;
-        TypeInfo* typeInfo = pexpr -> getType(gloScope, claDes, currentScope);
+        TypeInfo* typeInfo = pexpr -> getTypeInfo(gloScope, claDes, currentScope);
         if(typeInfo == NULL)
             return false;
         else
@@ -650,9 +686,9 @@ bool FieldAccess::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Sc
             else
             {
                 ClaDes* claDes = gloScope -> findClass(typeInfo -> getClassName()) -> getClaDes();
-                if(((typeInfo = claDes -> getClaScope() -> getType(pid -> getidname(), pid -> getLocation()))!=NULL) \
+                if(((typeInfo = claDes -> getClaScope() -> getTypeInfo(pid -> getidname(), pid -> getLocation()))!=NULL) \
                 ||  (claDes -> getParentClaDes() != NULL \
-                    && (typeInfo=claDes->getParentClaDes()->getClaScope()->getType(pid->getidname(), pid->getLocation()))!=NULL))
+                    && (typeInfo=claDes->getParentClaDes()->getClaScope()->getTypeInfo(pid->getidname(), pid->getLocation()))!=NULL))
                     return true;
                 else
                     IssueError::ClassDoesNotHaveTheAttriOrMethod(typeInfo -> getClassName(), pid -> getLocation(), pid -> getidname());
@@ -687,7 +723,7 @@ bool Call::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* cu
     {
         if(pexpr -> checkUndefinedVariables(gloScope, claDes, currentScope) == false)
             return false;
-        TypeInfo* typeInfo = pexpr -> getType(gloScope, claDes, currentScope);
+        TypeInfo* typeInfo = pexpr -> getTypeInfo(gloScope, claDes, currentScope);
         if(typeInfo == NULL)
             return false;
         else
@@ -700,9 +736,9 @@ bool Call::checkUndefinedVariables(GloScope* gloScope, ClaDes* claDes, Scope* cu
             else
             {
                 ClaDes* claDes = gloScope -> findClass(typeInfo -> getClassName()) -> getClaDes();
-                if(((claDes -> getClaScope() -> getType(pid -> getidname(), pid -> getLocation()))!=NULL) \
+                if(((claDes -> getClaScope() -> getTypeInfo(pid -> getidname(), pid -> getLocation()))!=NULL) \
                 ||  (claDes -> getParentClaDes() != NULL \
-                    && (claDes->getParentClaDes()->getClaScope()->getType(pid->getidname(), pid->getLocation()))!=NULL))
+                    && (claDes->getParentClaDes()->getClaScope()->getTypeInfo(pid->getidname(), pid->getLocation()))!=NULL))
                     ;
                 else
                 {
@@ -781,7 +817,8 @@ bool StmtBlock::checkBreak(bool isWhileOrForBlock)
     bool noErrors = true;
     for(auto stmt : *pstmts)
     {
-        noErrors = stmt -> checkBreak(isWhileOrForBlock)?noErrors:false;
+        if(stmt != NULL)
+            noErrors = stmt -> checkBreak(isWhileOrForBlock)?noErrors:false;
     }
     return noErrors;
 }
@@ -843,7 +880,7 @@ bool TreeNode::cmpTypeInfo(TypeInfo* typeInfo1, TypeInfo* typeInfo2)
 
 bool TreeNode::checkExprType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope, Expr* pexpr, TypeInfo* properTypeInfo)
 {
-    TypeInfo *typeInfo = pexpr -> getType(gloScope, claDes, currentScope);
+    TypeInfo *typeInfo = pexpr -> getTypeInfo(gloScope, claDes, currentScope);
     if(cmpTypeInfo(typeInfo, properTypeInfo) == false)
     {
         IssueError::MismatchType(typeInfo->getTypeName(), typeInfo->getLocation(), \
@@ -895,7 +932,7 @@ bool StmtBlock::checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* cur
     bool noErrors = true;
     for(auto stmt : *pstmts)
     {
-        if(typeid(*stmt).name() == typeid(StmtBlock).name())
+        if(stmt != NULL && typeid(*stmt).name() == typeid(StmtBlock).name())
         {
             LocScope *subLocScope = ((LocScope*)currentScope)->nextSubLocScope();
             if(subLocScope != NULL)
@@ -908,7 +945,7 @@ bool StmtBlock::checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* cur
                 return false;
             }
         }
-        else
+        else if(stmt != NULL)
         {
             noErrors = stmt->checkMismatchType(gloScope, claDes, currentScope) ? noErrors : false;
         }
@@ -923,6 +960,7 @@ bool IfStmt::checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* curren
     noErrors = pexpr->checkMismatchType(gloScope, claDes, currentScope);
     noErrors = checkExprType(gloScope, claDes, currentScope, pexpr, \
                (new TypeInfo()) -> withType(DC::TYPE::TYPE::DC_BOOL)) ? noErrors : false;
+    currentScope = ((LocScope*)currentScope)->nextSubLocScope();
     if(pstmt1 != NULL)
         if(typeid(*pstmt1).name() == typeid(StmtBlock).name())
             noErrors = pstmt1 -> checkMismatchType(gloScope, claDes, ((LocScope*)currentScope)->nextSubLocScope()) ? noErrors : false;
@@ -1002,7 +1040,7 @@ bool ReturnStmt::checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* cu
     {
         if(poptexpr -> checkMismatchType(gloScope, claDes, currentScope) == false)
             return false;
-        TypeInfo* typeInfo = poptexpr ->getType(gloScope, claDes, currentScope); 
+        TypeInfo* typeInfo = poptexpr ->getTypeInfo(gloScope, claDes, currentScope); 
         if(cmpTypeInfo(typeInfo, properTypeInfo) == false)
         {
             IssueError::MismatchReturnType(typeInfo->getTypeName(), typeInfo->getLocation(), \
@@ -1029,7 +1067,7 @@ bool AssignExpr::checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* cu
     ||  pexpr -> checkMismatchType(gloScope, claDes, currentScope) == false)
         return false;
     return checkExprType(gloScope, claDes, currentScope, pexpr, \
-                             plvalue -> getType(gloScope, claDes, currentScope));
+                             plvalue -> getTypeInfo(gloScope, claDes, currentScope));
 }
 
 bool ArithmeticExpr::checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
@@ -1073,11 +1111,11 @@ bool Call::checkActualsAndFormalsMatch(GloScope* gloScope, ClaDes* claDes, Scope
     {
         for(int i=0; i<pactuals->size(); i++)
         {
-            if(cmpTypeInfo(((ForScopeEntry*)formals[i+actualsShoudAddValue])->getTypeInfo(), (*pactuals)[i]->getType(gloScope, claDes, currentScope)) == false)
+            if(cmpTypeInfo(((ForScopeEntry*)formals[i+actualsShoudAddValue])->getTypeInfo(), (*pactuals)[i]->getTypeInfo(gloScope, claDes, currentScope)) == false)
             {
                 noErrors = false;
-                IssueError::ActualsAndFormalsTypeMismatch((*pactuals)[i]->getType(gloScope, claDes, currentScope)->getTypeName(), \
-                                                          (*pactuals)[i]->getType(gloScope, claDes, currentScope)->getLocation(), \
+                IssueError::ActualsAndFormalsTypeMismatch((*pactuals)[i]->getTypeInfo(gloScope, claDes, currentScope)->getTypeName(), \
+                                                          (*pactuals)[i]->getTypeInfo(gloScope, claDes, currentScope)->getLocation(), \
                                                           ((ForScopeEntry*)formals[i+actualsShoudAddValue])->getTypeInfo()->getTypeName(),\
                                                           ((ForScopeEntry*)formals[i+actualsShoudAddValue])->getTypeInfo()->getLocation());
             }
@@ -1096,7 +1134,7 @@ bool Call::checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentS
     {
         if(pexpr -> checkMismatchType(gloScope, claDes, currentScope) == false)
             return false;
-        typeInfo = pexpr -> getType(gloScope, claDes, currentScope);
+        typeInfo = pexpr -> getTypeInfo(gloScope, claDes, currentScope);
         if(typeInfo -> getClassName() == "")
         {
             IssueError::UnCorrectlyDotUsed(typeInfo->getLocation(), typeInfo->getName());
@@ -1104,7 +1142,7 @@ bool Call::checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentS
         }
         objectClaDes = gloScope -> findClass(typeInfo -> getClassName()) -> getClaDes();
     }
-    ClaScope* claScope = objectClaDes -> getClaScope() -> getType(pid -> getidname(), pid -> getLocation())!=NULL \
+    ClaScope* claScope = objectClaDes -> getClaScope() -> getTypeInfo(pid -> getidname(), pid -> getLocation())!=NULL \
                             ? objectClaDes -> getClaScope() : objectClaDes->getParentClaDes()->getClaScope();
     for(auto entry : claScope -> getEntries())
     {
@@ -1120,12 +1158,12 @@ bool Call::checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentS
 bool FieldAccess::checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     if(pexpr == NULL)
-        return pid -> getType(gloScope, claDes, currentScope);
+        return pid -> getTypeInfo(gloScope, claDes, currentScope);
     else
     {
         if(pexpr -> checkMismatchType(gloScope, claDes, currentScope) == false)
             return false;
-        TypeInfo* typeInfo = pexpr -> getType(gloScope, claDes, currentScope);
+        TypeInfo* typeInfo = pexpr -> getTypeInfo(gloScope, claDes, currentScope);
         if(typeInfo == NULL)
             return false;
         else
@@ -1146,12 +1184,12 @@ bool ArrayAccess::checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* c
     || pexpr2 -> checkMismatchType(gloScope, claDes, currentScope) == false)
         return false;
     TypeInfo* typeInfo = NULL;
-    if((typeInfo = pexpr2 -> getType(gloScope, claDes, currentScope)) -> getType() != DC::TYPE::TYPE::DC_INT)
+    if((typeInfo = pexpr2 -> getTypeInfo(gloScope, claDes, currentScope)) -> getType() != DC::TYPE::TYPE::DC_INT)
     {
         IssueError::ArrayAccessMismatchType(typeInfo->getTypeName(), typeInfo->getLocation(), "int", NULL);
         return false;
     }
-    if((typeInfo = pexpr1 -> getType(gloScope, claDes, currentScope))->getType() != DC::TYPE::TYPE::DC_ARRAY)
+    if((typeInfo = pexpr1 -> getTypeInfo(gloScope, claDes, currentScope))->getType() != DC::TYPE::TYPE::DC_ARRAY)
     {
         IssueError::UnCorrectlyBracketsUsed(typeInfo->getName(), typeInfo->getLocation());
         return false;
@@ -1164,7 +1202,7 @@ bool NewArrayExpr::checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* 
     if(pexpr -> checkMismatchType(gloScope, claDes, currentScope) == false)
         return false;
     TypeInfo* typeInfo = NULL;
-    if((typeInfo = pexpr -> getType(gloScope, claDes, currentScope)) -> getType() != DC::TYPE::TYPE::DC_INT)
+    if((typeInfo = pexpr -> getTypeInfo(gloScope, claDes, currentScope)) -> getType() != DC::TYPE::TYPE::DC_INT)
     {
         IssueError::MismatchType(typeInfo -> getTypeName(), typeInfo -> getLocation(), \
                                 "int", NULL);
@@ -1173,29 +1211,28 @@ bool NewArrayExpr::checkMismatchType(GloScope* gloScope, ClaDes* claDes, Scope* 
     return true;
 }
 
-
 //expr get type
-TypeInfo* TreeNode::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+TypeInfo* TreeNode::getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     return new TypeInfo();
 }
 
-TypeInfo* Id::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+TypeInfo* Id::getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     TypeInfo *typeInfo = NULL;
     //find id in loccal scope first
     while(true)
     {   
-        if((typeInfo = currentScope -> getType(name, plocation)) != NULL)
+        if((typeInfo = currentScope -> getTypeInfo(name, plocation)) != NULL)
             break;
         if((currentScope = currentScope -> getParentScope()) == NULL)
             break;
     }
     //if not found, find the id in class scope: self class first, then parent class
     if((typeInfo != NULL) \
-    || ((typeInfo = claDes -> getClaScope() -> getType(name, plocation)) != NULL) \
+    || ((typeInfo = claDes -> getClaScope() -> getTypeInfo(name, plocation)) != NULL) \
     || (claDes -> getParentClaDes() != NULL \
-        && (typeInfo=claDes->getParentClaDes()->getClaScope()->getType(name, plocation)) != NULL))
+        && (typeInfo=claDes->getParentClaDes()->getClaScope()->getTypeInfo(name, plocation)) != NULL))
     {
         typeInfo -> setLocation(plocation);
         typeInfo -> setName(name);
@@ -1205,17 +1242,17 @@ TypeInfo* Id::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
     return new TypeInfo();
 }
 
-TypeInfo* AssignExpr::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+TypeInfo* AssignExpr::getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
-    return plvalue -> getType(gloScope, claDes, currentScope);
+    return plvalue -> getTypeInfo(gloScope, claDes, currentScope);
 }
 
-TypeInfo* ArithmeticExpr::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+TypeInfo* ArithmeticExpr::getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
-    return pexpr1 -> getType(gloScope, claDes, currentScope);
+    return pexpr1 -> getTypeInfo(gloScope, claDes, currentScope);
 }
 
-TypeInfo* RelationExpr::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+TypeInfo* RelationExpr::getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     TypeInfo* typeInfo = new TypeInfo();
     typeInfo -> setType(DC::TYPE::TYPE::DC_BOOL);
@@ -1225,7 +1262,7 @@ TypeInfo* RelationExpr::getType(GloScope* gloScope, ClaDes* claDes, Scope* curre
 }
 
 //never return NULL, even something wrong
-TypeInfo* LogicalExpr::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+TypeInfo* LogicalExpr::getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     TypeInfo* typeInfo = new TypeInfo();
     typeInfo -> setType(DC::TYPE::TYPE::DC_BOOL);
@@ -1234,17 +1271,17 @@ TypeInfo* LogicalExpr::getType(GloScope* gloScope, ClaDes* claDes, Scope* curren
     return typeInfo;
 }
 
-TypeInfo* FieldAccess::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+TypeInfo* FieldAccess::getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     if(pexpr == NULL)
-        return pid -> getType(gloScope, claDes, currentScope);
+        return pid -> getTypeInfo(gloScope, claDes, currentScope);
     else
     {
-        TypeInfo* typeInfo = pexpr -> getType(gloScope, claDes, currentScope);
+        TypeInfo* typeInfo = pexpr -> getTypeInfo(gloScope, claDes, currentScope);
         ClaDes* objectClaDes = gloScope -> findClass(typeInfo -> getClassName()) -> getClaDes();
-        if(((typeInfo = objectClaDes -> getClaScope() -> getType(pid -> getidname(), pid -> getLocation()))!=NULL) \
+        if(((typeInfo = objectClaDes -> getClaScope() -> getTypeInfo(pid -> getidname(), pid -> getLocation()))!=NULL) \
         ||  (objectClaDes -> getParentClaDes() != NULL \
-            && (typeInfo=objectClaDes->getParentClaDes()->getClaScope()->getType(pid->getidname(), pid->getLocation()))!=NULL))
+            && (typeInfo=objectClaDes->getParentClaDes()->getClaScope()->getTypeInfo(pid->getidname(), pid->getLocation()))!=NULL))
         {
             typeInfo -> setLocation(pexpr->getLocation());
             return typeInfo;
@@ -1254,9 +1291,9 @@ TypeInfo* FieldAccess::getType(GloScope* gloScope, ClaDes* claDes, Scope* curren
     return new TypeInfo();
 }
 
-TypeInfo* ArrayAccess::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+TypeInfo* ArrayAccess::getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
-    TypeInfo* typeInfo = new TypeInfo(pexpr1 -> getType(gloScope, claDes, currentScope));
+    TypeInfo* typeInfo = new TypeInfo(pexpr1 -> getTypeInfo(gloScope, claDes, currentScope));
     if(typeInfo -> getArrayLevel() == 1)
     {
         typeInfo -> setType(typeInfo->getArrayType());
@@ -1264,17 +1301,17 @@ TypeInfo* ArrayAccess::getType(GloScope* gloScope, ClaDes* claDes, Scope* curren
     return typeInfo;
 }
 
-TypeInfo* Call::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+TypeInfo* Call::getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     if(pexpr == NULL)
-        return pid -> getType(gloScope, claDes, currentScope);
+        return pid -> getTypeInfo(gloScope, claDes, currentScope);
     else
     {
-        TypeInfo *typeInfo = pexpr -> getType(gloScope, claDes, currentScope);
+        TypeInfo *typeInfo = pexpr -> getTypeInfo(gloScope, claDes, currentScope);
         ClaDes* objectClaDes = gloScope -> findClass(typeInfo -> getClassName()) -> getClaDes();
-        if(((typeInfo = objectClaDes -> getClaScope() -> getType(pid -> getidname(), pid -> getLocation()))!=NULL) \
+        if(((typeInfo = objectClaDes -> getClaScope() -> getTypeInfo(pid -> getidname(), pid -> getLocation()))!=NULL) \
         ||  (objectClaDes -> getParentClaDes() != NULL \
-            && (typeInfo=objectClaDes->getParentClaDes()->getClaScope()->getType(pid->getidname(), pid->getLocation()))!=NULL))
+            && (typeInfo=objectClaDes->getParentClaDes()->getClaScope()->getTypeInfo(pid->getidname(), pid->getLocation()))!=NULL))
         {
                 
             typeInfo->setLocation(pexpr->getLocation());
@@ -1285,7 +1322,7 @@ TypeInfo* Call::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
     return new TypeInfo();
 }
 
-TypeInfo* This::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+TypeInfo* This::getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     TypeInfo *typeInfo = new TypeInfo();
     typeInfo -> setType(DC::TYPE::TYPE::DC_NAMED);
@@ -1302,7 +1339,7 @@ TypeInfo* This::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
     return typeInfo;
 }
 
-TypeInfo* ReadInteger::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+TypeInfo* ReadInteger::getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     TypeInfo *typeInfo = new TypeInfo();
     typeInfo -> setType(DC::TYPE::TYPE::DC_INT);
@@ -1311,7 +1348,7 @@ TypeInfo* ReadInteger::getType(GloScope* gloScope, ClaDes* claDes, Scope* curren
     return typeInfo;
 }
 
-TypeInfo* ReadLine::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+TypeInfo* ReadLine::getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     TypeInfo *typeInfo = new TypeInfo();
     typeInfo -> setType(DC::TYPE::TYPE::DC_INT);
@@ -1320,7 +1357,7 @@ TypeInfo* ReadLine::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentSc
     return typeInfo;
 }
 
-TypeInfo* Instanceof::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+TypeInfo* Instanceof::getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     TypeInfo *typeInfo = new TypeInfo();
     typeInfo -> setType(DC::TYPE::TYPE::DC_BOOL);
@@ -1328,7 +1365,7 @@ TypeInfo* Instanceof::getType(GloScope* gloScope, ClaDes* claDes, Scope* current
     return typeInfo;
 }
 
-TypeInfo* NewExpr::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+TypeInfo* NewExpr::getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     TypeInfo *typeInfo = new TypeInfo();
     typeInfo->setType(DC::TYPE::TYPE::DC_NAMED);
@@ -1337,31 +1374,20 @@ TypeInfo* NewExpr::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentSco
     return typeInfo;
 }
 
-TypeInfo* NewArrayExpr::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+TypeInfo* NewArrayExpr::getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
-    TypeInfo *typeInfo = new TypeInfo();
-    typeInfo->setType(ptype->getType());
-    switch(ptype->getType())
-    {
-        case(DC::TYPE::DC_NAMED):
-            typeInfo->setClassName(((NamedType*)ptype)->getClassName());
-            break;
-        case(DC::TYPE::DC_ARRAY):
-            Type* arrayType = ((ArrayType*)ptype)->getArrayType();
-            if (arrayType->getType() == DC::TYPE::DC_NAMED)
-            {
-                typeInfo->setClassName(((NamedType*)arrayType)->getClassName());
-            }
-            typeInfo->setArrayType(arrayType->getType());
-            typeInfo->setArrayLevel(((ArrayType*)ptype)->getArrayLevel());
-            break;
+    TypeInfo *typeInfo = getTypeInfoFromType(ptype);
+    if(typeInfo -> getType() != DC::TYPE::TYPE::DC_ARRAY){
+        typeInfo -> setArrayLevel(1);
+        typeInfo -> setArrayType(typeInfo -> getType());
     }
+    typeInfo -> setType(DC::TYPE::TYPE::DC_ARRAY);
     typeInfo -> setName("newarray");
     typeInfo -> setLocation(getLocation());
     return typeInfo;
 }
 
-TypeInfo* IntCon::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+TypeInfo* IntCon::getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     TypeInfo *typeInfo = new TypeInfo();
     typeInfo -> setType(DC::TYPE::TYPE::DC_INT);
@@ -1370,7 +1396,7 @@ TypeInfo* IntCon::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScop
     return typeInfo;
 }
 
-TypeInfo* BoolCon::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+TypeInfo* BoolCon::getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     TypeInfo *typeInfo = new TypeInfo();
     typeInfo -> setType(DC::TYPE::TYPE::DC_BOOL);
@@ -1379,7 +1405,7 @@ TypeInfo* BoolCon::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentSco
     return typeInfo;
 }
 
-TypeInfo* StringCon::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+TypeInfo* StringCon::getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     TypeInfo *typeInfo = new TypeInfo();
     typeInfo -> setType(DC::TYPE::TYPE::DC_STRING);
@@ -1388,7 +1414,7 @@ TypeInfo* StringCon::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentS
     return typeInfo;
 }
 
-TypeInfo* NullCon::getType(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
+TypeInfo* NullCon::getTypeInfo(GloScope* gloScope, ClaDes* claDes, Scope* currentScope)
 {
     TypeInfo *typeInfo = new TypeInfo();
     typeInfo -> setType(DC::TYPE::TYPE::DC_INT);
@@ -1501,29 +1527,5 @@ YYLTYPE* NullCon::getLocation()
 {
     return plocation;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//check whether dot(.) is used right, 
-
-
 
 

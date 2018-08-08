@@ -7,12 +7,9 @@ class Computer{
 	}
 }
 class Mac extends Computer{
-	int [] mouse;
-    int mouse1;
+	int mouse;
 	void Crash(int numTimes){
-		mouse[0] = 0;
-        mouse1[1] = 1;
-        Print("ack!");
+		Print("ack!");
 	}
 }
 class Main{
@@ -20,5 +17,6 @@ class Main{
 		class Mac powerbook;
 		powerbook=new Mac();
 		powerbook.Crash(2);
+        powerbook[1] = 2;
 	}
 }

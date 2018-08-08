@@ -60,7 +60,7 @@ public:
     virtual void printSym(int aline, int level) = 0;
     virtual Scope* getParentScope();
     virtual bool findId(std::string idName, YYLTYPE *plocation);
-    virtual TypeInfo* getType(std::string idName, YYLTYPE *plocation);
+    virtual TypeInfo* getTypeInfo(std::string idName, YYLTYPE *plocation);
 };
 
 //GloScope
@@ -163,7 +163,7 @@ public:
     bool checkUndefinedClass(GloScope* gloScope);
 
     bool findId(std::string idName, YYLTYPE *plocation);
-    TypeInfo* getType(std::string idName, YYLTYPE *plocation);
+    TypeInfo* getTypeInfo(std::string idName, YYLTYPE *plocation);
 };
 
 //TypeInfo
@@ -281,7 +281,7 @@ public:
     //check
     bool checkUndefinedClass(GloScope* gloScope);
     bool findId(std::string idName, YYLTYPE *plocation);
-    TypeInfo* getType(std::string idName, YYLTYPE *plocation);
+    TypeInfo* getTypeInfo(std::string idName, YYLTYPE *plocation);
 };
 //formal scope entry
 class ForScopeEntry: public Entry
@@ -310,7 +310,7 @@ private:
     Scope *parentScope;
     //used by nextSubLocScope as the pos to start to find
     int start;
-    
+
 public:
     LocScope();
     bool addEntry(Entry* entry);
@@ -326,9 +326,11 @@ public:
     bool checkRedefinedLocalVariables();
 
     LocScope* nextSubLocScope();
+    void setStart(int start);
+
     bool findId(std::string idName, YYLTYPE *plocation);
     int cmpYyltype(YYLTYPE *l1, YYLTYPE *l2);
-    TypeInfo* getType(std::string idName, YYLTYPE *plocation);
+    TypeInfo* getTypeInfo(std::string idName, YYLTYPE *plocation);
 };
 //local scope entry
 class LocScopeEntry: public Entry
